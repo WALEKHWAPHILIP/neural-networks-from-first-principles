@@ -1,0 +1,418 @@
+---
+title: "Single Neuron Classification"
+---
+
+## Why this chapter exists
+
+This chapter introduces the simplest neural-network classification setting: a single neuron used for binary classification.
+
+Binary classification means there are only two possible classes, such as:
+
+- 0 or 1,
+- no or yes,
+- fail or pass,
+- negative or positive.
+
+Unlike regression, classification usually needs an output that can be interpreted as a probability-like quantity.
+
+That is why we do not use the identity activation here.
+
+## What binary classification means
+
+In binary classification, the target variable takes one of two values:
+
+$$
+y \in \{0,1\}
+$$
+
+For example:
+
+- $y = 0$ may mean "did not buy",
+- $y = 1$ may mean "did buy".
+
+The model should output a number that tells us how strongly it leans toward class 1.
+
+So we want the prediction to lie between 0 and 1.
+
+## Why sigmoid is used
+
+The sigmoid activation function is:
+
+$$
+\sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+This takes any real number $z$ and maps it into the interval:
+
+$$
+(0,1)
+$$
+
+That makes sigmoid useful for binary classification.
+
+If the output is close to 1, the model is leaning toward class 1.  
+If the output is close to 0, the model is leaning toward class 0.
+
+## The model
+
+We again use a neuron with two inputs:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+But now the prediction is:
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+So the model is no longer just a linear output. It is a linear score followed by sigmoid.
+
+## Our tiny classification dataset
+
+We use this small dataset:
+
+| Example | $x_1$ | $x_2$ | $y$ |
+|---|---:|---:|---:|
+| 1 | 0 | 0 | 0 |
+| 2 | 0 | 1 | 0 |
+| 3 | 1 | 0 | 1 |
+| 4 | 1 | 1 | 1 |
+
+This is small enough for hand calculation and helps us see how the neuron behaves.
+
+## Why this dataset is useful
+
+This dataset is useful because it contains both classes and keeps the arithmetic manageable.
+
+We can inspect:
+
+- how the weighted sum changes,
+- how sigmoid transforms that sum,
+- how the predicted probability responds.
+
+## Initial parameter values
+
+Suppose we start with:
+
+$$
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+$$
+
+These are just starting values.
+
+## Forward pass for Example 1
+
+Take Example 1:
+
+$$
+x_1 = 0,\quad x_2 = 0,\quad y = 0
+$$
+
+First compute the pre-activation:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute:
+
+$$
+z = (2)(0) + (-1)(0) + (-0.5)
+$$
+
+$$
+z = 0 + 0 - 0.5 = -0.5
+$$
+
+Now apply sigmoid:
+
+$$
+\hat{y} = \sigma(-0.5) = \frac{1}{1 + e^{0.5}}
+$$
+
+Using the approximation:
+
+$$
+e^{0.5} \approx 1.6487
+$$
+
+we get:
+
+$$
+\hat{y} \approx \frac{1}{1 + 1.6487}
+= \frac{1}{2.6487}
+\approx 0.3775
+$$
+
+So the predicted probability-like output is:
+
+$$
+\hat{y} \approx 0.3775
+$$
+
+## Interpreting the prediction
+
+The true target is:
+
+$$
+y = 0
+$$
+
+The model predicted:
+
+$$
+\hat{y} \approx 0.3775
+$$
+
+This is below 0.5, so the model leans toward class 0.
+
+That is directionally reasonable, although not extremely confident.
+
+## Decision rule
+
+A common decision rule is:
+
+- predict class 1 if $\hat{y} \ge 0.5$,
+- predict class 0 if $\hat{y} < 0.5$.
+
+This threshold is common, though not always mandatory.
+
+For Example 1:
+
+$$
+0.3775 < 0.5
+$$
+
+so the predicted class is 0.
+
+## Binary cross-entropy loss
+
+For binary classification, a common loss is binary cross-entropy:
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+This loss behaves sensibly for probabilities:
+
+- if the model assigns high probability to the correct class, the loss is small,
+- if the model assigns low probability to the correct class, the loss is large.
+
+## Loss for Example 1
+
+For Example 1, we have:
+
+$$
+y = 0,\quad \hat{y} \approx 0.3775
+$$
+
+Substitute into the loss:
+
+$$
+L = -\left[0\cdot \log(0.3775) + (1-0)\log(1-0.3775)\right]
+$$
+
+Simplify:
+
+$$
+L = -\log(0.6225)
+$$
+
+Using:
+
+$$
+\log(0.6225) \approx -0.4741
+$$
+
+we get:
+
+$$
+L \approx 0.4741
+$$
+
+So the loss is:
+
+$$
+L \approx 0.4741
+$$
+
+## Forward pass for all four examples
+
+Using:
+
+$$
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+$$
+
+we compute all four predictions.
+
+### Example 1
+
+$$
+z_1 = (2)(0) + (-1)(0) - 0.5 = -0.5
+$$
+
+$$
+\hat{y}_1 = \sigma(-0.5) \approx 0.3775
+$$
+
+### Example 2
+
+$$
+z_2 = (2)(0) + (-1)(1) - 0.5 = -1.5
+$$
+
+$$
+\hat{y}_2 = \sigma(-1.5) \approx 0.1824
+$$
+
+### Example 3
+
+$$
+z_3 = (2)(1) + (-1)(0) - 0.5 = 1.5
+$$
+
+$$
+\hat{y}_3 = \sigma(1.5) \approx 0.8176
+$$
+
+### Example 4
+
+$$
+z_4 = (2)(1) + (-1)(1) - 0.5 = 0.5
+$$
+
+$$
+\hat{y}_4 = \sigma(0.5) \approx 0.6225
+$$
+
+## Compare predicted probabilities and classes
+
+Using the threshold 0.5:
+
+| Example | True $y$ | $\hat{y}$ | Predicted class |
+|---|---:|---:|---:|
+| 1 | 0 | 0.3775 | 0 |
+| 2 | 0 | 0.1824 | 0 |
+| 3 | 1 | 0.8176 | 1 |
+| 4 | 1 | 0.6225 | 1 |
+
+In this setup, all four classes are predicted correctly.
+
+That does not mean the model is perfect. It only means it performs well on this tiny example.
+
+## Why the loss still matters
+
+Even when the predicted class is correct, the probability may still be weak.
+
+For example, predicting
+
+$$
+\hat{y} = 0.51
+$$
+
+for a true class of 1 is correct by threshold, but not very confident.
+
+Loss captures not just correctness, but also confidence.
+
+## A small Python check
+
+```{python}
+import math
+
+data = [
+    {"x1": 0, "x2": 0, "y": 0},
+    {"x1": 0, "x2": 1, "y": 0},
+    {"x1": 1, "x2": 0, "y": 1},
+    {"x1": 1, "x2": 1, "y": 1},
+]
+
+w1 = 2.0
+w2 = -1.0
+b = -0.5
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+for i, row in enumerate(data, start=1):
+    z = w1 * row["x1"] + w2 * row["x2"] + b
+    y_hat = sigmoid(z)
+    pred_class = 1 if y_hat >= 0.5 else 0
+    loss = -(row["y"] * math.log(y_hat) + (1 - row["y"]) * math.log(1 - y_hat))
+
+    print(f"Example {i}")
+    print(f"  x1 = {row['x1']}, x2 = {row['x2']}, y = {row['y']}")
+    print(f"  z = {z}")
+    print(f"  prediction = {y_hat:.4f}")
+    print(f"  predicted class = {pred_class}")
+    print(f"  loss = {loss:.4f}")
+    print()
+```
+
+## Why this code matters
+
+Again, the code is a check, not a substitute for reasoning.
+
+The learner should first ask:
+
+* What do I expect $z$ to be?
+* What do I expect sigmoid to do to that value?
+* Should the output be above or below 0.5?
+
+Then the code confirms the calculation.
+
+## Common mistakes
+
+### Mistake 1: using identity activation for binary classification
+
+Identity output can be any real number, such as 3.2 or -4.7.
+
+That is not suitable when we want a probability-like output.
+
+### Mistake 2: thinking sigmoid output is a guaranteed true probability
+
+It is better to say it is a probability-like score produced by the model.
+
+Whether it is well calibrated is a separate question.
+
+### Mistake 3: confusing the class prediction with the probability output
+
+These are different:
+
+* $\hat{y} = 0.8176$ is the model output,
+* class 1 is the thresholded decision.
+
+### Mistake 4: forgetting that cross-entropy uses logarithms
+
+Binary cross-entropy is not the same as squared error.
+
+Its form is specifically designed for probabilistic binary outputs.
+
+## Chapter checklist
+
+By the end of this chapter, you should be able to answer:
+
+1. Why do we use sigmoid for binary classification?
+2. Why must the output lie between 0 and 1?
+3. How do we compute $\hat{y}$ from $z$?
+4. How do we convert a probability-like output into a class?
+5. Why can the class be correct even when the loss is not tiny?
+6. Why is cross-entropy useful here?
+
+## Suggested by-hand exercise
+
+Using the same dataset, but with:
+
+$$
+w_1 = 1,\quad w_2 = 1,\quad b = -0.5
+$$
+
+compute by hand for all four examples:
+
+1. the pre-activation value $z$,
+2. the sigmoid output $\hat{y}$,
+3. the predicted class using threshold 0.5.
+
+Then compare with a short Python script.

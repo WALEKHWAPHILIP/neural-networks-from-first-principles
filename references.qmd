@@ -1,0 +1,41 @@
+---
+title: "References"
+---
+
+## Why this chapter exists
+
+This chapter lists the main sources that support the concepts used in this book.
+
+The goal of this mini-project is first-principles understanding, not literature review.  
+Still, a teaching book should point learners and lecturers to standard references for deeper study.
+
+## Core references used in spirit
+
+The ideas in this book are standard neural-network foundations, especially:
+
+- weighted linear combination,
+- activation functions,
+- squared error loss,
+- binary cross-entropy loss,
+- gradient descent,
+- backpropagation via the chain rule.
+
+## Reference list
+
+::: {#refs}
+:::
+
+## How to use these references
+
+Use these references in different ways depending on your goal:
+
+- for intuition and broad overview, start with a textbook chapter,
+- for mathematical detail, study the derivations carefully,
+- for implementation perspective, compare the formulas here with software-library documentation,
+- for teaching, use the references to connect this hand-calculable book to the broader neural-network literature.
+
+## Note to learners
+
+You do not need to master all these sources before using this book.
+
+The main job of this page is to give you trustworthy places to go next after you understand the worked examples in this book.

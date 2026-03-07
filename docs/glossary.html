@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.24">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="keywords" content="neural networks, backpropagation, regression, classification, sigmoid, gradient descent, machine learning, educational book">
+<meta name="description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+
+<title>11&nbsp; Glossary – Neural Networks from First Principles</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./solutions-practice-exercises.html" rel="prev">
+<link href="./images/favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-697d4de1eee3a11a7bce293067f0aa8c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="author" content="Walekhwa Tambiti Leo Philip">
+<meta name="description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Neural Networks from First Principles">
+<meta property="og:description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<meta property="og:image" content="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/images/og-neural-networks-book.png">
+<meta property="og:site_name" content="Neural Networks from First Principles">
+<meta property="og:image:alt" content="Cover image for Neural Networks from First Principles">
+<meta property="og:image:height" content="630">
+<meta property="og:image:width" content="1200">
+<meta name="twitter:title" content="Neural Networks from First Principles">
+<meta name="twitter:description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<meta name="twitter:image" content="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/images/og-neural-networks-book.png">
+<meta name="twitter:image:alt" content="Cover image for Neural Networks from First Principles">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="630">
+<meta name="twitter:image-width" content="1200">
+<link rel="canonical" href="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/glossary.html">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./glossary.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Glossary</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Neural Networks from First Principles</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Welcome</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about-this-book.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">About This Book</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basics-of-neural-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basics of Neural Networks</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./single-neuron-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Single Neuron Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./single-neuron-classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Single Neuron Classification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backpropagation-1-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Backpropagation for Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backpropagation-2-classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Backpropagation for Classification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./practice-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Practice Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./solutions-suggested-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Solutions to Suggested Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./solutions-practice-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Solutions to Practice Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glossary.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">References</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-this-chapter-exists" id="toc-why-this-chapter-exists" class="nav-link active" data-scroll-target="#why-this-chapter-exists"><span class="header-section-number">11.1</span> Why this chapter exists</a></li>
+  <li><a href="#core-symbols" id="toc-core-symbols" class="nav-link" data-scroll-target="#core-symbols"><span class="header-section-number">11.2</span> Core symbols</a>
+  <ul class="collapse">
+  <li><a href="#x" id="toc-x" class="nav-link" data-scroll-target="#x"><span class="header-section-number">11.2.1</span> <span class="math inline">\(x\)</span></a></li>
+  <li><a href="#w" id="toc-w" class="nav-link" data-scroll-target="#w"><span class="header-section-number">11.2.2</span> <span class="math inline">\(w\)</span></a></li>
+  <li><a href="#b" id="toc-b" class="nav-link" data-scroll-target="#b"><span class="header-section-number">11.2.3</span> <span class="math inline">\(b\)</span></a></li>
+  <li><a href="#z" id="toc-z" class="nav-link" data-scroll-target="#z"><span class="header-section-number">11.2.4</span> <span class="math inline">\(z\)</span></a></li>
+  <li><a href="#haty" id="toc-haty" class="nav-link" data-scroll-target="#haty"><span class="header-section-number">11.2.5</span> <span class="math inline">\(\hat{y}\)</span></a></li>
+  <li><a href="#y" id="toc-y" class="nav-link" data-scroll-target="#y"><span class="header-section-number">11.2.6</span> <span class="math inline">\(y\)</span></a></li>
+  <li><a href="#l" id="toc-l" class="nav-link" data-scroll-target="#l"><span class="header-section-number">11.2.7</span> <span class="math inline">\(L\)</span></a></li>
+  <li><a href="#eta" id="toc-eta" class="nav-link" data-scroll-target="#eta"><span class="header-section-number">11.2.8</span> <span class="math inline">\(\eta\)</span></a></li>
+  </ul></li>
+  <li><a href="#core-terms" id="toc-core-terms" class="nav-link" data-scroll-target="#core-terms"><span class="header-section-number">11.3</span> Core terms</a>
+  <ul class="collapse">
+  <li><a href="#neuron" id="toc-neuron" class="nav-link" data-scroll-target="#neuron"><span class="header-section-number">11.3.1</span> Neuron</a></li>
+  <li><a href="#activation-function" id="toc-activation-function" class="nav-link" data-scroll-target="#activation-function"><span class="header-section-number">11.3.2</span> Activation function</a></li>
+  <li><a href="#identity-activation" id="toc-identity-activation" class="nav-link" data-scroll-target="#identity-activation"><span class="header-section-number">11.3.3</span> Identity activation</a></li>
+  <li><a href="#sigmoid-activation" id="toc-sigmoid-activation" class="nav-link" data-scroll-target="#sigmoid-activation"><span class="header-section-number">11.3.4</span> Sigmoid activation</a></li>
+  <li><a href="#regression" id="toc-regression" class="nav-link" data-scroll-target="#regression"><span class="header-section-number">11.3.5</span> Regression</a></li>
+  <li><a href="#binary-classification" id="toc-binary-classification" class="nav-link" data-scroll-target="#binary-classification"><span class="header-section-number">11.3.6</span> Binary classification</a></li>
+  <li><a href="#forward-propagation" id="toc-forward-propagation" class="nav-link" data-scroll-target="#forward-propagation"><span class="header-section-number">11.3.7</span> Forward propagation</a></li>
+  <li><a href="#backpropagation" id="toc-backpropagation" class="nav-link" data-scroll-target="#backpropagation"><span class="header-section-number">11.3.8</span> Backpropagation</a></li>
+  <li><a href="#gradient" id="toc-gradient" class="nav-link" data-scroll-target="#gradient"><span class="header-section-number">11.3.9</span> Gradient</a></li>
+  <li><a href="#gradient-descent" id="toc-gradient-descent" class="nav-link" data-scroll-target="#gradient-descent"><span class="header-section-number">11.3.10</span> Gradient descent</a></li>
+  <li><a href="#chain-rule" id="toc-chain-rule" class="nav-link" data-scroll-target="#chain-rule"><span class="header-section-number">11.3.11</span> Chain rule</a></li>
+  </ul></li>
+  <li><a href="#loss-functions" id="toc-loss-functions" class="nav-link" data-scroll-target="#loss-functions"><span class="header-section-number">11.4</span> Loss functions</a>
+  <ul class="collapse">
+  <li><a href="#squared-error-loss" id="toc-squared-error-loss" class="nav-link" data-scroll-target="#squared-error-loss"><span class="header-section-number">11.4.1</span> Squared error loss</a></li>
+  <li><a href="#binary-cross-entropy-loss" id="toc-binary-cross-entropy-loss" class="nav-link" data-scroll-target="#binary-cross-entropy-loss"><span class="header-section-number">11.4.2</span> Binary cross-entropy loss</a></li>
+  </ul></li>
+  <li><a href="#important-distinctions" id="toc-important-distinctions" class="nav-link" data-scroll-target="#important-distinctions"><span class="header-section-number">11.5</span> Important distinctions</a>
+  <ul class="collapse">
+  <li><a href="#error-vs-loss" id="toc-error-vs-loss" class="nav-link" data-scroll-target="#error-vs-loss"><span class="header-section-number">11.5.1</span> Error vs loss</a></li>
+  <li><a href="#prediction-vs-predicted-class" id="toc-prediction-vs-predicted-class" class="nav-link" data-scroll-target="#prediction-vs-predicted-class"><span class="header-section-number">11.5.2</span> Prediction vs predicted class</a></li>
+  <li><a href="#parameter-vs-input" id="toc-parameter-vs-input" class="nav-link" data-scroll-target="#parameter-vs-input"><span class="header-section-number">11.5.3</span> Parameter vs input</a></li>
+  </ul></li>
+  <li><a href="#very-short-summary-table" id="toc-very-short-summary-table" class="nav-link" data-scroll-target="#very-short-summary-table"><span class="header-section-number">11.6</span> Very short summary table</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Glossary</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+<div>
+  <div class="keywords">
+    <div class="block-title">Keywords</div>
+    <p>neural networks, backpropagation, regression, classification, sigmoid, gradient descent, machine learning, educational book</p>
+  </div>
+</div>
+
+</header>
+
+
+<section id="why-this-chapter-exists" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="why-this-chapter-exists"><span class="header-section-number">11.1</span> Why this chapter exists</h2>
+<p>This glossary gives a stable reference for the main terms and symbols used throughout the book.</p>
+<p>Use it when:</p>
+<ul>
+<li>you forget what a symbol means,</li>
+<li>you want a quick definition,</li>
+<li>you want to distinguish two similar ideas,</li>
+<li>you want a compact revision page before an exercise or class.</li>
+</ul>
+</section>
+<section id="core-symbols" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="core-symbols"><span class="header-section-number">11.2</span> Core symbols</h2>
+<section id="x" class="level3" data-number="11.2.1">
+<h3 data-number="11.2.1" class="anchored" data-anchor-id="x"><span class="header-section-number">11.2.1</span> <span class="math inline">\(x\)</span></h3>
+<p><strong>Definition:</strong> An input variable.</p>
+<p><strong>Plain-language meaning:</strong> A number fed into the model.</p>
+<p><strong>Example:</strong> If a neuron uses two inputs, we may write them as <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>.</p>
+<p><strong>Common confusion:</strong> Inputs are given to the model. They are not learned by the model.</p>
+</section>
+<section id="w" class="level3" data-number="11.2.2">
+<h3 data-number="11.2.2" class="anchored" data-anchor-id="w"><span class="header-section-number">11.2.2</span> <span class="math inline">\(w\)</span></h3>
+<p><strong>Definition:</strong> A weight parameter attached to an input.</p>
+<p><strong>Plain-language meaning:</strong> A number that tells the model how strongly an input influences the score.</p>
+<p><strong>Example:</strong></p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p><strong>Common confusion:</strong> A weight is learned during training. It is not the same as the input.</p>
+</section>
+<section id="b" class="level3" data-number="11.2.3">
+<h3 data-number="11.2.3" class="anchored" data-anchor-id="b"><span class="header-section-number">11.2.3</span> <span class="math inline">\(b\)</span></h3>
+<p><strong>Definition:</strong> The bias parameter.</p>
+<p><strong>Plain-language meaning:</strong> A shift term added to the weighted sum.</p>
+<p><strong>Example:</strong></p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p><strong>Common confusion:</strong> The bias is not attached to a single input. It is added after the weighted inputs are combined.</p>
+</section>
+<section id="z" class="level3" data-number="11.2.4">
+<h3 data-number="11.2.4" class="anchored" data-anchor-id="z"><span class="header-section-number">11.2.4</span> <span class="math inline">\(z\)</span></h3>
+<p><strong>Definition:</strong> The pre-activation value or linear score.</p>
+<p><strong>Plain-language meaning:</strong> The weighted sum before applying the activation function.</p>
+<p><strong>Example:</strong></p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p><strong>Common confusion:</strong> <span class="math inline">\(z\)</span> is not always the final prediction. It becomes the final prediction only when the activation is the identity function.</p>
+</section>
+<section id="haty" class="level3" data-number="11.2.5">
+<h3 data-number="11.2.5" class="anchored" data-anchor-id="haty"><span class="header-section-number">11.2.5</span> <span class="math inline">\(\hat{y}\)</span></h3>
+<p><strong>Definition:</strong> The model prediction.</p>
+<p><strong>Plain-language meaning:</strong> The output produced by the model.</p>
+<p><strong>Example in regression:</strong></p>
+<p><span class="math display">\[
+\hat{y} = z
+\]</span></p>
+<p><strong>Example in classification:</strong></p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z)
+\]</span></p>
+<p><strong>Common confusion:</strong> In classification, <span class="math inline">\(\hat{y}\)</span> is usually the probability-like output, not the thresholded class label.</p>
+</section>
+<section id="y" class="level3" data-number="11.2.6">
+<h3 data-number="11.2.6" class="anchored" data-anchor-id="y"><span class="header-section-number">11.2.6</span> <span class="math inline">\(y\)</span></h3>
+<p><strong>Definition:</strong> The true target value.</p>
+<p><strong>Plain-language meaning:</strong> The correct answer the model should predict.</p>
+<p><strong>Example:</strong> In regression, <span class="math inline">\(y\)</span> may be 5.7. In binary classification, <span class="math inline">\(y\)</span> may be 0 or 1.</p>
+<p><strong>Common confusion:</strong> <span class="math inline">\(y\)</span> is the truth from the data. <span class="math inline">\(\hat{y}\)</span> is the model’s guess.</p>
+</section>
+<section id="l" class="level3" data-number="11.2.7">
+<h3 data-number="11.2.7" class="anchored" data-anchor-id="l"><span class="header-section-number">11.2.7</span> <span class="math inline">\(L\)</span></h3>
+<p><strong>Definition:</strong> The loss value.</p>
+<p><strong>Plain-language meaning:</strong> A number that measures how wrong the model currently is.</p>
+<p><strong>Example in regression:</strong></p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p><strong>Example in binary classification:</strong></p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p><strong>Common confusion:</strong> Loss is not the same as raw error. It is a function of the prediction mismatch.</p>
+</section>
+<section id="eta" class="level3" data-number="11.2.8">
+<h3 data-number="11.2.8" class="anchored" data-anchor-id="eta"><span class="header-section-number">11.2.8</span> <span class="math inline">\(\eta\)</span></h3>
+<p><strong>Definition:</strong> The learning rate.</p>
+<p><strong>Plain-language meaning:</strong> The step size used when updating parameters.</p>
+<p><strong>Example:</strong></p>
+<p><span class="math display">\[
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+\]</span></p>
+<p><strong>Common confusion:</strong> A larger learning rate is not always better. If it is too large, learning can become unstable.</p>
+</section>
+</section>
+<section id="core-terms" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="core-terms"><span class="header-section-number">11.3</span> Core terms</h2>
+<section id="neuron" class="level3" data-number="11.3.1">
+<h3 data-number="11.3.1" class="anchored" data-anchor-id="neuron"><span class="header-section-number">11.3.1</span> Neuron</h3>
+<p><strong>Definition:</strong> A computational unit that combines inputs, weights, and bias, then optionally applies an activation function.</p>
+<p><strong>Plain-language meaning:</strong> The smallest working piece of a neural network in this book.</p>
+<p><strong>Common confusion:</strong> A neuron is a mathematical object here, not a biological brain cell.</p>
+</section>
+<section id="activation-function" class="level3" data-number="11.3.2">
+<h3 data-number="11.3.2" class="anchored" data-anchor-id="activation-function"><span class="header-section-number">11.3.2</span> Activation function</h3>
+<p><strong>Definition:</strong> A function applied to the score <span class="math inline">\(z\)</span> to produce the output.</p>
+<p><strong>Plain-language meaning:</strong> A rule that transforms the weighted sum.</p>
+<p><strong>Examples:</strong></p>
+<p>Identity:</p>
+<p><span class="math display">\[
+f(z) = z
+\]</span></p>
+<p>Sigmoid:</p>
+<p><span class="math display">\[
+f(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p><strong>Common confusion:</strong> The activation function is chosen based on the type of problem.</p>
+</section>
+<section id="identity-activation" class="level3" data-number="11.3.3">
+<h3 data-number="11.3.3" class="anchored" data-anchor-id="identity-activation"><span class="header-section-number">11.3.3</span> Identity activation</h3>
+<p><strong>Definition:</strong> The activation function that returns the input unchanged.</p>
+<p><strong>Formula:</strong></p>
+<p><span class="math display">\[
+f(z) = z
+\]</span></p>
+<p><strong>Use:</strong> Common in simple regression examples.</p>
+<p><strong>Common confusion:</strong> With identity activation, the pre-activation and output are the same.</p>
+</section>
+<section id="sigmoid-activation" class="level3" data-number="11.3.4">
+<h3 data-number="11.3.4" class="anchored" data-anchor-id="sigmoid-activation"><span class="header-section-number">11.3.4</span> Sigmoid activation</h3>
+<p><strong>Definition:</strong> A nonlinear activation that maps any real number into the interval <span class="math inline">\((0,1)\)</span>.</p>
+<p><strong>Formula:</strong></p>
+<p><span class="math display">\[
+\sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p><strong>Use:</strong> Common in binary classification.</p>
+<p><strong>Common confusion:</strong> Sigmoid outputs a probability-like score, but that does not automatically guarantee perfect calibration.</p>
+</section>
+<section id="regression" class="level3" data-number="11.3.5">
+<h3 data-number="11.3.5" class="anchored" data-anchor-id="regression"><span class="header-section-number">11.3.5</span> Regression</h3>
+<p><strong>Definition:</strong> A prediction problem where the target is numeric.</p>
+<p><strong>Examples:</strong> price, temperature, demand, exam score.</p>
+<p><strong>Common confusion:</strong> Regression outputs are not restricted to just 0 and 1.</p>
+</section>
+<section id="binary-classification" class="level3" data-number="11.3.6">
+<h3 data-number="11.3.6" class="anchored" data-anchor-id="binary-classification"><span class="header-section-number">11.3.6</span> Binary classification</h3>
+<p><strong>Definition:</strong> A prediction problem with two possible classes.</p>
+<p><strong>Examples:</strong> yes/no, spam/not spam, pass/fail.</p>
+<p><strong>Common confusion:</strong> The model output is often a probability-like score, while the final class is produced using a threshold.</p>
+</section>
+<section id="forward-propagation" class="level3" data-number="11.3.7">
+<h3 data-number="11.3.7" class="anchored" data-anchor-id="forward-propagation"><span class="header-section-number">11.3.7</span> Forward propagation</h3>
+<p><strong>Definition:</strong> The process of computing the model output from inputs and current parameter values.</p>
+<p><strong>Plain-language meaning:</strong> Moving from input to prediction.</p>
+<p><strong>Common confusion:</strong> Forward propagation computes predictions. It does not update parameters.</p>
+</section>
+<section id="backpropagation" class="level3" data-number="11.3.8">
+<h3 data-number="11.3.8" class="anchored" data-anchor-id="backpropagation"><span class="header-section-number">11.3.8</span> Backpropagation</h3>
+<p><strong>Definition:</strong> The process of computing gradients of the loss with respect to parameters by moving backward through the computation.</p>
+<p><strong>Plain-language meaning:</strong> Working backward to find how each parameter should change.</p>
+<p><strong>Common confusion:</strong> Backpropagation computes gradients. Gradient descent uses those gradients to update parameters.</p>
+</section>
+<section id="gradient" class="level3" data-number="11.3.9">
+<h3 data-number="11.3.9" class="anchored" data-anchor-id="gradient"><span class="header-section-number">11.3.9</span> Gradient</h3>
+<p><strong>Definition:</strong> A derivative that tells us how the loss changes when a parameter changes.</p>
+<p><strong>Example:</strong></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1}
+\]</span></p>
+<p><strong>Plain-language meaning:</strong> A direction-and-sensitivity signal for learning.</p>
+<p><strong>Common confusion:</strong> A gradient is not the parameter update itself.</p>
+</section>
+<section id="gradient-descent" class="level3" data-number="11.3.10">
+<h3 data-number="11.3.10" class="anchored" data-anchor-id="gradient-descent"><span class="header-section-number">11.3.10</span> Gradient descent</h3>
+<p><strong>Definition:</strong> The update rule that moves parameters in the direction that reduces loss.</p>
+<p><strong>Formula:</strong></p>
+<p><span class="math display">\[
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+\]</span></p>
+<p><strong>Common confusion:</strong> Backpropagation and gradient descent are related but not identical. Backpropagation computes gradients; gradient descent uses them.</p>
+</section>
+<section id="chain-rule" class="level3" data-number="11.3.11">
+<h3 data-number="11.3.11" class="anchored" data-anchor-id="chain-rule"><span class="header-section-number">11.3.11</span> Chain rule</h3>
+<p><strong>Definition:</strong> A derivative rule for functions composed of other functions.</p>
+<p><strong>Plain-language meaning:</strong> A way to trace how a change flows through several connected steps.</p>
+<p><strong>Example idea:</strong></p>
+<p><span class="math display">\[
+w \to z \to \hat{y} \to L
+\]</span></p>
+<p><strong>Common confusion:</strong> The chain rule is not optional in layered models. It is the central logic behind backpropagation.</p>
+</section>
+</section>
+<section id="loss-functions" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="loss-functions"><span class="header-section-number">11.4</span> Loss functions</h2>
+<section id="squared-error-loss" class="level3" data-number="11.4.1">
+<h3 data-number="11.4.1" class="anchored" data-anchor-id="squared-error-loss"><span class="header-section-number">11.4.1</span> Squared error loss</h3>
+<p><strong>Definition:</strong> A regression loss that squares the difference between target and prediction.</p>
+<p><strong>Formula:</strong></p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p><strong>Why used:</strong> It penalizes larger errors more strongly and is easy to differentiate.</p>
+<p><strong>Common confusion:</strong> The factor <span class="math inline">\(\frac{1}{2}\)</span> is included for derivative convenience.</p>
+</section>
+<section id="binary-cross-entropy-loss" class="level3" data-number="11.4.2">
+<h3 data-number="11.4.2" class="anchored" data-anchor-id="binary-cross-entropy-loss"><span class="header-section-number">11.4.2</span> Binary cross-entropy loss</h3>
+<p><strong>Definition:</strong> A classification loss for binary targets.</p>
+<p><strong>Formula:</strong></p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p><strong>Why used:</strong> It works naturally with probability-like outputs from sigmoid.</p>
+<p><strong>Common confusion:</strong> This is not the same as squared error. It is designed for binary classification.</p>
+</section>
+</section>
+<section id="important-distinctions" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="important-distinctions"><span class="header-section-number">11.5</span> Important distinctions</h2>
+<section id="error-vs-loss" class="level3" data-number="11.5.1">
+<h3 data-number="11.5.1" class="anchored" data-anchor-id="error-vs-loss"><span class="header-section-number">11.5.1</span> Error vs loss</h3>
+<p><strong>Error:</strong> Often means the raw difference between target and prediction, such as:</p>
+<p><span class="math display">\[
+y - \hat{y}
+\]</span></p>
+<p><strong>Loss:</strong> A formal function that converts prediction mismatch into a quantity to optimize.</p>
+<p><strong>Common confusion:</strong> These are related, but they are not identical.</p>
+</section>
+<section id="prediction-vs-predicted-class" class="level3" data-number="11.5.2">
+<h3 data-number="11.5.2" class="anchored" data-anchor-id="prediction-vs-predicted-class"><span class="header-section-number">11.5.2</span> Prediction vs predicted class</h3>
+<p><strong>Prediction:</strong> The raw model output, such as <span class="math inline">\(\hat{y} = 0.82\)</span>.</p>
+<p><strong>Predicted class:</strong> The label after applying a rule such as threshold 0.5.</p>
+<p><strong>Example:</strong></p>
+<ul>
+<li>prediction = 0.82</li>
+<li>predicted class = 1</li>
+</ul>
+<p><strong>Common confusion:</strong> In classification, these should not be treated as the same object.</p>
+</section>
+<section id="parameter-vs-input" class="level3" data-number="11.5.3">
+<h3 data-number="11.5.3" class="anchored" data-anchor-id="parameter-vs-input"><span class="header-section-number">11.5.3</span> Parameter vs input</h3>
+<p><strong>Input:</strong> Comes from the data.</p>
+<p><strong>Parameter:</strong> Is learned by the model.</p>
+<p><strong>Common confusion:</strong> Learners sometimes try to “update” inputs. Training updates parameters, not inputs.</p>
+</section>
+</section>
+<section id="very-short-summary-table" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="very-short-summary-table"><span class="header-section-number">11.6</span> Very short summary table</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(x\)</span></td>
+<td>input</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(w\)</span></td>
+<td>weight</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(b\)</span></td>
+<td>bias</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(z\)</span></td>
+<td>weighted sum before activation</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\hat{y}\)</span></td>
+<td>prediction</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(y\)</span></td>
+<td>true target</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(L\)</span></td>
+<td>loss</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\eta\)</span></td>
+<td>learning rate</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/learn\.walsoftcomputers\.com\/educational_platform\/neural-networks-from-first-principles\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./solutions-practice-exercises.html" class="pagination-link" aria-label="Solutions to Practice Exercises">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Solutions to Practice Exercises</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">References</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

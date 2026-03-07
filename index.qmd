@@ -1,0 +1,224 @@
+---
+title: "Welcome"
+---
+
+
+
+## Why this book exists
+
+Neural networks are often taught as software tools before they are taught as mathematical objects.
+
+That creates a problem: many learners can run code but cannot explain what each weight, activation, gradient, and update is doing.
+
+This book takes the opposite approach.
+
+We start from first principles and build neural networks in a way that can be understood by hand, checked line by line, and verified with small code examples.
+
+## What a neural network is
+
+A neural network is a mathematical function that maps inputs to outputs through weighted computations.
+
+At the most basic level, a neural network does three things:
+
+1.  takes in numbers,
+2.  transforms them using weights, biases, and activation functions,
+3.  adjusts those weights and biases so that its predictions become better.
+
+At the smallest scale, a neuron computes a score such as
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+and then transforms it into an output such as
+
+$$
+\hat{y} = f(z)
+$$
+
+where:
+
+-   $x_1, x_2$ are input variables,
+-   $w_1, w_2$ are weights,
+-   $b$ is a bias,
+-   $z$ is the pre-activation value,
+-   $f(\cdot)$ is an activation function,
+-   $\hat{y}$ is the prediction.
+
+This small computation is the core building block for everything that follows in the book.
+
+## Why we learn by hand first
+
+A learner who can compute one full forward pass and one full backward pass by hand understands the real mechanics of training.
+
+That matters because it helps answer questions such as:
+
+-   Why does the prediction change?
+-   Why does the loss go down?
+-   Why does the gradient have this sign?
+-   Why do we multiply by the derivative of the activation function?
+-   Why do some activations fit regression while others fit classification?
+
+When the numbers are small enough to compute by hand, the logic becomes visible.
+
+## What this book covers
+
+This mini-project book teaches:
+
+-   the basic structure of a neural network,
+-   forward propagation,
+-   loss functions,
+-   backpropagation,
+-   weight updates,
+-   a regression example,
+-   a classification example,
+-   practice exercises with hand-calculable data.
+
+The goal is not to cover everything in deep learning.
+
+The goal is to make the basic logic so clear that later complexity becomes easier to understand.
+
+## Who this book is for
+
+This book is designed for:
+
+-   beginners who want a slow and clear introduction,
+-   students who want to understand the mathematics behind neural-network training,
+-   lecturers who want board-friendly examples,
+-   self-learners who prefer explanation before abstraction,
+-   anyone who wants to understand both regression and classification through one-neuron examples first.
+
+## How to use this book
+
+Use this book slowly.
+
+For each worked example:
+
+1.  read the definitions,
+2.  write down the symbols,
+3.  compute the intermediate values by hand,
+4.  compare your results with the code output,
+5.  explain in words why each step happened.
+
+Do not rush to code before the arithmetic makes sense.
+
+Keep a notebook beside you.
+
+The book becomes much more useful when you write while reading.
+
+## Suggested study paths
+
+### Path 1: complete beginner
+
+Read in this order:
+
+1.  Basics of Neural Networks
+2.  Single Neuron Regression
+3.  Single Neuron Classification
+4.  Backpropagation for Regression
+5.  Backpropagation for Classification
+6.  Practice Exercises
+7.  Glossary
+
+### Path 2: quick revision before class or exam
+
+Read in this order:
+
+1.  Glossary
+2.  Backpropagation for Regression
+3.  Backpropagation for Classification
+4.  Practice Exercises
+
+### Path 3: lecturer classroom use
+
+Use these chapters most heavily:
+
+1.  Basics of Neural Networks
+2.  Single Neuron Regression
+3.  Single Neuron Classification
+4.  Practice Exercises
+5.  Glossary
+
+## Chapter roadmap
+
+The book is organized as follows:
+
+1.  **Basics of Neural Networks** — definitions, symbols, and intuition.
+2.  **Single Neuron Regression** — a first hand-calculable prediction problem.
+3.  **Single Neuron Classification** — a first hand-calculable classification problem.
+4.  **Backpropagation for Regression** — step-by-step gradient calculations for regression.
+5.  **Backpropagation for Classification** — sigmoid plus cross-entropy backpropagation.
+6.  **Practice Exercises** — learner drills and checks.
+7.  **Glossary** — key terms and symbols.
+8.  **References** — supporting sources.
+
+## Chapter map
+
+| Chapter | Main purpose |
+|------------------------------------|------------------------------------|
+| Welcome | Orientation and study guidance |
+| Basics of Neural Networks | Core terms, symbols, and ideas |
+| Single Neuron Regression | Forward pass and loss for regression |
+| Single Neuron Classification | Forward pass and loss for binary classification |
+| Backpropagation for Regression | Regression gradients and parameter updates |
+| Backpropagation for Classification | Sigmoid plus cross-entropy backpropagation |
+| Practice Exercises | Hand-calculation drills |
+| Glossary | Stable terminology and symbol reference |
+| References | Source foundation for further study |
+
+## What you should be able to do by the end
+
+By the end of this book, you should be able to:
+
+-   explain what a neuron computes,
+-   perform a regression forward pass by hand,
+-   perform a classification forward pass by hand,
+-   compute squared error loss,
+-   compute binary cross-entropy loss,
+-   trace a gradient backward,
+-   update parameters using gradient descent,
+-   explain the difference between regression and classification outputs.
+
+## What this book does not try to do
+
+This book does not try to cover:
+
+-   deep architectures,
+-   convolutional networks,
+-   transformers,
+-   optimization tricks,
+-   large-scale training systems.
+
+Those topics matter, but they make much more sense after the one-neuron learning logic is clear.
+
+## A note to learners and lecturers
+
+This book is written as both a learning guide and a teaching reference.
+
+Learners can use it for careful self-study.\
+Lecturers can use it for classroom demonstrations, board walkthroughs, hand-calculation exercises, and conceptual reinforcement before coding labs.
+
+## Study habit recommendation
+
+For every chapter:
+
+-   redraw the neuron,
+-   label each symbol,
+-   compute each intermediate quantity,
+-   write one sentence explaining why that step exists.
+
+That habit turns formulas into understanding.
+
+## License
+
+© Walekhwa Tambiti Leo Philip
+
+This book is licensed under the **Creative Commons Attribution 4.0 International (CC BY 4.0)** license.
+
+You may copy, share, redistribute, remix, transform, and build upon this work, including for commercial purposes, provided that appropriate credit is given.
+
+The author welcomes reuse of this book by both humans and AI systems, including educational tools, language models, and custom GPTs, subject to the terms of the CC BY 4.0 license.
+
+**Author:** Walekhwa Tambiti Leo Philip 
+**Website:** ai.walsoftcomputers.com  
+**Contact:** philip@walsoftcomputers.com

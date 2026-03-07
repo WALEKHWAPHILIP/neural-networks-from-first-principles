@@ -1,0 +1,342 @@
+---
+title: "Glossary"
+---
+
+## Why this chapter exists
+
+This glossary gives a stable reference for the main terms and symbols used throughout the book.
+
+Use it when:
+
+- you forget what a symbol means,
+- you want a quick definition,
+- you want to distinguish two similar ideas,
+- you want a compact revision page before an exercise or class.
+
+## Core symbols
+
+### $x$
+
+**Definition:** An input variable.
+
+**Plain-language meaning:** A number fed into the model.
+
+**Example:** If a neuron uses two inputs, we may write them as $x_1$ and $x_2$.
+
+**Common confusion:** Inputs are given to the model. They are not learned by the model.
+
+### $w$
+
+**Definition:** A weight parameter attached to an input.
+
+**Plain-language meaning:** A number that tells the model how strongly an input influences the score.
+
+**Example:**
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+**Common confusion:** A weight is learned during training. It is not the same as the input.
+
+### $b$
+
+**Definition:** The bias parameter.
+
+**Plain-language meaning:** A shift term added to the weighted sum.
+
+**Example:**
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+**Common confusion:** The bias is not attached to a single input. It is added after the weighted inputs are combined.
+
+### $z$
+
+**Definition:** The pre-activation value or linear score.
+
+**Plain-language meaning:** The weighted sum before applying the activation function.
+
+**Example:**
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+**Common confusion:** $z$ is not always the final prediction. It becomes the final prediction only when the activation is the identity function.
+
+### $\hat{y}$
+
+**Definition:** The model prediction.
+
+**Plain-language meaning:** The output produced by the model.
+
+**Example in regression:**
+
+$$
+\hat{y} = z
+$$
+
+**Example in classification:**
+
+$$
+\hat{y} = \sigma(z)
+$$
+
+**Common confusion:** In classification, $\hat{y}$ is usually the probability-like output, not the thresholded class label.
+
+### $y$
+
+**Definition:** The true target value.
+
+**Plain-language meaning:** The correct answer the model should predict.
+
+**Example:** In regression, $y$ may be 5.7. In binary classification, $y$ may be 0 or 1.
+
+**Common confusion:** $y$ is the truth from the data. $\hat{y}$ is the model's guess.
+
+### $L$
+
+**Definition:** The loss value.
+
+**Plain-language meaning:** A number that measures how wrong the model currently is.
+
+**Example in regression:**
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+**Example in binary classification:**
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+**Common confusion:** Loss is not the same as raw error. It is a function of the prediction mismatch.
+
+### $\eta$
+
+**Definition:** The learning rate.
+
+**Plain-language meaning:** The step size used when updating parameters.
+
+**Example:**
+
+$$
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+$$
+
+**Common confusion:** A larger learning rate is not always better. If it is too large, learning can become unstable.
+
+## Core terms
+
+### Neuron
+
+**Definition:** A computational unit that combines inputs, weights, and bias, then optionally applies an activation function.
+
+**Plain-language meaning:** The smallest working piece of a neural network in this book.
+
+**Common confusion:** A neuron is a mathematical object here, not a biological brain cell.
+
+### Activation function
+
+**Definition:** A function applied to the score $z$ to produce the output.
+
+**Plain-language meaning:** A rule that transforms the weighted sum.
+
+**Examples:**
+
+Identity:
+
+$$
+f(z) = z
+$$
+
+Sigmoid:
+
+$$
+f(z) = \frac{1}{1 + e^{-z}}
+$$
+
+**Common confusion:** The activation function is chosen based on the type of problem.
+
+### Identity activation
+
+**Definition:** The activation function that returns the input unchanged.
+
+**Formula:**
+
+$$
+f(z) = z
+$$
+
+**Use:** Common in simple regression examples.
+
+**Common confusion:** With identity activation, the pre-activation and output are the same.
+
+### Sigmoid activation
+
+**Definition:** A nonlinear activation that maps any real number into the interval $(0,1)$.
+
+**Formula:**
+
+$$
+\sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+**Use:** Common in binary classification.
+
+**Common confusion:** Sigmoid outputs a probability-like score, but that does not automatically guarantee perfect calibration.
+
+### Regression
+
+**Definition:** A prediction problem where the target is numeric.
+
+**Examples:** price, temperature, demand, exam score.
+
+**Common confusion:** Regression outputs are not restricted to just 0 and 1.
+
+### Binary classification
+
+**Definition:** A prediction problem with two possible classes.
+
+**Examples:** yes/no, spam/not spam, pass/fail.
+
+**Common confusion:** The model output is often a probability-like score, while the final class is produced using a threshold.
+
+### Forward propagation
+
+**Definition:** The process of computing the model output from inputs and current parameter values.
+
+**Plain-language meaning:** Moving from input to prediction.
+
+**Common confusion:** Forward propagation computes predictions. It does not update parameters.
+
+### Backpropagation
+
+**Definition:** The process of computing gradients of the loss with respect to parameters by moving backward through the computation.
+
+**Plain-language meaning:** Working backward to find how each parameter should change.
+
+**Common confusion:** Backpropagation computes gradients. Gradient descent uses those gradients to update parameters.
+
+### Gradient
+
+**Definition:** A derivative that tells us how the loss changes when a parameter changes.
+
+**Example:**
+
+$$
+\frac{\partial L}{\partial w_1}
+$$
+
+**Plain-language meaning:** A direction-and-sensitivity signal for learning.
+
+**Common confusion:** A gradient is not the parameter update itself.
+
+### Gradient descent
+
+**Definition:** The update rule that moves parameters in the direction that reduces loss.
+
+**Formula:**
+
+$$
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+$$
+
+**Common confusion:** Backpropagation and gradient descent are related but not identical. Backpropagation computes gradients; gradient descent uses them.
+
+### Chain rule
+
+**Definition:** A derivative rule for functions composed of other functions.
+
+**Plain-language meaning:** A way to trace how a change flows through several connected steps.
+
+**Example idea:**
+
+$$
+w \to z \to \hat{y} \to L
+$$
+
+**Common confusion:** The chain rule is not optional in layered models. It is the central logic behind backpropagation.
+
+## Loss functions
+
+### Squared error loss
+
+**Definition:** A regression loss that squares the difference between target and prediction.
+
+**Formula:**
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+**Why used:** It penalizes larger errors more strongly and is easy to differentiate.
+
+**Common confusion:** The factor $\frac{1}{2}$ is included for derivative convenience.
+
+### Binary cross-entropy loss
+
+**Definition:** A classification loss for binary targets.
+
+**Formula:**
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+**Why used:** It works naturally with probability-like outputs from sigmoid.
+
+**Common confusion:** This is not the same as squared error. It is designed for binary classification.
+
+## Important distinctions
+
+### Error vs loss
+
+**Error:** Often means the raw difference between target and prediction, such as:
+
+$$
+y - \hat{y}
+$$
+
+**Loss:** A formal function that converts prediction mismatch into a quantity to optimize.
+
+**Common confusion:** These are related, but they are not identical.
+
+### Prediction vs predicted class
+
+**Prediction:** The raw model output, such as $\hat{y} = 0.82$.
+
+**Predicted class:** The label after applying a rule such as threshold 0.5.
+
+**Example:**
+
+- prediction = 0.82
+- predicted class = 1
+
+**Common confusion:** In classification, these should not be treated as the same object.
+
+### Parameter vs input
+
+**Input:** Comes from the data.
+
+**Parameter:** Is learned by the model.
+
+**Common confusion:** Learners sometimes try to “update” inputs. Training updates parameters, not inputs.
+
+## Very short summary table
+
+| Item | Meaning |
+|---|---|
+| $x$ | input |
+| $w$ | weight |
+| $b$ | bias |
+| $z$ | weighted sum before activation |
+| $\hat{y}$ | prediction |
+| $y$ | true target |
+| $L$ | loss |
+| $\eta$ | learning rate |

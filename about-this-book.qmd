@@ -1,0 +1,45 @@
+---
+title: "About This Book"
+---
+
+## Why I wrote this book
+
+I wrote this book while studying Machine Learning at BI Norwegian Business School.
+
+During that work, I became increasingly aware that many learners could follow software steps without fully understanding the mathematical logic underneath them.
+
+I saw a need for a slower, clearer, first-principles explanation that would help fellow students and other beginners understand what a neuron computes, how loss is defined, and how backpropagation works step by step.
+
+This book was written to meet that need.
+
+Its aim is to make the foundational mechanics of neural networks visible, hand-calculable, and teachable before moving to larger software frameworks and more complex architectures.
+
+## Who this book is for
+
+This book is designed for:
+
+- beginners who want a slow and clear introduction,
+- students who want to understand the mathematics behind neural-network training,
+- lecturers who want board-friendly examples,
+- self-learners who prefer explanation before abstraction,
+- anyone who wants to understand regression and classification through one-neuron examples first.
+
+## What you should know before starting
+
+No prior deep-learning background is assumed, but basic algebra and comfort with simple equations will help.
+
+The book is written to be accessible to beginners, especially learners who want to understand the logic of neural networks before relying on software libraries.
+
+## Publication note
+
+- **Version:** 1.0  
+- **Edition:** First public edition  
+- **Last updated:** March 2026
+
+This book is intended for self-study, classroom use, and open educational reuse.
+
+## Acknowledgments
+
+This book was motivated in part by the learning challenges I observed while studying Machine Learning at BI Norwegian Business School.
+
+I am grateful for the academic environment that made these questions visible and for the fellow learners whose need for clearer first-principles explanations helped shape the direction of this work.

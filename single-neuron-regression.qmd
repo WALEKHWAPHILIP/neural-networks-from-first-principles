@@ -1,0 +1,438 @@
+---
+title: "Single Neuron Regression"
+---
+
+## Why this chapter exists
+
+This chapter introduces the simplest neural-network prediction setting: a single neuron used for regression.
+
+Regression means we want to predict a numerical value, such as:
+
+- house price,
+- temperature,
+- sales,
+- exam score,
+- energy usage.
+
+We begin here because regression with one neuron is the clearest place to learn the mechanics of forward computation.
+
+## What regression means
+
+A regression problem predicts a numerical target.
+
+If the true target is $y = 8.5$, then a prediction such as $\hat{y} = 8.2$ or $\hat{y} = 9.1$ is still meaningful, because both are numerical values.
+
+In this chapter, the neuron's output is allowed to be any real number.
+
+That is why we use the **identity activation**:
+
+$$
+f(z) = z
+$$
+
+So the neuron's output is simply:
+
+$$
+\hat{y} = z
+$$
+
+## The model
+
+We use a neuron with two inputs:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Because we are using identity activation, the prediction is:
+
+$$
+\hat{y} = z
+$$
+
+So the full model is:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+## Our tiny dataset
+
+We use a very small dataset with two input variables and one target.
+
+| Example | $x_1$ | $x_2$ | $y$ |
+|---|---:|---:|---:|
+| 1 | 1 | 2 | 4 |
+| 2 | 2 | 1 | 5 |
+| 3 | 3 | 0 | 6 |
+
+This dataset is small enough to compute by hand.
+
+## Why this dataset is useful
+
+This dataset is intentionally tiny.
+
+It helps us focus on the mechanics of the neuron instead of getting lost in too many numbers.
+
+A small dataset is ideal when learning:
+
+- weighted sums,
+- predictions,
+- errors,
+- parameter effects.
+
+## Initial parameter values
+
+We must start with some parameter values.
+
+Suppose:
+
+$$
+w_1 = 0.5, \quad w_2 = 1.0, \quad b = 0.0
+$$
+
+These are not yet learned values. They are just starting values.
+
+## Forward pass for Example 1
+
+Take Example 1:
+
+$$
+x_1 = 1,\quad x_2 = 2,\quad y = 4
+$$
+
+The model is:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+\hat{y} = (0.5)(1) + (1.0)(2) + 0.0
+$$
+
+Compute each term:
+
+$$
+(0.5)(1) = 0.5
+$$
+
+$$
+(1.0)(2) = 2.0
+$$
+
+Add them:
+
+$$
+\hat{y} = 0.5 + 2.0 + 0.0 = 2.5
+$$
+
+So the prediction is:
+
+$$
+\hat{y} = 2.5
+$$
+
+## Interpreting the prediction
+
+The true target is:
+
+$$
+y = 4
+$$
+
+But the model predicted:
+
+$$
+\hat{y} = 2.5
+$$
+
+So the prediction is too low by:
+
+$$
+y - \hat{y} = 4 - 2.5 = 1.5
+$$
+
+This means the current parameters are not yet giving a good prediction for this example.
+
+## Loss for one example
+
+A common regression loss is the squared error:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+Why include the factor $\frac{1}{2}$?
+
+Because later, when differentiating, it simplifies the derivative.
+
+For Example 1:
+
+$$
+L = \frac{1}{2}(4 - 2.5)^2
+$$
+
+First compute the error:
+
+$$
+4 - 2.5 = 1.5
+$$
+
+Square it:
+
+$$
+(1.5)^2 = 2.25
+$$
+
+Multiply by $\frac{1}{2}$:
+
+$$
+L = \frac{1}{2}(2.25) = 1.125
+$$
+
+So the loss for Example 1 is:
+
+$$
+L = 1.125
+$$
+
+## Why squared error is useful
+
+Squared error does two important things:
+
+1. it penalizes larger errors more strongly,
+2. it makes the loss always nonnegative.
+
+It is also mathematically convenient when we derive gradients.
+
+## Forward pass for all three examples
+
+Using:
+
+$$
+w_1 = 0.5,\quad w_2 = 1.0,\quad b = 0.0
+$$
+
+we compute predictions for all examples.
+
+### Example 1
+
+$$
+\hat{y}_1 = (0.5)(1) + (1.0)(2) + 0 = 2.5
+$$
+
+### Example 2
+
+$$
+\hat{y}_2 = (0.5)(2) + (1.0)(1) + 0
+$$
+
+$$
+\hat{y}_2 = 1.0 + 1.0 = 2.0
+$$
+
+### Example 3
+
+$$
+\hat{y}_3 = (0.5)(3) + (1.0)(0) + 0
+$$
+
+$$
+\hat{y}_3 = 1.5 + 0 = 1.5
+$$
+
+## Compare predictions with targets
+
+| Example | Target $y$ | Prediction $\hat{y}$ | Error $y - \hat{y}$ |
+|---|---:|---:|---:|
+| 1 | 4.0 | 2.5 | 1.5 |
+| 2 | 5.0 | 2.0 | 3.0 |
+| 3 | 6.0 | 1.5 | 4.5 |
+
+These errors are large, which tells us the initial parameters are poor.
+
+That is normal at the start of training.
+
+## Mean loss over the dataset
+
+For each example, use:
+
+$$
+L_i = \frac{1}{2}(y_i - \hat{y}_i)^2
+$$
+
+### Example 1 loss
+
+$$
+L_1 = \frac{1}{2}(4 - 2.5)^2 = \frac{1}{2}(1.5)^2 = 1.125
+$$
+
+### Example 2 loss
+
+$$
+L_2 = \frac{1}{2}(5 - 2.0)^2 = \frac{1}{2}(3.0)^2 = 4.5
+$$
+
+### Example 3 loss
+
+$$
+L_3 = \frac{1}{2}(6 - 1.5)^2 = \frac{1}{2}(4.5)^2 = 10.125
+$$
+
+Now compute the average:
+
+$$
+\text{Mean Loss} = \frac{L_1 + L_2 + L_3}{3}
+$$
+
+Substitute:
+
+$$
+\text{Mean Loss} = \frac{1.125 + 4.5 + 10.125}{3}
+$$
+
+$$
+\text{Mean Loss} = \frac{15.75}{3} = 5.25
+$$
+
+So the mean loss over the dataset is:
+
+$$
+\text{Mean Loss} = 5.25
+$$
+
+## What the loss is telling us
+
+The loss is not just a number.
+
+It summarizes model performance under the current parameters.
+
+A large loss means:
+
+- the predictions are far from the targets,
+- the current weights and bias need adjustment.
+
+## A small Python check
+
+```{python}
+# Tiny regression example: forward pass and squared-error loss
+
+data = [
+    {"x1": 1, "x2": 2, "y": 4},
+    {"x1": 2, "x2": 1, "y": 5},
+    {"x1": 3, "x2": 0, "y": 6},
+]
+
+w1 = 0.5
+w2 = 1.0
+b = 0.0
+
+losses = []
+
+for i, row in enumerate(data, start=1):
+    y_hat = w1 * row["x1"] + w2 * row["x2"] + b
+    loss = 0.5 * (row["y"] - y_hat) ** 2
+    losses.append(loss)
+
+    print(f"Example {i}")
+    print(f"  x1 = {row['x1']}, x2 = {row['x2']}, y = {row['y']}")
+    print(f"  prediction = {y_hat}")
+    print(f"  loss = {loss}")
+    print()
+
+mean_loss = sum(losses) / len(losses)
+print(f"Mean loss = {mean_loss}")
+```
+
+## Why this code matters
+
+The code does not replace understanding.
+
+It only checks the hand calculations.
+
+The correct learning order is:
+
+1. compute by hand,
+2. predict what the code should output,
+3. run the code,
+4. compare the results.
+
+## Common mistakes
+
+### Mistake 1: forgetting that identity activation changes nothing
+
+If:
+
+$$
+f(z) = z
+$$
+
+then:
+
+$$
+\hat{y} = z
+$$
+
+There is no extra transformation.
+
+### Mistake 2: mixing up error and loss
+
+The error may be:
+
+$$
+y - \hat{y}
+$$
+
+But the loss here is:
+
+$$
+\frac{1}{2}(y - \hat{y})^2
+$$
+
+These are not the same quantity.
+
+### Mistake 3: forgetting to square the error
+
+If the error is $3$, then the squared part is $9$, not $3$.
+
+### Mistake 4: forgetting the factor $\frac{1}{2}$
+
+In this chapter, we are defining loss as:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+So keep the factor.
+
+## Chapter checklist
+
+By the end of this chapter, you should be able to answer:
+
+1. What makes this a regression problem?
+2. Why do we use identity activation here?
+3. How do we compute $\hat{y}$ for one example?
+4. How do we compute squared error loss?
+5. What does a large loss mean?
+6. Why do we check hand calculations with code?
+
+## Suggested by-hand exercise
+
+Using the same dataset, but with:
+
+$$
+w_1 = 1,\quad w_2 = 1,\quad b = 0
+$$
+
+compute by hand:
+
+1. the prediction for each example,
+2. the loss for each example,
+3. the mean loss across all examples.
+
+Then compare your answers with a short Python script.
+
+

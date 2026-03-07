@@ -1,0 +1,94 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Neural Networks from First Principles"
+  subtitle: "A Hand-Calculable Mini-Project Book for Regression and Classification"
+  author: "Walekhwa Tambiti Leo Philip"
+  date: "2026-03-06"
+  description: "A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises."
+  site-url: "https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/"
+  favicon: "images/favicon.ico"
+  open-graph:
+    title: "Neural Networks from First Principles"
+    description: "A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises."
+    image: "images/og-neural-networks-book.png"
+    image-alt: "Cover image for Neural Networks from First Principles"
+    image-width: 1200
+    image-height: 630
+  twitter-card:
+    title: "Neural Networks from First Principles"
+    description: "A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises."
+    card-style: summary_large_image
+    image: "images/og-neural-networks-book.png"
+    image-alt: "Cover image for Neural Networks from First Principles"
+    image-width: 1200
+    image-height: 630
+  chapters:
+    - index.qmd
+    - about-this-book.qmd
+    - basics-of-neural-networks.qmd
+    - single-neuron-regression.qmd
+    - single-neuron-classification.qmd
+    - backpropagation-1-regression.qmd
+    - backpropagation-2-classification.qmd
+    - practice-exercises.qmd
+    - solutions-suggested-exercises.qmd
+    - solutions-practice-exercises.qmd
+    - glossary.qmd
+    - references.qmd
+
+bibliography: references.bib
+csl: apa.csl
+
+format:
+  html:
+    theme: litera
+    toc: true
+    number-sections: true
+    code-fold: false
+    code-tools: false
+    code-copy: hover
+    code-overflow: wrap
+    canonical-url: true
+    citations-hover: true
+    footnotes-hover: true
+    link-external-icon: true
+    link-external-newwindow: true
+    title-block-style: default
+    title-block-banner: false
+    fig-responsive: true
+    tbl-cap-location: top
+    reference-location: document
+    citation-location: document
+    include-in-header:
+      text: |
+        <meta name="robots" content="index,follow,max-image-preview:large">
+        <meta name="author" content="Walekhwa Tambiti Leo Philip">
+        <meta name="description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+        <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+        <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+
+execute:
+  echo: true
+  warning: false
+  message: false
+
+lang: en
+keywords:
+  - neural networks
+  - backpropagation
+  - regression
+  - classification
+  - sigmoid
+  - gradient descent
+  - machine learning
+  - educational book
+
+copyright: "© 2026 Walekhwa Tambiti Leo Philip"
+license: "CC BY 4.0"
+
+editor: visual

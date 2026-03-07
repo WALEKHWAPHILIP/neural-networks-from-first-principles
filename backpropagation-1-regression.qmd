@@ -1,0 +1,563 @@
+---
+title: "Backpropagation for Regression"
+---
+
+## Why this chapter exists
+
+A neural network becomes useful only when it can improve its parameters.
+
+That means it must answer this question:
+
+How should each weight and bias change so that the loss becomes smaller?
+
+Backpropagation is the method used to compute these needed changes.
+
+This chapter explains backpropagation from first principles using the simplest possible setting:
+
+- one neuron,
+- two inputs,
+- identity activation,
+- squared error loss,
+- one training example.
+
+## What backpropagation means
+
+Backpropagation is the process of computing how the loss changes with respect to each parameter.
+
+In symbols, we want quantities such as:
+
+$$
+\frac{\partial L}{\partial w_1}, \quad \frac{\partial L}{\partial w_2}, \quad \frac{\partial L}{\partial b}
+$$
+
+These are called gradients.
+
+They tell us how sensitive the loss is to each parameter.
+
+## Why gradients matter
+
+Suppose a gradient is large and positive:
+
+$$
+\frac{\partial L}{\partial w_1} > 0
+$$
+
+That means increasing $w_1$ would increase the loss locally.
+
+So to reduce loss, we would usually move $w_1$ downward.
+
+If the gradient is negative, the opposite idea applies.
+
+So the gradient is a direction signal.
+
+## Our setup
+
+We use the same single-neuron regression form:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Because we are using identity activation:
+
+$$
+\hat{y} = z
+$$
+
+The loss for one example is:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+## One training example
+
+Use this single example:
+
+$$
+x_1 = 1,\quad x_2 = 2,\quad y = 4
+$$
+
+and initial parameters:
+
+$$
+w_1 = 0.5,\quad w_2 = 1.0,\quad b = 0.0
+$$
+
+## Step 1: forward pass
+
+First compute the prediction.
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute:
+
+$$
+\hat{y} = (0.5)(1) + (1.0)(2) + 0
+$$
+
+$$
+\hat{y} = 0.5 + 2.0 = 2.5
+$$
+
+So:
+
+$$
+\hat{y} = 2.5
+$$
+
+Now compute the loss:
+
+$$
+L = \frac{1}{2}(4 - 2.5)^2
+$$
+
+$$
+L = \frac{1}{2}(1.5)^2 = \frac{1}{2}(2.25) = 1.125
+$$
+
+So the current loss is:
+
+$$
+L = 1.125
+$$
+
+## Step 2: identify the dependency chain
+
+To compute gradients, we ask:
+
+How does the loss depend on each parameter?
+
+The dependency chain is:
+
+$$
+w_1, w_2, b \to \hat{y} \to L
+$$
+
+That means:
+
+- the parameters affect the prediction,
+- the prediction affects the loss.
+
+So we use the chain rule.
+
+## Step 3: derivative of loss with respect to prediction
+
+We start from:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+Differentiate with respect to $\hat{y}$:
+
+$$
+\frac{\partial L}{\partial \hat{y}} = -(y - \hat{y})
+$$
+
+This can also be written as:
+
+$$
+\frac{\partial L}{\partial \hat{y}} = \hat{y} - y
+$$
+
+These two forms are equivalent.
+
+Now substitute:
+
+$$
+\frac{\partial L}{\partial \hat{y}} = 2.5 - 4 = -1.5
+$$
+
+So:
+
+$$
+\frac{\partial L}{\partial \hat{y}} = -1.5
+$$
+
+## Why this sign makes sense
+
+The gradient is negative because the prediction is too small.
+
+If the prediction increases slightly, the loss should decrease.
+
+That is why the derivative with respect to $\hat{y}$ is negative here.
+
+## Step 4: derivative of prediction with respect to each parameter
+
+The prediction is:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+Treat the inputs as constants.
+
+Then:
+
+$$
+\frac{\partial \hat{y}}{\partial w_1} = x_1
+$$
+
+$$
+\frac{\partial \hat{y}}{\partial w_2} = x_2
+$$
+
+$$
+\frac{\partial \hat{y}}{\partial b} = 1
+$$
+
+Now substitute the input values:
+
+$$
+\frac{\partial \hat{y}}{\partial w_1} = 1
+$$
+
+$$
+\frac{\partial \hat{y}}{\partial w_2} = 2
+$$
+
+$$
+\frac{\partial \hat{y}}{\partial b} = 1
+$$
+
+## Step 5: apply the chain rule
+
+For each parameter:
+
+$$
+\frac{\partial L}{\partial w_1}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial w_1}
+$$
+
+$$
+\frac{\partial L}{\partial w_2}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial w_2}
+$$
+
+$$
+\frac{\partial L}{\partial b}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial b}
+$$
+
+Substitute the values.
+
+### Gradient for $w_1$
+
+$$
+\frac{\partial L}{\partial w_1} = (-1.5)(1) = -1.5
+$$
+
+### Gradient for $w_2$
+
+$$
+\frac{\partial L}{\partial w_2} = (-1.5)(2) = -3.0
+$$
+
+### Gradient for $b$
+
+$$
+\frac{\partial L}{\partial b} = (-1.5)(1) = -1.5
+$$
+
+So the gradients are:
+
+$$
+\frac{\partial L}{\partial w_1} = -1.5,\quad
+\frac{\partial L}{\partial w_2} = -3.0,\quad
+\frac{\partial L}{\partial b} = -1.5
+$$
+
+## Why these gradient values make sense
+
+Because the prediction is too low, the model needs to increase its output.
+
+The gradients are negative, so subtracting them during gradient descent will increase the parameters.
+
+That will tend to increase the prediction on this example.
+
+This is exactly what we want.
+
+## Step 6: update the parameters
+
+Gradient descent updates parameters using:
+
+$$
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+$$
+
+where $\eta$ is the learning rate.
+
+Let:
+
+$$
+\eta = 0.1
+$$
+
+### Update $w_1$
+
+$$
+w_1^{\text{new}} = 0.5 - 0.1(-1.5)
+$$
+
+$$
+w_1^{\text{new}} = 0.5 + 0.15 = 0.65
+$$
+
+### Update $w_2$
+
+$$
+w_2^{\text{new}} = 1.0 - 0.1(-3.0)
+$$
+
+$$
+w_2^{\text{new}} = 1.0 + 0.3 = 1.3
+$$
+
+### Update $b$
+
+$$
+b^{\text{new}} = 0.0 - 0.1(-1.5)
+$$
+
+$$
+b^{\text{new}} = 0.15
+$$
+
+So the updated parameters are:
+
+$$
+w_1 = 0.65,\quad w_2 = 1.3,\quad b = 0.15
+$$
+
+## Step 7: check whether the loss decreased
+
+Now compute the new prediction:
+
+$$
+\hat{y}_{\text{new}} = (0.65)(1) + (1.3)(2) + 0.15
+$$
+
+$$
+\hat{y}_{\text{new}} = 0.65 + 2.6 + 0.15 = 3.4
+$$
+
+Now compute the new loss:
+
+$$
+L_{\text{new}} = \frac{1}{2}(4 - 3.4)^2
+$$
+
+$$
+L_{\text{new}} = \frac{1}{2}(0.6)^2 = \frac{1}{2}(0.36) = 0.18
+$$
+
+So the loss changed from:
+
+$$
+1.125 \to 0.18
+$$
+
+This is a large improvement after one update step.
+
+## Why the loss decreased
+
+The prediction moved from:
+
+$$
+2.5 \to 3.4
+$$
+
+The target was:
+
+$$
+4
+$$
+
+So the prediction became closer to the target.
+
+Since squared error penalizes distance from the target, the loss decreased.
+
+## A small Python check
+
+```{python}
+# Backpropagation by hand for one regression example
+
+x1 = 1
+x2 = 2
+y = 4
+
+w1 = 0.5
+w2 = 1.0
+b = 0.0
+eta = 0.1
+
+# Forward pass
+y_hat = w1 * x1 + w2 * x2 + b
+loss = 0.5 * (y - y_hat) ** 2
+
+# Backward pass
+dL_dyhat = y_hat - y
+dyhat_dw1 = x1
+dyhat_dw2 = x2
+dyhat_db = 1
+
+dL_dw1 = dL_dyhat * dyhat_dw1
+dL_dw2 = dL_dyhat * dyhat_dw2
+dL_db = dL_dyhat * dyhat_db
+
+# Parameter update
+w1_new = w1 - eta * dL_dw1
+w2_new = w2 - eta * dL_dw2
+b_new = b - eta * dL_db
+
+# New forward pass
+y_hat_new = w1_new * x1 + w2_new * x2 + b_new
+loss_new = 0.5 * (y - y_hat_new) ** 2
+
+print("Initial prediction:", y_hat)
+print("Initial loss:", loss)
+print()
+print("Gradients:")
+print("  dL/dw1 =", dL_dw1)
+print("  dL/dw2 =", dL_dw2)
+print("  dL/db  =", dL_db)
+print()
+print("Updated parameters:")
+print("  w1 =", w1_new)
+print("  w2 =", w2_new)
+print("  b  =", b_new)
+print()
+print("New prediction:", y_hat_new)
+print("New loss:", loss_new)
+```
+
+## Why the chain rule is the heart of backpropagation
+
+Backpropagation is not a mysterious special trick.
+
+It is repeated use of the chain rule.
+
+Backpropagation is the repeated application of the chain rule through a layered computation [@rumelhart1986learning; @goodfellow2016deep; @haykin2009neural].
+
+The chain rule lets us move backward through a computation graph and ask:
+
+If this final quantity changed, how much did each earlier quantity contribute?
+
+That is the central logic of learning.
+
+## Common mistakes
+
+### Mistake 1: differentiating with respect to the wrong variable
+
+Be clear about what is changing and what is being held constant.
+
+For example:
+
+* $\frac{\partial L}{\partial \hat{y}}$ is not the same as $\frac{\partial L}{\partial w_1}$
+
+### Mistake 2: dropping the sign
+
+A sign error changes the direction of learning.
+
+That can make the model worse instead of better.
+
+### Mistake 3: forgetting the chain rule
+
+You do not jump directly from $L$ to $w_1$ without following the dependency path.
+
+### Mistake 4: updating in the wrong direction
+
+Gradient descent subtracts the gradient:
+
+$$
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+$$
+
+not plus the gradient.
+
+## Chapter checklist
+
+By the end of this chapter, you should be able to answer:
+
+1. What does backpropagation compute?
+2. Why do we need gradients?
+3. What is the chain rule doing here?
+4. How do we compute $\frac{\partial L}{\partial \hat{y}}$?
+5. How do we compute gradients for $w_1$, $w_2$, and $b$?
+6. Why did the loss decrease after the update?
+
+## Suggested by-hand exercise
+
+Use:
+
+$$
+x_1 = 2,\quad x_2 = 1,\quad y = 5
+$$
+
+Initial parameters:
+
+$$
+w_1 = 0.5,\quad w_2 = 1.0,\quad b = 0.0
+$$
+
+Learning rate:
+
+$$
+\eta = 0.1
+$$
+
+Assume the model:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+Assume the activation function is the identity function:
+
+$$
+f(z) = z
+$$
+
+Use the loss:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+Compute by hand:
+
+1. the prediction $\hat{y}$,
+2. the loss $L$,
+3. $\frac{\partial L}{\partial \hat{y}}$,
+4. $\frac{\partial L}{\partial w_1}$,
+5. $\frac{\partial L}{\partial w_2}$,
+6. $\frac{\partial L}{\partial b}$,
+7. the updated parameters,
+8. the new prediction and new loss.
+
+## One important conceptual note
+
+This chapter uses **regression backpropagation** first, not classification backpropagation.
+
+That is deliberate.
+
+Reason:
+
+* sigmoid + cross-entropy backpropagation is extremely important,
+* but it adds extra derivative complexity,
+* and the learner should first master the simpler chain-rule case.
+
+The next chapter applies the same backpropagation logic to binary classification.
+

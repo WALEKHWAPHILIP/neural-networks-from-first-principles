@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.24">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="keywords" content="neural networks, backpropagation, regression, classification, sigmoid, gradient descent, machine learning, educational book">
+<meta name="description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+
+<title>4&nbsp; Single Neuron Regression – Neural Networks from First Principles</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./single-neuron-classification.html" rel="next">
+<link href="./basics-of-neural-networks.html" rel="prev">
+<link href="./images/favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-697d4de1eee3a11a7bce293067f0aa8c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="author" content="Walekhwa Tambiti Leo Philip">
+<meta name="description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Neural Networks from First Principles">
+<meta property="og:description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<meta property="og:image" content="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/images/og-neural-networks-book.png">
+<meta property="og:site_name" content="Neural Networks from First Principles">
+<meta property="og:image:alt" content="Cover image for Neural Networks from First Principles">
+<meta property="og:image:height" content="630">
+<meta property="og:image:width" content="1200">
+<meta name="twitter:title" content="Neural Networks from First Principles">
+<meta name="twitter:description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<meta name="twitter:image" content="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/images/og-neural-networks-book.png">
+<meta name="twitter:image:alt" content="Cover image for Neural Networks from First Principles">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="630">
+<meta name="twitter:image-width" content="1200">
+<link rel="canonical" href="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/single-neuron-regression.html">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./single-neuron-regression.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Single Neuron Regression</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Neural Networks from First Principles</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Welcome</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about-this-book.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">About This Book</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basics-of-neural-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basics of Neural Networks</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./single-neuron-regression.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Single Neuron Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./single-neuron-classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Single Neuron Classification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backpropagation-1-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Backpropagation for Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backpropagation-2-classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Backpropagation for Classification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./practice-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Practice Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./solutions-suggested-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Solutions to Suggested Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./solutions-practice-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Solutions to Practice Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">References</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-this-chapter-exists" id="toc-why-this-chapter-exists" class="nav-link active" data-scroll-target="#why-this-chapter-exists"><span class="header-section-number">4.1</span> Why this chapter exists</a></li>
+  <li><a href="#what-regression-means" id="toc-what-regression-means" class="nav-link" data-scroll-target="#what-regression-means"><span class="header-section-number">4.2</span> What regression means</a></li>
+  <li><a href="#the-model" id="toc-the-model" class="nav-link" data-scroll-target="#the-model"><span class="header-section-number">4.3</span> The model</a></li>
+  <li><a href="#our-tiny-dataset" id="toc-our-tiny-dataset" class="nav-link" data-scroll-target="#our-tiny-dataset"><span class="header-section-number">4.4</span> Our tiny dataset</a></li>
+  <li><a href="#why-this-dataset-is-useful" id="toc-why-this-dataset-is-useful" class="nav-link" data-scroll-target="#why-this-dataset-is-useful"><span class="header-section-number">4.5</span> Why this dataset is useful</a></li>
+  <li><a href="#initial-parameter-values" id="toc-initial-parameter-values" class="nav-link" data-scroll-target="#initial-parameter-values"><span class="header-section-number">4.6</span> Initial parameter values</a></li>
+  <li><a href="#forward-pass-for-example-1" id="toc-forward-pass-for-example-1" class="nav-link" data-scroll-target="#forward-pass-for-example-1"><span class="header-section-number">4.7</span> Forward pass for Example 1</a></li>
+  <li><a href="#interpreting-the-prediction" id="toc-interpreting-the-prediction" class="nav-link" data-scroll-target="#interpreting-the-prediction"><span class="header-section-number">4.8</span> Interpreting the prediction</a></li>
+  <li><a href="#loss-for-one-example" id="toc-loss-for-one-example" class="nav-link" data-scroll-target="#loss-for-one-example"><span class="header-section-number">4.9</span> Loss for one example</a></li>
+  <li><a href="#why-squared-error-is-useful" id="toc-why-squared-error-is-useful" class="nav-link" data-scroll-target="#why-squared-error-is-useful"><span class="header-section-number">4.10</span> Why squared error is useful</a></li>
+  <li><a href="#forward-pass-for-all-three-examples" id="toc-forward-pass-for-all-three-examples" class="nav-link" data-scroll-target="#forward-pass-for-all-three-examples"><span class="header-section-number">4.11</span> Forward pass for all three examples</a>
+  <ul class="collapse">
+  <li><a href="#example-1" id="toc-example-1" class="nav-link" data-scroll-target="#example-1"><span class="header-section-number">4.11.1</span> Example 1</a></li>
+  <li><a href="#example-2" id="toc-example-2" class="nav-link" data-scroll-target="#example-2"><span class="header-section-number">4.11.2</span> Example 2</a></li>
+  <li><a href="#example-3" id="toc-example-3" class="nav-link" data-scroll-target="#example-3"><span class="header-section-number">4.11.3</span> Example 3</a></li>
+  </ul></li>
+  <li><a href="#compare-predictions-with-targets" id="toc-compare-predictions-with-targets" class="nav-link" data-scroll-target="#compare-predictions-with-targets"><span class="header-section-number">4.12</span> Compare predictions with targets</a></li>
+  <li><a href="#mean-loss-over-the-dataset" id="toc-mean-loss-over-the-dataset" class="nav-link" data-scroll-target="#mean-loss-over-the-dataset"><span class="header-section-number">4.13</span> Mean loss over the dataset</a>
+  <ul class="collapse">
+  <li><a href="#example-1-loss" id="toc-example-1-loss" class="nav-link" data-scroll-target="#example-1-loss"><span class="header-section-number">4.13.1</span> Example 1 loss</a></li>
+  <li><a href="#example-2-loss" id="toc-example-2-loss" class="nav-link" data-scroll-target="#example-2-loss"><span class="header-section-number">4.13.2</span> Example 2 loss</a></li>
+  <li><a href="#example-3-loss" id="toc-example-3-loss" class="nav-link" data-scroll-target="#example-3-loss"><span class="header-section-number">4.13.3</span> Example 3 loss</a></li>
+  </ul></li>
+  <li><a href="#what-the-loss-is-telling-us" id="toc-what-the-loss-is-telling-us" class="nav-link" data-scroll-target="#what-the-loss-is-telling-us"><span class="header-section-number">4.14</span> What the loss is telling us</a></li>
+  <li><a href="#a-small-python-check" id="toc-a-small-python-check" class="nav-link" data-scroll-target="#a-small-python-check"><span class="header-section-number">4.15</span> A small Python check</a></li>
+  <li><a href="#why-this-code-matters" id="toc-why-this-code-matters" class="nav-link" data-scroll-target="#why-this-code-matters"><span class="header-section-number">4.16</span> Why this code matters</a></li>
+  <li><a href="#common-mistakes" id="toc-common-mistakes" class="nav-link" data-scroll-target="#common-mistakes"><span class="header-section-number">4.17</span> Common mistakes</a>
+  <ul class="collapse">
+  <li><a href="#mistake-1-forgetting-that-identity-activation-changes-nothing" id="toc-mistake-1-forgetting-that-identity-activation-changes-nothing" class="nav-link" data-scroll-target="#mistake-1-forgetting-that-identity-activation-changes-nothing"><span class="header-section-number">4.17.1</span> Mistake 1: forgetting that identity activation changes nothing</a></li>
+  <li><a href="#mistake-2-mixing-up-error-and-loss" id="toc-mistake-2-mixing-up-error-and-loss" class="nav-link" data-scroll-target="#mistake-2-mixing-up-error-and-loss"><span class="header-section-number">4.17.2</span> Mistake 2: mixing up error and loss</a></li>
+  <li><a href="#mistake-3-forgetting-to-square-the-error" id="toc-mistake-3-forgetting-to-square-the-error" class="nav-link" data-scroll-target="#mistake-3-forgetting-to-square-the-error"><span class="header-section-number">4.17.3</span> Mistake 3: forgetting to square the error</a></li>
+  <li><a href="#mistake-4-forgetting-the-factor-frac12" id="toc-mistake-4-forgetting-the-factor-frac12" class="nav-link" data-scroll-target="#mistake-4-forgetting-the-factor-frac12"><span class="header-section-number">4.17.4</span> Mistake 4: forgetting the factor <span class="math inline">\(\frac{1}{2}\)</span></a></li>
+  </ul></li>
+  <li><a href="#chapter-checklist" id="toc-chapter-checklist" class="nav-link" data-scroll-target="#chapter-checklist"><span class="header-section-number">4.18</span> Chapter checklist</a></li>
+  <li><a href="#suggested-by-hand-exercise" id="toc-suggested-by-hand-exercise" class="nav-link" data-scroll-target="#suggested-by-hand-exercise"><span class="header-section-number">4.19</span> Suggested by-hand exercise</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Single Neuron Regression</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+<div>
+  <div class="keywords">
+    <div class="block-title">Keywords</div>
+    <p>neural networks, backpropagation, regression, classification, sigmoid, gradient descent, machine learning, educational book</p>
+  </div>
+</div>
+
+</header>
+
+
+<section id="why-this-chapter-exists" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="why-this-chapter-exists"><span class="header-section-number">4.1</span> Why this chapter exists</h2>
+<p>This chapter introduces the simplest neural-network prediction setting: a single neuron used for regression.</p>
+<p>Regression means we want to predict a numerical value, such as:</p>
+<ul>
+<li>house price,</li>
+<li>temperature,</li>
+<li>sales,</li>
+<li>exam score,</li>
+<li>energy usage.</li>
+</ul>
+<p>We begin here because regression with one neuron is the clearest place to learn the mechanics of forward computation.</p>
+</section>
+<section id="what-regression-means" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="what-regression-means"><span class="header-section-number">4.2</span> What regression means</h2>
+<p>A regression problem predicts a numerical target.</p>
+<p>If the true target is <span class="math inline">\(y = 8.5\)</span>, then a prediction such as <span class="math inline">\(\hat{y} = 8.2\)</span> or <span class="math inline">\(\hat{y} = 9.1\)</span> is still meaningful, because both are numerical values.</p>
+<p>In this chapter, the neuron’s output is allowed to be any real number.</p>
+<p>That is why we use the <strong>identity activation</strong>:</p>
+<p><span class="math display">\[
+f(z) = z
+\]</span></p>
+<p>So the neuron’s output is simply:</p>
+<p><span class="math display">\[
+\hat{y} = z
+\]</span></p>
+</section>
+<section id="the-model" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="the-model"><span class="header-section-number">4.3</span> The model</h2>
+<p>We use a neuron with two inputs:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Because we are using identity activation, the prediction is:</p>
+<p><span class="math display">\[
+\hat{y} = z
+\]</span></p>
+<p>So the full model is:</p>
+<p><span class="math display">\[
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+</section>
+<section id="our-tiny-dataset" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="our-tiny-dataset"><span class="header-section-number">4.4</span> Our tiny dataset</h2>
+<p>We use a very small dataset with two input variables and one target.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Example</th>
+<th style="text-align: right;"><span class="math inline">\(x_1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(x_2\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+</tr>
+</tbody>
+</table>
+<p>This dataset is small enough to compute by hand.</p>
+</section>
+<section id="why-this-dataset-is-useful" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="why-this-dataset-is-useful"><span class="header-section-number">4.5</span> Why this dataset is useful</h2>
+<p>This dataset is intentionally tiny.</p>
+<p>It helps us focus on the mechanics of the neuron instead of getting lost in too many numbers.</p>
+<p>A small dataset is ideal when learning:</p>
+<ul>
+<li>weighted sums,</li>
+<li>predictions,</li>
+<li>errors,</li>
+<li>parameter effects.</li>
+</ul>
+</section>
+<section id="initial-parameter-values" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="initial-parameter-values"><span class="header-section-number">4.6</span> Initial parameter values</h2>
+<p>We must start with some parameter values.</p>
+<p>Suppose:</p>
+<p><span class="math display">\[
+w_1 = 0.5, \quad w_2 = 1.0, \quad b = 0.0
+\]</span></p>
+<p>These are not yet learned values. They are just starting values.</p>
+</section>
+<section id="forward-pass-for-example-1" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="forward-pass-for-example-1"><span class="header-section-number">4.7</span> Forward pass for Example 1</h2>
+<p>Take Example 1:</p>
+<p><span class="math display">\[
+x_1 = 1,\quad x_2 = 2,\quad y = 4
+\]</span></p>
+<p>The model is:</p>
+<p><span class="math display">\[
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\hat{y} = (0.5)(1) + (1.0)(2) + 0.0
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(0.5)(1) = 0.5
+\]</span></p>
+<p><span class="math display">\[
+(1.0)(2) = 2.0
+\]</span></p>
+<p>Add them:</p>
+<p><span class="math display">\[
+\hat{y} = 0.5 + 2.0 + 0.0 = 2.5
+\]</span></p>
+<p>So the prediction is:</p>
+<p><span class="math display">\[
+\hat{y} = 2.5
+\]</span></p>
+</section>
+<section id="interpreting-the-prediction" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="interpreting-the-prediction"><span class="header-section-number">4.8</span> Interpreting the prediction</h2>
+<p>The true target is:</p>
+<p><span class="math display">\[
+y = 4
+\]</span></p>
+<p>But the model predicted:</p>
+<p><span class="math display">\[
+\hat{y} = 2.5
+\]</span></p>
+<p>So the prediction is too low by:</p>
+<p><span class="math display">\[
+y - \hat{y} = 4 - 2.5 = 1.5
+\]</span></p>
+<p>This means the current parameters are not yet giving a good prediction for this example.</p>
+</section>
+<section id="loss-for-one-example" class="level2" data-number="4.9">
+<h2 data-number="4.9" class="anchored" data-anchor-id="loss-for-one-example"><span class="header-section-number">4.9</span> Loss for one example</h2>
+<p>A common regression loss is the squared error:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>Why include the factor <span class="math inline">\(\frac{1}{2}\)</span>?</p>
+<p>Because later, when differentiating, it simplifies the derivative.</p>
+<p>For Example 1:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(4 - 2.5)^2
+\]</span></p>
+<p>First compute the error:</p>
+<p><span class="math display">\[
+4 - 2.5 = 1.5
+\]</span></p>
+<p>Square it:</p>
+<p><span class="math display">\[
+(1.5)^2 = 2.25
+\]</span></p>
+<p>Multiply by <span class="math inline">\(\frac{1}{2}\)</span>:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(2.25) = 1.125
+\]</span></p>
+<p>So the loss for Example 1 is:</p>
+<p><span class="math display">\[
+L = 1.125
+\]</span></p>
+</section>
+<section id="why-squared-error-is-useful" class="level2" data-number="4.10">
+<h2 data-number="4.10" class="anchored" data-anchor-id="why-squared-error-is-useful"><span class="header-section-number">4.10</span> Why squared error is useful</h2>
+<p>Squared error does two important things:</p>
+<ol type="1">
+<li>it penalizes larger errors more strongly,</li>
+<li>it makes the loss always nonnegative.</li>
+</ol>
+<p>It is also mathematically convenient when we derive gradients.</p>
+</section>
+<section id="forward-pass-for-all-three-examples" class="level2" data-number="4.11">
+<h2 data-number="4.11" class="anchored" data-anchor-id="forward-pass-for-all-three-examples"><span class="header-section-number">4.11</span> Forward pass for all three examples</h2>
+<p>Using:</p>
+<p><span class="math display">\[
+w_1 = 0.5,\quad w_2 = 1.0,\quad b = 0.0
+\]</span></p>
+<p>we compute predictions for all examples.</p>
+<section id="example-1" class="level3" data-number="4.11.1">
+<h3 data-number="4.11.1" class="anchored" data-anchor-id="example-1"><span class="header-section-number">4.11.1</span> Example 1</h3>
+<p><span class="math display">\[
+\hat{y}_1 = (0.5)(1) + (1.0)(2) + 0 = 2.5
+\]</span></p>
+</section>
+<section id="example-2" class="level3" data-number="4.11.2">
+<h3 data-number="4.11.2" class="anchored" data-anchor-id="example-2"><span class="header-section-number">4.11.2</span> Example 2</h3>
+<p><span class="math display">\[
+\hat{y}_2 = (0.5)(2) + (1.0)(1) + 0
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_2 = 1.0 + 1.0 = 2.0
+\]</span></p>
+</section>
+<section id="example-3" class="level3" data-number="4.11.3">
+<h3 data-number="4.11.3" class="anchored" data-anchor-id="example-3"><span class="header-section-number">4.11.3</span> Example 3</h3>
+<p><span class="math display">\[
+\hat{y}_3 = (0.5)(3) + (1.0)(0) + 0
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_3 = 1.5 + 0 = 1.5
+\]</span></p>
+</section>
+</section>
+<section id="compare-predictions-with-targets" class="level2" data-number="4.12">
+<h2 data-number="4.12" class="anchored" data-anchor-id="compare-predictions-with-targets"><span class="header-section-number">4.12</span> Compare predictions with targets</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Example</th>
+<th style="text-align: right;">Target <span class="math inline">\(y\)</span></th>
+<th style="text-align: right;">Prediction <span class="math inline">\(\hat{y}\)</span></th>
+<th style="text-align: right;">Error <span class="math inline">\(y - \hat{y}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: right;">4.0</td>
+<td style="text-align: right;">2.5</td>
+<td style="text-align: right;">1.5</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">5.0</td>
+<td style="text-align: right;">2.0</td>
+<td style="text-align: right;">3.0</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">1.5</td>
+<td style="text-align: right;">4.5</td>
+</tr>
+</tbody>
+</table>
+<p>These errors are large, which tells us the initial parameters are poor.</p>
+<p>That is normal at the start of training.</p>
+</section>
+<section id="mean-loss-over-the-dataset" class="level2" data-number="4.13">
+<h2 data-number="4.13" class="anchored" data-anchor-id="mean-loss-over-the-dataset"><span class="header-section-number">4.13</span> Mean loss over the dataset</h2>
+<p>For each example, use:</p>
+<p><span class="math display">\[
+L_i = \frac{1}{2}(y_i - \hat{y}_i)^2
+\]</span></p>
+<section id="example-1-loss" class="level3" data-number="4.13.1">
+<h3 data-number="4.13.1" class="anchored" data-anchor-id="example-1-loss"><span class="header-section-number">4.13.1</span> Example 1 loss</h3>
+<p><span class="math display">\[
+L_1 = \frac{1}{2}(4 - 2.5)^2 = \frac{1}{2}(1.5)^2 = 1.125
+\]</span></p>
+</section>
+<section id="example-2-loss" class="level3" data-number="4.13.2">
+<h3 data-number="4.13.2" class="anchored" data-anchor-id="example-2-loss"><span class="header-section-number">4.13.2</span> Example 2 loss</h3>
+<p><span class="math display">\[
+L_2 = \frac{1}{2}(5 - 2.0)^2 = \frac{1}{2}(3.0)^2 = 4.5
+\]</span></p>
+</section>
+<section id="example-3-loss" class="level3" data-number="4.13.3">
+<h3 data-number="4.13.3" class="anchored" data-anchor-id="example-3-loss"><span class="header-section-number">4.13.3</span> Example 3 loss</h3>
+<p><span class="math display">\[
+L_3 = \frac{1}{2}(6 - 1.5)^2 = \frac{1}{2}(4.5)^2 = 10.125
+\]</span></p>
+<p>Now compute the average:</p>
+<p><span class="math display">\[
+\text{Mean Loss} = \frac{L_1 + L_2 + L_3}{3}
+\]</span></p>
+<p>Substitute:</p>
+<p><span class="math display">\[
+\text{Mean Loss} = \frac{1.125 + 4.5 + 10.125}{3}
+\]</span></p>
+<p><span class="math display">\[
+\text{Mean Loss} = \frac{15.75}{3} = 5.25
+\]</span></p>
+<p>So the mean loss over the dataset is:</p>
+<p><span class="math display">\[
+\text{Mean Loss} = 5.25
+\]</span></p>
+</section>
+</section>
+<section id="what-the-loss-is-telling-us" class="level2" data-number="4.14">
+<h2 data-number="4.14" class="anchored" data-anchor-id="what-the-loss-is-telling-us"><span class="header-section-number">4.14</span> What the loss is telling us</h2>
+<p>The loss is not just a number.</p>
+<p>It summarizes model performance under the current parameters.</p>
+<p>A large loss means:</p>
+<ul>
+<li>the predictions are far from the targets,</li>
+<li>the current weights and bias need adjustment.</li>
+</ul>
+</section>
+<section id="a-small-python-check" class="level2" data-number="4.15">
+<h2 data-number="4.15" class="anchored" data-anchor-id="a-small-python-check"><span class="header-section-number">4.15</span> A small Python check</h2>
+<div id="84b1cb02" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tiny regression example: forward pass and squared-error loss</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> [</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"x1"</span>: <span class="dv">1</span>, <span class="st">"x2"</span>: <span class="dv">2</span>, <span class="st">"y"</span>: <span class="dv">4</span>},</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"x1"</span>: <span class="dv">2</span>, <span class="st">"x2"</span>: <span class="dv">1</span>, <span class="st">"y"</span>: <span class="dv">5</span>},</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    {<span class="st">"x1"</span>: <span class="dv">3</span>, <span class="st">"x2"</span>: <span class="dv">0</span>, <span class="st">"y"</span>: <span class="dv">6</span>},</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>w1 <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>w2 <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>losses <span class="op">=</span> []</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, row <span class="kw">in</span> <span class="bu">enumerate</span>(data, start<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    y_hat <span class="op">=</span> w1 <span class="op">*</span> row[<span class="st">"x1"</span>] <span class="op">+</span> w2 <span class="op">*</span> row[<span class="st">"x2"</span>] <span class="op">+</span> b</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> (row[<span class="st">"y"</span>] <span class="op">-</span> y_hat) <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    losses.append(loss)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Example </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  x1 = </span><span class="sc">{</span>row[<span class="st">'x1'</span>]<span class="sc">}</span><span class="ss">, x2 = </span><span class="sc">{</span>row[<span class="st">'x2'</span>]<span class="sc">}</span><span class="ss">, y = </span><span class="sc">{</span>row[<span class="st">'y'</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  prediction = </span><span class="sc">{</span>y_hat<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  loss = </span><span class="sc">{</span>loss<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>()</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>mean_loss <span class="op">=</span> <span class="bu">sum</span>(losses) <span class="op">/</span> <span class="bu">len</span>(losses)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Mean loss = </span><span class="sc">{</span>mean_loss<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Example 1
+  x1 = 1, x2 = 2, y = 4
+  prediction = 2.5
+  loss = 1.125
+
+Example 2
+  x1 = 2, x2 = 1, y = 5
+  prediction = 2.0
+  loss = 4.5
+
+Example 3
+  x1 = 3, x2 = 0, y = 6
+  prediction = 1.5
+  loss = 10.125
+
+Mean loss = 5.25</code></pre>
+</div>
+</div>
+</section>
+<section id="why-this-code-matters" class="level2" data-number="4.16">
+<h2 data-number="4.16" class="anchored" data-anchor-id="why-this-code-matters"><span class="header-section-number">4.16</span> Why this code matters</h2>
+<p>The code does not replace understanding.</p>
+<p>It only checks the hand calculations.</p>
+<p>The correct learning order is:</p>
+<ol type="1">
+<li>compute by hand,</li>
+<li>predict what the code should output,</li>
+<li>run the code,</li>
+<li>compare the results.</li>
+</ol>
+</section>
+<section id="common-mistakes" class="level2" data-number="4.17">
+<h2 data-number="4.17" class="anchored" data-anchor-id="common-mistakes"><span class="header-section-number">4.17</span> Common mistakes</h2>
+<section id="mistake-1-forgetting-that-identity-activation-changes-nothing" class="level3" data-number="4.17.1">
+<h3 data-number="4.17.1" class="anchored" data-anchor-id="mistake-1-forgetting-that-identity-activation-changes-nothing"><span class="header-section-number">4.17.1</span> Mistake 1: forgetting that identity activation changes nothing</h3>
+<p>If:</p>
+<p><span class="math display">\[
+f(z) = z
+\]</span></p>
+<p>then:</p>
+<p><span class="math display">\[
+\hat{y} = z
+\]</span></p>
+<p>There is no extra transformation.</p>
+</section>
+<section id="mistake-2-mixing-up-error-and-loss" class="level3" data-number="4.17.2">
+<h3 data-number="4.17.2" class="anchored" data-anchor-id="mistake-2-mixing-up-error-and-loss"><span class="header-section-number">4.17.2</span> Mistake 2: mixing up error and loss</h3>
+<p>The error may be:</p>
+<p><span class="math display">\[
+y - \hat{y}
+\]</span></p>
+<p>But the loss here is:</p>
+<p><span class="math display">\[
+\frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>These are not the same quantity.</p>
+</section>
+<section id="mistake-3-forgetting-to-square-the-error" class="level3" data-number="4.17.3">
+<h3 data-number="4.17.3" class="anchored" data-anchor-id="mistake-3-forgetting-to-square-the-error"><span class="header-section-number">4.17.3</span> Mistake 3: forgetting to square the error</h3>
+<p>If the error is <span class="math inline">\(3\)</span>, then the squared part is <span class="math inline">\(9\)</span>, not <span class="math inline">\(3\)</span>.</p>
+</section>
+<section id="mistake-4-forgetting-the-factor-frac12" class="level3" data-number="4.17.4">
+<h3 data-number="4.17.4" class="anchored" data-anchor-id="mistake-4-forgetting-the-factor-frac12"><span class="header-section-number">4.17.4</span> Mistake 4: forgetting the factor <span class="math inline">\(\frac{1}{2}\)</span></h3>
+<p>In this chapter, we are defining loss as:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>So keep the factor.</p>
+</section>
+</section>
+<section id="chapter-checklist" class="level2" data-number="4.18">
+<h2 data-number="4.18" class="anchored" data-anchor-id="chapter-checklist"><span class="header-section-number">4.18</span> Chapter checklist</h2>
+<p>By the end of this chapter, you should be able to answer:</p>
+<ol type="1">
+<li>What makes this a regression problem?</li>
+<li>Why do we use identity activation here?</li>
+<li>How do we compute <span class="math inline">\(\hat{y}\)</span> for one example?</li>
+<li>How do we compute squared error loss?</li>
+<li>What does a large loss mean?</li>
+<li>Why do we check hand calculations with code?</li>
+</ol>
+</section>
+<section id="suggested-by-hand-exercise" class="level2" data-number="4.19">
+<h2 data-number="4.19" class="anchored" data-anchor-id="suggested-by-hand-exercise"><span class="header-section-number">4.19</span> Suggested by-hand exercise</h2>
+<p>Using the same dataset, but with:</p>
+<p><span class="math display">\[
+w_1 = 1,\quad w_2 = 1,\quad b = 0
+\]</span></p>
+<p>compute by hand:</p>
+<ol type="1">
+<li>the prediction for each example,</li>
+<li>the loss for each example,</li>
+<li>the mean loss across all examples.</li>
+</ol>
+<p>Then compare your answers with a short Python script.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/learn\.walsoftcomputers\.com\/educational_platform\/neural-networks-from-first-principles\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./basics-of-neural-networks.html" class="pagination-link" aria-label="Basics of Neural Networks">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basics of Neural Networks</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./single-neuron-classification.html" class="pagination-link" aria-label="Single Neuron Classification">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Single Neuron Classification</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

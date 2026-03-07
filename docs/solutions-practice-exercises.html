@@ -1,0 +1,3227 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.24">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="keywords" content="neural networks, backpropagation, regression, classification, sigmoid, gradient descent, machine learning, educational book">
+<meta name="description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+
+<title>10&nbsp; Solutions to Practice Exercises – Neural Networks from First Principles</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./glossary.html" rel="next">
+<link href="./solutions-suggested-exercises.html" rel="prev">
+<link href="./images/favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-697d4de1eee3a11a7bce293067f0aa8c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="author" content="Walekhwa Tambiti Leo Philip">
+<meta name="description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Neural Networks from First Principles">
+<meta property="og:description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<meta property="og:image" content="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/images/og-neural-networks-book.png">
+<meta property="og:site_name" content="Neural Networks from First Principles">
+<meta property="og:image:alt" content="Cover image for Neural Networks from First Principles">
+<meta property="og:image:height" content="630">
+<meta property="og:image:width" content="1200">
+<meta name="twitter:title" content="Neural Networks from First Principles">
+<meta name="twitter:description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<meta name="twitter:image" content="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/images/og-neural-networks-book.png">
+<meta name="twitter:image:alt" content="Cover image for Neural Networks from First Principles">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="630">
+<meta name="twitter:image-width" content="1200">
+<link rel="canonical" href="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/solutions-practice-exercises.html">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./solutions-practice-exercises.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Solutions to Practice Exercises</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Neural Networks from First Principles</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Welcome</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about-this-book.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">About This Book</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basics-of-neural-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basics of Neural Networks</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./single-neuron-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Single Neuron Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./single-neuron-classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Single Neuron Classification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backpropagation-1-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Backpropagation for Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backpropagation-2-classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Backpropagation for Classification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./practice-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Practice Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./solutions-suggested-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Solutions to Suggested Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./solutions-practice-exercises.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Solutions to Practice Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">References</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-this-chapter-exists" id="toc-why-this-chapter-exists" class="nav-link active" data-scroll-target="#why-this-chapter-exists"><span class="header-section-number">10.1</span> Why this chapter exists</a></li>
+  <li><a href="#how-to-use-this-chapter" id="toc-how-to-use-this-chapter" class="nav-link" data-scroll-target="#how-to-use-this-chapter"><span class="header-section-number">10.2</span> How to use this chapter</a></li>
+  <li><a href="#solutions-to-part-a-concept-and-symbol-checks" id="toc-solutions-to-part-a-concept-and-symbol-checks" class="nav-link" data-scroll-target="#solutions-to-part-a-concept-and-symbol-checks"><span class="header-section-number">10.3</span> Solutions to Part A: concept and symbol checks</a>
+  <ul class="collapse">
+  <li><a href="#solution-a1" id="toc-solution-a1" class="nav-link" data-scroll-target="#solution-a1"><span class="header-section-number">10.3.1</span> Solution A1</a></li>
+  <li><a href="#solution-a2" id="toc-solution-a2" class="nav-link" data-scroll-target="#solution-a2"><span class="header-section-number">10.3.2</span> Solution A2</a></li>
+  <li><a href="#solution-a3" id="toc-solution-a3" class="nav-link" data-scroll-target="#solution-a3"><span class="header-section-number">10.3.3</span> Solution A3</a></li>
+  </ul></li>
+  <li><a href="#solutions-to-part-b-regression-forward-pass-exercises" id="toc-solutions-to-part-b-regression-forward-pass-exercises" class="nav-link" data-scroll-target="#solutions-to-part-b-regression-forward-pass-exercises"><span class="header-section-number">10.4</span> Solutions to Part B: regression forward-pass exercises</a>
+  <ul class="collapse">
+  <li><a href="#solution-b1" id="toc-solution-b1" class="nav-link" data-scroll-target="#solution-b1"><span class="header-section-number">10.4.1</span> Solution B1</a></li>
+  <li><a href="#solution-b2" id="toc-solution-b2" class="nav-link" data-scroll-target="#solution-b2"><span class="header-section-number">10.4.2</span> Solution B2</a></li>
+  <li><a href="#solution-b3" id="toc-solution-b3" class="nav-link" data-scroll-target="#solution-b3"><span class="header-section-number">10.4.3</span> Solution B3</a></li>
+  </ul></li>
+  <li><a href="#solutions-to-part-c-classification-forward-pass-exercises" id="toc-solutions-to-part-c-classification-forward-pass-exercises" class="nav-link" data-scroll-target="#solutions-to-part-c-classification-forward-pass-exercises"><span class="header-section-number">10.5</span> Solutions to Part C: classification forward-pass exercises</a>
+  <ul class="collapse">
+  <li><a href="#solution-c1" id="toc-solution-c1" class="nav-link" data-scroll-target="#solution-c1"><span class="header-section-number">10.5.1</span> Solution C1</a></li>
+  <li><a href="#solution-c2" id="toc-solution-c2" class="nav-link" data-scroll-target="#solution-c2"><span class="header-section-number">10.5.2</span> Solution C2</a></li>
+  <li><a href="#solution-c3" id="toc-solution-c3" class="nav-link" data-scroll-target="#solution-c3"><span class="header-section-number">10.5.3</span> Solution C3</a></li>
+  </ul></li>
+  <li><a href="#solutions-to-part-d-regression-backpropagation-exercises" id="toc-solutions-to-part-d-regression-backpropagation-exercises" class="nav-link" data-scroll-target="#solutions-to-part-d-regression-backpropagation-exercises"><span class="header-section-number">10.6</span> Solutions to Part D: regression backpropagation exercises</a>
+  <ul class="collapse">
+  <li><a href="#solution-d1" id="toc-solution-d1" class="nav-link" data-scroll-target="#solution-d1"><span class="header-section-number">10.6.1</span> Solution D1</a></li>
+  <li><a href="#solution-d2" id="toc-solution-d2" class="nav-link" data-scroll-target="#solution-d2"><span class="header-section-number">10.6.2</span> Solution D2</a></li>
+  </ul></li>
+  <li><a href="#solutions-to-part-e-classification-backpropagation-exercises" id="toc-solutions-to-part-e-classification-backpropagation-exercises" class="nav-link" data-scroll-target="#solutions-to-part-e-classification-backpropagation-exercises"><span class="header-section-number">10.7</span> Solutions to Part E: classification backpropagation exercises</a>
+  <ul class="collapse">
+  <li><a href="#solution-e1" id="toc-solution-e1" class="nav-link" data-scroll-target="#solution-e1"><span class="header-section-number">10.7.1</span> Solution E1</a></li>
+  <li><a href="#solution-e2" id="toc-solution-e2" class="nav-link" data-scroll-target="#solution-e2"><span class="header-section-number">10.7.2</span> Solution E2</a></li>
+  </ul></li>
+  <li><a href="#final-note" id="toc-final-note" class="nav-link" data-scroll-target="#final-note"><span class="header-section-number">10.8</span> Final note</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Solutions to Practice Exercises</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+<div>
+  <div class="keywords">
+    <div class="block-title">Keywords</div>
+    <p>neural networks, backpropagation, regression, classification, sigmoid, gradient descent, machine learning, educational book</p>
+  </div>
+</div>
+
+</header>
+
+
+<section id="why-this-chapter-exists" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="why-this-chapter-exists"><span class="header-section-number">10.1</span> Why this chapter exists</h2>
+<p>This chapter provides fully worked solutions to the exercises in the Practice Exercises chapter.</p>
+<p>Work through each question yourself before reading the solution.</p>
+</section>
+<section id="how-to-use-this-chapter" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="how-to-use-this-chapter"><span class="header-section-number">10.2</span> How to use this chapter</h2>
+<p>For each solution:</p>
+<ol type="1">
+<li>identify the source question,</li>
+<li>restate the given values,</li>
+<li>write the formula before substitution,</li>
+<li>show every intermediate step,</li>
+<li>state the final answer,</li>
+<li>explain briefly what the result means.</li>
+</ol>
+</section>
+<section id="solutions-to-part-a-concept-and-symbol-checks" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="solutions-to-part-a-concept-and-symbol-checks"><span class="header-section-number">10.3</span> Solutions to Part A: concept and symbol checks</h2>
+<section id="solution-a1" class="level3" data-number="10.3.1">
+<h3 data-number="10.3.1" class="anchored" data-anchor-id="solution-a1"><span class="header-section-number">10.3.1</span> Solution A1</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise A1: identify the symbols</code></p>
+<p>The exercise asks you to define each symbol in your own words.</p>
+<p>A good solution is not just a one-word label. It should state what the symbol means and what role it plays in the model.</p>
+<p><strong>1. Symbol: <span class="math inline">\(x\)</span></strong></p>
+<p><strong>Definition:</strong> <span class="math inline">\(x\)</span> denotes an input variable.</p>
+<p><strong>Meaning in plain language:</strong> It is a number fed into the model.</p>
+<p><strong>Example:</strong> In a two-input neuron, we may write the inputs as <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span>.</p>
+<p><strong>2. Symbol: <span class="math inline">\(w\)</span></strong></p>
+<p><strong>Definition:</strong> <span class="math inline">\(w\)</span> denotes a weight parameter.</p>
+<p><strong>Meaning in plain language:</strong> It tells the model how strongly an input affects the score.</p>
+<p><strong>Example:</strong> In the expression <span class="math inline">\(w_1 x_1 + w_2 x_2\)</span>, the weights are <span class="math inline">\(w_1\)</span> and <span class="math inline">\(w_2\)</span>.</p>
+<p><strong>3. Symbol: <span class="math inline">\(b\)</span></strong></p>
+<p><strong>Definition:</strong> <span class="math inline">\(b\)</span> denotes the bias parameter.</p>
+<p><strong>Meaning in plain language:</strong> It is a shift term added to the weighted sum.</p>
+<p><strong>Example:</strong> In</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>the term <span class="math inline">\(b\)</span> shifts the value of <span class="math inline">\(z\)</span> up or down.</p>
+<p><strong>4. Symbol: <span class="math inline">\(z\)</span></strong></p>
+<p><strong>Definition:</strong> <span class="math inline">\(z\)</span> denotes the pre-activation value, or linear score.</p>
+<p><strong>Meaning in plain language:</strong> It is the weighted sum before the activation function is applied.</p>
+<p><strong>Example:</strong></p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p><strong>5. Symbol: <span class="math inline">\(\hat{y}\)</span></strong></p>
+<p><strong>Definition:</strong> <span class="math inline">\(\hat{y}\)</span> denotes the model prediction.</p>
+<p><strong>Meaning in plain language:</strong> It is the output produced by the model.</p>
+<p><strong>Example in regression:</strong></p>
+<p><span class="math display">\[
+\hat{y} = z
+\]</span></p>
+<p><strong>Example in classification:</strong></p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z)
+\]</span></p>
+<p><strong>6. Symbol: <span class="math inline">\(y\)</span></strong></p>
+<p><strong>Definition:</strong> <span class="math inline">\(y\)</span> denotes the true target value.</p>
+<p><strong>Meaning in plain language:</strong> It is the correct answer from the data.</p>
+<p><strong>Example:</strong> In regression, <span class="math inline">\(y\)</span> may be a value such as 5.7. In binary classification, <span class="math inline">\(y\)</span> may be 0 or 1.</p>
+<p><strong>7. Symbol: <span class="math inline">\(L\)</span></strong></p>
+<p><strong>Definition:</strong> <span class="math inline">\(L\)</span> denotes the loss.</p>
+<p><strong>Meaning in plain language:</strong> It is a number that measures how wrong the model currently is.</p>
+<p><strong>Example in regression:</strong></p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p><strong>Example in classification:</strong></p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p><strong>8. Symbol: <span class="math inline">\(\eta\)</span></strong></p>
+<p><strong>Definition:</strong> <span class="math inline">\(\eta\)</span> denotes the learning rate.</p>
+<p><strong>Meaning in plain language:</strong> It is the step size used when updating parameters.</p>
+<p><strong>Example:</strong></p>
+<p><span class="math display">\[
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+\]</span></p>
+<p><strong><em>Final answer summary</em></strong></p>
+<p>A concise correct answer is:</p>
+<ul>
+<li><span class="math inline">\(x\)</span>: input variable</li>
+<li><span class="math inline">\(w\)</span>: weight parameter</li>
+<li><span class="math inline">\(b\)</span>: bias parameter</li>
+<li><span class="math inline">\(z\)</span>: pre-activation value or linear score</li>
+<li><span class="math inline">\(\hat{y}\)</span>: model prediction</li>
+<li><span class="math inline">\(y\)</span>: true target value</li>
+<li><span class="math inline">\(L\)</span>: loss</li>
+<li><span class="math inline">\(\eta\)</span>: learning rate</li>
+</ul>
+<p><strong><em>Interpretation</em></strong></p>
+<p>These symbols are the core language of the book. If you know what each one means, the formulas in later chapters become much easier to read and understand.</p>
+<hr>
+</section>
+<section id="solution-a2" class="level3" data-number="10.3.2">
+<h3 data-number="10.3.2" class="anchored" data-anchor-id="solution-a2"><span class="header-section-number">10.3.2</span> Solution A2</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise A2: explain the difference</code></p>
+<p>This exercise asks you to distinguish between pairs of ideas that learners often confuse.</p>
+<p>A strong answer should not just say that they are “different.” It should explain what each object is and what role it plays.</p>
+<p><strong>1. Difference between <span class="math inline">\(z\)</span> and <span class="math inline">\(\hat{y}\)</span></strong></p>
+<p><strong><span class="math inline">\(z\)</span>:</strong> The pre-activation value, or linear score.</p>
+<p><strong><span class="math inline">\(\hat{y}\)</span>:</strong> The model prediction.</p>
+<p><strong>Key idea:</strong> <span class="math inline">\(z\)</span> is the value before the activation function is applied, while <span class="math inline">\(\hat{y}\)</span> is the value after the model has produced its output.</p>
+<p><strong>Example in regression:</strong></p>
+<p>With identity activation,</p>
+<p><span class="math display">\[
+\hat{y} = z
+\]</span></p>
+<p>so the two are the same.</p>
+<p><strong>Example in classification:</strong></p>
+<p>With sigmoid activation,</p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z)
+\]</span></p>
+<p>so <span class="math inline">\(\hat{y}\)</span> is a transformed version of <span class="math inline">\(z\)</span>.</p>
+<p><strong>Conclusion:</strong> <span class="math inline">\(z\)</span> is the score before activation; <span class="math inline">\(\hat{y}\)</span> is the final output used as the prediction.</p>
+<p><strong>2. Difference between error and loss</strong></p>
+<p><strong>Error:</strong> A raw difference between the true target and the prediction.</p>
+<p>A common example is:</p>
+<p><span class="math display">\[
+y - \hat{y}
+\]</span></p>
+<p><strong>Loss:</strong> A formal function that converts prediction mismatch into a quantity that the model tries to minimize.</p>
+<p><strong>Example in regression:</strong></p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p><strong>Key idea:</strong> Error is a direct mismatch. Loss is a function built from that mismatch.</p>
+<p><strong>Conclusion:</strong> Error is the raw difference; loss is the quantity used for optimization.</p>
+<p><strong>3. Difference between regression output and classification output</strong></p>
+<p><strong>Regression output:</strong> A numeric prediction that can, in principle, take any real value.</p>
+<p><strong>Examples:</strong> house price, temperature, sales, exam score.</p>
+<p>In a simple one-neuron regression model:</p>
+<p><span class="math display">\[
+\hat{y} = z
+\]</span></p>
+<p><strong>Classification output:</strong> A probability-like score, usually between 0 and 1 in binary classification.</p>
+<p>In a simple one-neuron classification model:</p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z)
+\]</span></p>
+<p><strong>Key idea:</strong> Regression predicts a numeric quantity, while binary classification predicts how strongly the model leans toward one class.</p>
+<p><strong>Conclusion:</strong> Regression output is an unrestricted numeric prediction; classification output is a probability-like score used to decide a class.</p>
+<p><strong>4. Difference between weight and bias</strong></p>
+<p><strong>Weight:</strong> A parameter attached to an input.</p>
+<p>It controls how strongly that input affects the score.</p>
+<p><strong>Bias:</strong> A separate parameter added after the weighted inputs are combined.</p>
+<p>It shifts the score upward or downward.</p>
+<p><strong>Example:</strong></p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Here:</p>
+<ul>
+<li><span class="math inline">\(w_1\)</span> and <span class="math inline">\(w_2\)</span> are weights,</li>
+<li><span class="math inline">\(b\)</span> is the bias.</li>
+</ul>
+<p><strong>Key idea:</strong> A weight scales an input contribution, while the bias shifts the whole expression.</p>
+<p><strong>Conclusion:</strong> Weights control input influence; the bias provides an offset.</p>
+<p><strong><em>Final answer summary</em></strong></p>
+<p>A concise correct answer is:</p>
+<ul>
+<li><span class="math inline">\(z\)</span> is the value before activation; <span class="math inline">\(\hat{y}\)</span> is the final prediction.</li>
+<li>Error is a raw mismatch such as <span class="math inline">\(y - \hat{y}\)</span>; loss is a function of that mismatch.</li>
+<li>Regression output is a numeric prediction; classification output is a probability-like score.</li>
+<li>A weight multiplies an input; a bias shifts the total score.</li>
+</ul>
+<p><strong><em>Interpretation</em></strong></p>
+<p>These distinctions matter because many later mistakes in neural networks come from mixing up objects that play different roles in the computation.</p>
+<hr>
+</section>
+<section id="solution-a3" class="level3" data-number="10.3.3">
+<h3 data-number="10.3.3" class="anchored" data-anchor-id="solution-a3"><span class="header-section-number">10.3.3</span> Solution A3</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise A3: activation choice</code></p>
+<p>This exercise asks you to choose the more appropriate activation function in each situation and explain why.</p>
+<p>In this book, the key rule is:</p>
+<ul>
+<li>use <strong>identity activation</strong> for simple regression when the output should be a numeric value,</li>
+<li>use <strong>sigmoid activation</strong> for binary classification when the output should be a probability-like value between 0 and 1.</li>
+</ul>
+<p><strong>1. Predicting house price</strong></p>
+<p>The more appropriate activation is:</p>
+<p><strong>Identity activation</strong></p>
+<p><span class="math display">\[
+f(z) = z
+\]</span></p>
+<p><strong>Why?</strong></p>
+<p>House price is a numeric target.</p>
+<p>In regression, we want the model output to behave like a numerical value rather than a class probability.</p>
+<p>A house price is not restricted to the interval <span class="math inline">\((0,1)\)</span>, so sigmoid would be inappropriate here.</p>
+<p><strong>Conclusion:</strong> Use identity activation because house price is a regression problem.</p>
+<p><strong>2. Predicting whether an email is spam</strong></p>
+<p>The more appropriate activation is:</p>
+<p><strong>Sigmoid activation</strong></p>
+<p><span class="math display">\[
+\sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p><strong>Why?</strong></p>
+<p>This is a binary classification problem.</p>
+<p>The possible outcomes are something like:</p>
+<ul>
+<li>spam,</li>
+<li>not spam.</li>
+</ul>
+<p>Sigmoid is appropriate because it maps the score into a value between 0 and 1, which can be interpreted as a probability-like output.</p>
+<p><strong>Conclusion:</strong> Use sigmoid activation because spam detection is a binary classification problem.</p>
+<p><strong>3. Predicting annual sales</strong></p>
+<p>The more appropriate activation is:</p>
+<p><strong>Identity activation</strong></p>
+<p><span class="math display">\[
+f(z) = z
+\]</span></p>
+<p><strong>Why?</strong></p>
+<p>Annual sales is a numeric quantity.</p>
+<p>The goal is to predict an amount, not a class label.</p>
+<p>So this is a regression task, and the output should not be restricted to <span class="math inline">\((0,1)\)</span>.</p>
+<p><strong>Conclusion:</strong> Use identity activation because annual sales is a regression problem.</p>
+<p><strong>4. Predicting whether a customer clicks an ad</strong></p>
+<p>The more appropriate activation is:</p>
+<p><strong>Sigmoid activation</strong></p>
+<p><span class="math display">\[
+\sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p><strong>Why?</strong></p>
+<p>This is a binary classification problem.</p>
+<p>The outcomes are something like:</p>
+<ul>
+<li>click,</li>
+<li>no click.</li>
+</ul>
+<p>Sigmoid is appropriate because it produces a probability-like output between 0 and 1, which can then be thresholded into a class decision.</p>
+<p><strong>Conclusion:</strong> Use sigmoid activation because click prediction is a binary classification problem.</p>
+<p><strong><em>Final answer summary</em></strong></p>
+<p>A concise correct answer is:</p>
+<ol type="1">
+<li>predicting house price → identity activation</li>
+<li>predicting whether an email is spam → sigmoid activation</li>
+<li>predicting annual sales → identity activation</li>
+<li>predicting whether a customer clicks an ad → sigmoid activation</li>
+</ol>
+<p><strong><em>Interpretation</em></strong></p>
+<p>The activation function should match the kind of target you are predicting. Numeric targets suggest regression with identity activation, while two-class targets suggest binary classification with sigmoid activation.</p>
+<hr>
+</section>
+</section>
+<section id="solutions-to-part-b-regression-forward-pass-exercises" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="solutions-to-part-b-regression-forward-pass-exercises"><span class="header-section-number">10.4</span> Solutions to Part B: regression forward-pass exercises</h2>
+<section id="solution-b1" class="level3" data-number="10.4.1">
+<h3 data-number="10.4.1" class="anchored" data-anchor-id="solution-b1"><span class="header-section-number">10.4.1</span> Solution B1</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise B1</code></p>
+<p><strong>Given</strong></p>
+<p><span class="math display">\[
+x_1 = 1,\quad x_2 = 3,\quad y = 5
+\]</span></p>
+<p>and:</p>
+<p><span class="math display">\[
+w_1 = 1,\quad w_2 = 0.5,\quad b = 0
+\]</span></p>
+<p>In these regression exercises, we use identity activation, so the model is:</p>
+<p><span class="math display">\[
+\hat{y} = z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>The loss is squared error:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>The exercise asks for:</p>
+<ol type="1">
+<li>the prediction <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the error <span class="math inline">\(y - \hat{y}\)</span>,</li>
+<li>the loss <span class="math inline">\(L\)</span>.</li>
+</ol>
+<p><strong>Step 1: compute the prediction <span class="math inline">\(\hat{y}\)</span></strong></p>
+<p>Start with the model:</p>
+<p><span class="math display">\[
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\hat{y} = (1)(1) + (0.5)(3) + 0
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(1)(1) = 1
+\]</span></p>
+<p><span class="math display">\[
+(0.5)(3) = 1.5
+\]</span></p>
+<p>Now add them:</p>
+<p><span class="math display">\[
+\hat{y} = 1 + 1.5 + 0
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} = 2.5
+\]</span></p>
+<p>So the prediction is:</p>
+<p><span class="math display">\[
+\hat{y} = 2.5
+\]</span></p>
+<p><strong>Step 2: compute the error</strong></p>
+<p>Use:</p>
+<p><span class="math display">\[
+y - \hat{y}
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+y - \hat{y} = 5 - 2.5
+\]</span></p>
+<p><span class="math display">\[
+y - \hat{y} = 2.5
+\]</span></p>
+<p>So the error is:</p>
+<p><span class="math display">\[
+y - \hat{y} = 2.5
+\]</span></p>
+<p><strong>Step 3: compute the loss</strong></p>
+<p>Use the squared error loss:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>Substitute the error:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(2.5)^2
+\]</span></p>
+<p>Square the error:</p>
+<p><span class="math display">\[
+(2.5)^2 = 6.25
+\]</span></p>
+<p>Multiply by <span class="math inline">\(\frac{1}{2}\)</span>:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(6.25)
+\]</span></p>
+<p><span class="math display">\[
+L = 3.125
+\]</span></p>
+<p>So the loss is:</p>
+<p><span class="math display">\[
+L = 3.125
+\]</span></p>
+<p><strong><em>Final answers</em></strong></p>
+<ol type="1">
+<li><p>Prediction:</p>
+<p><span class="math display">\[
+\hat{y} = 2.5
+\]</span></p></li>
+<li><p>Error:</p>
+<p><span class="math display">\[
+y - \hat{y} = 2.5
+\]</span></p></li>
+<li><p>Loss:</p>
+<p><span class="math display">\[
+L = 3.125
+\]</span></p></li>
+</ol>
+<p><strong><em>Interpretation</em></strong></p>
+<p>The model predicts <span class="math inline">\(2.5\)</span> while the true target is <span class="math inline">\(5\)</span>, so the prediction is too low. That produces a positive error of <span class="math inline">\(2.5\)</span> and a squared error loss of <span class="math inline">\(3.125\)</span>.</p>
+<hr>
+</section>
+<section id="solution-b2" class="level3" data-number="10.4.2">
+<h3 data-number="10.4.2" class="anchored" data-anchor-id="solution-b2"><span class="header-section-number">10.4.2</span> Solution B2</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise B2</code></p>
+<p><strong>Given</strong></p>
+<p><span class="math display">\[
+x_1 = 2,\quad x_2 = 1,\quad y = 4
+\]</span></p>
+<p>and:</p>
+<p><span class="math display">\[
+w_1 = 0.5,\quad w_2 = 1.5,\quad b = -0.5
+\]</span></p>
+<p>In these regression exercises, we use identity activation, so the model is:</p>
+<p><span class="math display">\[
+\hat{y} = z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>The loss is squared error:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>The exercise asks for:</p>
+<ol type="1">
+<li>the prediction <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the error <span class="math inline">\(y - \hat{y}\)</span>,</li>
+<li>the loss <span class="math inline">\(L\)</span>.</li>
+</ol>
+<p><strong>Step 1: compute the prediction <span class="math inline">\(\hat{y}\)</span></strong></p>
+<p>Start with the model:</p>
+<p><span class="math display">\[
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\hat{y} = (0.5)(2) + (1.5)(1) + (-0.5)
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(0.5)(2) = 1.0
+\]</span></p>
+<p><span class="math display">\[
+(1.5)(1) = 1.5
+\]</span></p>
+<p>Now add them:</p>
+<p><span class="math display">\[
+\hat{y} = 1.0 + 1.5 - 0.5
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} = 2.0
+\]</span></p>
+<p>So the prediction is:</p>
+<p><span class="math display">\[
+\hat{y} = 2.0
+\]</span></p>
+<p><strong>Step 2: compute the error</strong></p>
+<p>Use:</p>
+<p><span class="math display">\[
+y - \hat{y}
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+y - \hat{y} = 4 - 2.0
+\]</span></p>
+<p><span class="math display">\[
+y - \hat{y} = 2.0
+\]</span></p>
+<p>So the error is:</p>
+<p><span class="math display">\[
+y - \hat{y} = 2.0
+\]</span></p>
+<p><strong>Step 3: compute the loss</strong></p>
+<p>Use the squared error loss:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>Substitute the error:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(2.0)^2
+\]</span></p>
+<p>Square the error:</p>
+<p><span class="math display">\[
+(2.0)^2 = 4.0
+\]</span></p>
+<p>Multiply by <span class="math inline">\(\frac{1}{2}\)</span>:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(4.0)
+\]</span></p>
+<p><span class="math display">\[
+L = 2.0
+\]</span></p>
+<p>So the loss is:</p>
+<p><span class="math display">\[
+L = 2.0
+\]</span></p>
+<p><strong><em>Final answers</em></strong></p>
+<ol type="1">
+<li><p>Prediction:</p>
+<p><span class="math display">\[
+\hat{y} = 2.0
+\]</span></p></li>
+<li><p>Error:</p>
+<p><span class="math display">\[
+y - \hat{y} = 2.0
+\]</span></p></li>
+<li><p>Loss:</p>
+<p><span class="math display">\[
+L = 2.0
+\]</span></p></li>
+</ol>
+<p><strong><em>Interpretation</em></strong></p>
+<p>The model predicts <span class="math inline">\(2.0\)</span> while the true target is <span class="math inline">\(4\)</span>, so the prediction is too low by <span class="math inline">\(2.0\)</span>. After squaring that error and multiplying by <span class="math inline">\(\frac{1}{2}\)</span>, the loss is <span class="math inline">\(2.0\)</span>.</p>
+<hr>
+</section>
+<section id="solution-b3" class="level3" data-number="10.4.3">
+<h3 data-number="10.4.3" class="anchored" data-anchor-id="solution-b3"><span class="header-section-number">10.4.3</span> Solution B3</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise B3</code></p>
+<p><strong>Given</strong></p>
+<p>The dataset is:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Example</th>
+<th style="text-align: right;"><span class="math inline">\(x_1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(x_2\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5</td>
+</tr>
+</tbody>
+</table>
+<p>The parameters are:</p>
+<p><span class="math display">\[
+w_1 = 1,\quad w_2 = 1,\quad b = 0
+\]</span></p>
+<p>In these regression exercises, we use identity activation, so the model is:</p>
+<p><span class="math display">\[
+\hat{y} = z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>The loss for one example is:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>The exercise asks for:</p>
+<ol type="1">
+<li>the prediction for each example,</li>
+<li>the loss for each example,</li>
+<li>the mean loss across the dataset.</li>
+</ol>
+<p><strong>Step 1: compute the prediction for each example</strong></p>
+<p><strong>Example 1</strong></p>
+<p>Given:</p>
+<p><span class="math display">\[
+x_1 = 1,\quad x_2 = 0,\quad y = 2
+\]</span></p>
+<p>Use the model:</p>
+<p><span class="math display">\[
+\hat{y}_1 = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\hat{y}_1 = (1)(1) + (1)(0) + 0
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(1)(1) = 1
+\]</span></p>
+<p><span class="math display">\[
+(1)(0) = 0
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y}_1 = 1 + 0 + 0 = 1
+\]</span></p>
+<p><strong>Example 2</strong></p>
+<p>Given:</p>
+<p><span class="math display">\[
+x_1 = 0,\quad x_2 = 2,\quad y = 3
+\]</span></p>
+<p>Use the model:</p>
+<p><span class="math display">\[
+\hat{y}_2 = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\hat{y}_2 = (1)(0) + (1)(2) + 0
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(1)(0) = 0
+\]</span></p>
+<p><span class="math display">\[
+(1)(2) = 2
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y}_2 = 0 + 2 + 0 = 2
+\]</span></p>
+<p><strong>Example 3</strong></p>
+<p>Given:</p>
+<p><span class="math display">\[
+x_1 = 2,\quad x_2 = 1,\quad y = 5
+\]</span></p>
+<p>Use the model:</p>
+<p><span class="math display">\[
+\hat{y}_3 = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\hat{y}_3 = (1)(2) + (1)(1) + 0
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(1)(2) = 2
+\]</span></p>
+<p><span class="math display">\[
+(1)(1) = 1
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y}_3 = 2 + 1 + 0 = 3
+\]</span></p>
+<p><strong>Step 2: compute the loss for each example</strong></p>
+<p>Use:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p><strong>Example 1 loss</strong></p>
+<p>For Example 1:</p>
+<p><span class="math display">\[
+y = 2,\quad \hat{y}_1 = 1
+\]</span></p>
+<p>Substitute into the loss formula:</p>
+<p><span class="math display">\[
+L_1 = \frac{1}{2}(2 - 1)^2
+\]</span></p>
+<p>Compute the error:</p>
+<p><span class="math display">\[
+2 - 1 = 1
+\]</span></p>
+<p>Square it:</p>
+<p><span class="math display">\[
+1^2 = 1
+\]</span></p>
+<p>Multiply by <span class="math inline">\(\frac{1}{2}\)</span>:</p>
+<p><span class="math display">\[
+L_1 = \frac{1}{2}(1) = 0.5
+\]</span></p>
+<p><strong>Example 2 loss</strong></p>
+<p>For Example 2:</p>
+<p><span class="math display">\[
+y = 3,\quad \hat{y}_2 = 2
+\]</span></p>
+<p>Substitute into the loss formula:</p>
+<p><span class="math display">\[
+L_2 = \frac{1}{2}(3 - 2)^2
+\]</span></p>
+<p>Compute the error:</p>
+<p><span class="math display">\[
+3 - 2 = 1
+\]</span></p>
+<p>Square it:</p>
+<p><span class="math display">\[
+1^2 = 1
+\]</span></p>
+<p>Multiply by <span class="math inline">\(\frac{1}{2}\)</span>:</p>
+<p><span class="math display">\[
+L_2 = \frac{1}{2}(1) = 0.5
+\]</span></p>
+<p><strong>Example 3 loss</strong></p>
+<p>For Example 3:</p>
+<p><span class="math display">\[
+y = 5,\quad \hat{y}_3 = 3
+\]</span></p>
+<p>Substitute into the loss formula:</p>
+<p><span class="math display">\[
+L_3 = \frac{1}{2}(5 - 3)^2
+\]</span></p>
+<p>Compute the error:</p>
+<p><span class="math display">\[
+5 - 3 = 2
+\]</span></p>
+<p>Square it:</p>
+<p><span class="math display">\[
+2^2 = 4
+\]</span></p>
+<p>Multiply by <span class="math inline">\(\frac{1}{2}\)</span>:</p>
+<p><span class="math display">\[
+L_3 = \frac{1}{2}(4) = 2
+\]</span></p>
+<p><strong>Step 3: compute the mean loss</strong></p>
+<p>The mean loss is:</p>
+<p><span class="math display">\[
+\text{Mean Loss} = \frac{L_1 + L_2 + L_3}{3}
+\]</span></p>
+<p>Substitute the loss values:</p>
+<p><span class="math display">\[
+\text{Mean Loss} = \frac{0.5 + 0.5 + 2}{3}
+\]</span></p>
+<p>Add the numerator:</p>
+<p><span class="math display">\[
+0.5 + 0.5 + 2 = 3
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\text{Mean Loss} = \frac{3}{3}
+\]</span></p>
+<p><span class="math display">\[
+\text{Mean Loss} = 1
+\]</span></p>
+<p><strong><em>Final answers</em></strong></p>
+<p><strong><em>Predictions</em></strong></p>
+<p><span class="math display">\[
+\hat{y}_1 = 1,\quad \hat{y}_2 = 2,\quad \hat{y}_3 = 3
+\]</span></p>
+<p><strong><em>Losses</em></strong></p>
+<p><span class="math display">\[
+L_1 = 0.5,\quad L_2 = 0.5,\quad L_3 = 2
+\]</span></p>
+<p><strong><em>Mean loss</em></strong></p>
+<p><span class="math display">\[
+\text{Mean Loss} = 1
+\]</span></p>
+<p><strong><em>Interpretation</em></strong></p>
+<p>With these parameter values, the model underpredicts all three targets. The first two examples have smaller errors, while the third example has the largest error and therefore contributes the largest loss.</p>
+<hr>
+</section>
+</section>
+<section id="solutions-to-part-c-classification-forward-pass-exercises" class="level2" data-number="10.5">
+<h2 data-number="10.5" class="anchored" data-anchor-id="solutions-to-part-c-classification-forward-pass-exercises"><span class="header-section-number">10.5</span> Solutions to Part C: classification forward-pass exercises</h2>
+<section id="solution-c1" class="level3" data-number="10.5.1">
+<h3 data-number="10.5.1" class="anchored" data-anchor-id="solution-c1"><span class="header-section-number">10.5.1</span> Solution C1</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise C1</code></p>
+<p><strong>Given</strong></p>
+<p><span class="math display">\[
+x_1 = 1,\quad x_2 = 0,\quad y = 1
+\]</span></p>
+<p>and:</p>
+<p><span class="math display">\[
+w_1 = 1,\quad w_2 = -1,\quad b = 0
+\]</span></p>
+<p>In these classification exercises, we use the model:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p>The predicted class uses threshold 0.5:</p>
+<ul>
+<li>predict class 1 if <span class="math inline">\(\hat{y} \ge 0.5\)</span>,</li>
+<li>predict class 0 if <span class="math inline">\(\hat{y} &lt; 0.5\)</span>.</li>
+</ul>
+<p>The loss is binary cross-entropy:</p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p>The exercise asks for:</p>
+<ol type="1">
+<li>the linear score <span class="math inline">\(z\)</span>,</li>
+<li>the prediction <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the predicted class,</li>
+<li>the loss.</li>
+</ol>
+<p><strong>Step 1: compute the linear score <span class="math inline">\(z\)</span></strong></p>
+<p>Start with:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+z = (1)(1) + (-1)(0) + 0
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(1)(1) = 1
+\]</span></p>
+<p><span class="math display">\[
+(-1)(0) = 0
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+z = 1 + 0 + 0 = 1
+\]</span></p>
+<p>Therefore:</p>
+<p><span class="math display">\[
+z = 1
+\]</span></p>
+<p><strong>Step 2: compute the prediction <span class="math inline">\(\hat{y}\)</span></strong></p>
+<p>Use the sigmoid formula:</p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p>Substitute <span class="math inline">\(z = 1\)</span>:</p>
+<p><span class="math display">\[
+\hat{y} = \frac{1}{1 + e^{-1}}
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+e^{-1} \approx 0.3679
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+\hat{y} \approx \frac{1}{1 + 0.3679}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} \approx \frac{1}{1.3679}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} \approx 0.7311
+\]</span></p>
+<p>So the prediction is:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.7311
+\]</span></p>
+<p><strong>Step 3: compute the predicted class</strong></p>
+<p>Use threshold 0.5.</p>
+<p>Since:</p>
+<p><span class="math display">\[
+0.7311 \ge 0.5
+\]</span></p>
+<p>the predicted class is:</p>
+<p><span class="math display">\[
+1
+\]</span></p>
+<p><strong>Step 4: compute the loss</strong></p>
+<p>Use binary cross-entropy:</p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p>Substitute <span class="math inline">\(y = 1\)</span>:</p>
+<p><span class="math display">\[
+L = -\log(\hat{y})
+\]</span></p>
+<p>Now substitute <span class="math inline">\(\hat{y} \approx 0.7311\)</span>:</p>
+<p><span class="math display">\[
+L \approx -\log(0.7311)
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+\log(0.7311) \approx -0.3133
+\]</span></p>
+<p>Therefore:</p>
+<p><span class="math display">\[
+L \approx 0.3133
+\]</span></p>
+<p>So the loss is:</p>
+<p><span class="math display">\[
+L \approx 0.3133
+\]</span></p>
+<p><strong><em>Final answers</em></strong></p>
+<ol type="1">
+<li><p>Linear score:</p>
+<p><span class="math display">\[
+z = 1
+\]</span></p></li>
+<li><p>Prediction:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.7311
+\]</span></p></li>
+<li><p>Predicted class:</p>
+<p><span class="math display">\[
+1
+\]</span></p></li>
+<li><p>Loss:</p>
+<p><span class="math display">\[
+L \approx 0.3133
+\]</span></p></li>
+</ol>
+<p><strong><em>Interpretation</em></strong></p>
+<p>The model produces a score of <span class="math inline">\(1\)</span>, which sigmoid turns into a probability-like output of about <span class="math inline">\(0.7311\)</span>. Since this is above <span class="math inline">\(0.5\)</span>, the model predicts class 1, which matches the true target.</p>
+<hr>
+</section>
+<section id="solution-c2" class="level3" data-number="10.5.2">
+<h3 data-number="10.5.2" class="anchored" data-anchor-id="solution-c2"><span class="header-section-number">10.5.2</span> Solution C2</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise C2</code></p>
+<p><strong>Given</strong></p>
+<p><span class="math display">\[
+x_1 = 0,\quad x_2 = 1,\quad y = 0
+\]</span></p>
+<p>and:</p>
+<p><span class="math display">\[
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+\]</span></p>
+<p>In these classification exercises, we use the model:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p>The predicted class uses threshold 0.5:</p>
+<ul>
+<li>predict class 1 if <span class="math inline">\(\hat{y} \ge 0.5\)</span>,</li>
+<li>predict class 0 if <span class="math inline">\(\hat{y} &lt; 0.5\)</span>.</li>
+</ul>
+<p>The loss is binary cross-entropy:</p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p>The exercise asks for:</p>
+<ol type="1">
+<li>the linear score <span class="math inline">\(z\)</span>,</li>
+<li>the prediction <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the predicted class,</li>
+<li>the loss.</li>
+</ol>
+<p><strong>Step 1: compute the linear score <span class="math inline">\(z\)</span></strong></p>
+<p>Start with:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+z = (2)(0) + (-1)(1) + (-0.5)
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(2)(0) = 0
+\]</span></p>
+<p><span class="math display">\[
+(-1)(1) = -1
+\]</span></p>
+<p>Now add them:</p>
+<p><span class="math display">\[
+z = 0 + (-1) + (-0.5)
+\]</span></p>
+<p><span class="math display">\[
+z = -1 - 0.5
+\]</span></p>
+<p><span class="math display">\[
+z = -1.5
+\]</span></p>
+<p>Therefore:</p>
+<p><span class="math display">\[
+z = -1.5
+\]</span></p>
+<p><strong>Step 2: compute the prediction <span class="math inline">\(\hat{y}\)</span></strong></p>
+<p>Use the sigmoid formula:</p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p>Substitute <span class="math inline">\(z = -1.5\)</span>:</p>
+<p><span class="math display">\[
+\hat{y} = \frac{1}{1 + e^{-(-1.5)}}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} = \frac{1}{1 + e^{1.5}}
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+e^{1.5} \approx 4.4817
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+\hat{y} \approx \frac{1}{1 + 4.4817}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} \approx \frac{1}{5.4817}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} \approx 0.1824
+\]</span></p>
+<p>So the prediction is:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.1824
+\]</span></p>
+<p><strong>Step 3: compute the predicted class</strong></p>
+<p>Use threshold 0.5.</p>
+<p>Since:</p>
+<p><span class="math display">\[
+0.1824 &lt; 0.5
+\]</span></p>
+<p>the predicted class is:</p>
+<p><span class="math display">\[
+0
+\]</span></p>
+<p><strong>Step 4: compute the loss</strong></p>
+<p>Use binary cross-entropy:</p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p>Substitute <span class="math inline">\(y = 0\)</span>:</p>
+<p><span class="math display">\[
+L = -\log(1-\hat{y})
+\]</span></p>
+<p>Now substitute <span class="math inline">\(\hat{y} \approx 0.1824\)</span>:</p>
+<p><span class="math display">\[
+L \approx -\log(1 - 0.1824)
+\]</span></p>
+<p><span class="math display">\[
+L \approx -\log(0.8176)
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+\log(0.8176) \approx -0.2014
+\]</span></p>
+<p>Therefore:</p>
+<p><span class="math display">\[
+L \approx 0.2014
+\]</span></p>
+<p>So the loss is:</p>
+<p><span class="math display">\[
+L \approx 0.2014
+\]</span></p>
+<p><strong><em>Final answers</em></strong></p>
+<ol type="1">
+<li><p>Linear score:</p>
+<p><span class="math display">\[
+z = -1.5
+\]</span></p></li>
+<li><p>Prediction:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.1824
+\]</span></p></li>
+<li><p>Predicted class:</p>
+<p><span class="math display">\[
+0
+\]</span></p></li>
+<li><p>Loss:</p>
+<p><span class="math display">\[
+L \approx 0.2014
+\]</span></p></li>
+</ol>
+<p><strong><em>Interpretation</em></strong></p>
+<p>The model produces a negative score, so sigmoid returns a value well below <span class="math inline">\(0.5\)</span>. That leads to predicted class 0, which matches the true target. Because the model gives fairly low probability to class 1, the loss is also reasonably small.</p>
+<hr>
+</section>
+<section id="solution-c3" class="level3" data-number="10.5.3">
+<h3 data-number="10.5.3" class="anchored" data-anchor-id="solution-c3"><span class="header-section-number">10.5.3</span> Solution C3</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise C3</code></p>
+<p><strong>Given</strong></p>
+<p>The dataset is:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Example</th>
+<th style="text-align: right;"><span class="math inline">\(x_1\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(x_2\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(y\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>The parameters are:</p>
+<p><span class="math display">\[
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+\]</span></p>
+<p>In these classification exercises, we use the model:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p>Use threshold 0.5 for the predicted class:</p>
+<ul>
+<li>predict class 1 if <span class="math inline">\(\hat{y} \ge 0.5\)</span>,</li>
+<li>predict class 0 if <span class="math inline">\(\hat{y} &lt; 0.5\)</span>.</li>
+</ul>
+<p>The exercise asks for all four examples:</p>
+<ol type="1">
+<li>the score <span class="math inline">\(z\)</span>,</li>
+<li>the prediction <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the predicted class,</li>
+</ol>
+<p>and then asks how many of the four examples are classified correctly.</p>
+<p><strong>Step 1: Example 1</strong></p>
+<p>Given:</p>
+<p><span class="math display">\[
+x_1 = 0,\quad x_2 = 0,\quad y = 0
+\]</span></p>
+<p>Compute the score:</p>
+<p><span class="math display">\[
+z_1 = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+z_1 = (2)(0) + (-1)(0) + (-0.5)
+\]</span></p>
+<p><span class="math display">\[
+z_1 = 0 + 0 - 0.5 = -0.5
+\]</span></p>
+<p>Now compute the prediction:</p>
+<p><span class="math display">\[
+\hat{y}_1 = \sigma(-0.5) = \frac{1}{1 + e^{0.5}}
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+e^{0.5} \approx 1.6487
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+\hat{y}_1 \approx \frac{1}{1 + 1.6487}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_1 \approx \frac{1}{2.6487}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_1 \approx 0.3775
+\]</span></p>
+<p>Now classify using threshold 0.5:</p>
+<p><span class="math display">\[
+0.3775 &lt; 0.5
+\]</span></p>
+<p>So the predicted class is:</p>
+<p><span class="math display">\[
+0
+\]</span></p>
+<p>Compare with the true target:</p>
+<p><span class="math display">\[
+\text{Predicted class} = 0,\quad y = 0
+\]</span></p>
+<p>So Example 1 is classified correctly.</p>
+<p><strong>Step 2: Example 2</strong></p>
+<p>Given:</p>
+<p><span class="math display">\[
+x_1 = 1,\quad x_2 = 0,\quad y = 1
+\]</span></p>
+<p>Compute the score:</p>
+<p><span class="math display">\[
+z_2 = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+z_2 = (2)(1) + (-1)(0) + (-0.5)
+\]</span></p>
+<p><span class="math display">\[
+z_2 = 2 + 0 - 0.5 = 1.5
+\]</span></p>
+<p>Now compute the prediction:</p>
+<p><span class="math display">\[
+\hat{y}_2 = \sigma(1.5) = \frac{1}{1 + e^{-1.5}}
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+e^{-1.5} \approx 0.2231
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+\hat{y}_2 \approx \frac{1}{1 + 0.2231}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_2 \approx \frac{1}{1.2231}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_2 \approx 0.8176
+\]</span></p>
+<p>Now classify using threshold 0.5:</p>
+<p><span class="math display">\[
+0.8176 \ge 0.5
+\]</span></p>
+<p>So the predicted class is:</p>
+<p><span class="math display">\[
+1
+\]</span></p>
+<p>Compare with the true target:</p>
+<p><span class="math display">\[
+\text{Predicted class} = 1,\quad y = 1
+\]</span></p>
+<p>So Example 2 is classified correctly.</p>
+<p><strong>Step 3: Example 3</strong></p>
+<p>Given:</p>
+<p><span class="math display">\[
+x_1 = 0,\quad x_2 = 1,\quad y = 0
+\]</span></p>
+<p>Compute the score:</p>
+<p><span class="math display">\[
+z_3 = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+z_3 = (2)(0) + (-1)(1) + (-0.5)
+\]</span></p>
+<p><span class="math display">\[
+z_3 = 0 - 1 - 0.5 = -1.5
+\]</span></p>
+<p>Now compute the prediction:</p>
+<p><span class="math display">\[
+\hat{y}_3 = \sigma(-1.5) = \frac{1}{1 + e^{1.5}}
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+e^{1.5} \approx 4.4817
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+\hat{y}_3 \approx \frac{1}{1 + 4.4817}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_3 \approx \frac{1}{5.4817}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_3 \approx 0.1824
+\]</span></p>
+<p>Now classify using threshold 0.5:</p>
+<p><span class="math display">\[
+0.1824 &lt; 0.5
+\]</span></p>
+<p>So the predicted class is:</p>
+<p><span class="math display">\[
+0
+\]</span></p>
+<p>Compare with the true target:</p>
+<p><span class="math display">\[
+\text{Predicted class} = 0,\quad y = 0
+\]</span></p>
+<p>So Example 3 is classified correctly.</p>
+<p><strong>Step 4: Example 4</strong></p>
+<p>Given:</p>
+<p><span class="math display">\[
+x_1 = 1,\quad x_2 = 1,\quad y = 1
+\]</span></p>
+<p>Compute the score:</p>
+<p><span class="math display">\[
+z_4 = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+z_4 = (2)(1) + (-1)(1) + (-0.5)
+\]</span></p>
+<p><span class="math display">\[
+z_4 = 2 - 1 - 0.5 = 0.5
+\]</span></p>
+<p>Now compute the prediction:</p>
+<p><span class="math display">\[
+\hat{y}_4 = \sigma(0.5) = \frac{1}{1 + e^{-0.5}}
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+e^{-0.5} \approx 0.6065
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+\hat{y}_4 \approx \frac{1}{1 + 0.6065}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_4 \approx \frac{1}{1.6065}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_4 \approx 0.6225
+\]</span></p>
+<p>Now classify using threshold 0.5:</p>
+<p><span class="math display">\[
+0.6225 \ge 0.5
+\]</span></p>
+<p>So the predicted class is:</p>
+<p><span class="math display">\[
+1
+\]</span></p>
+<p>Compare with the true target:</p>
+<p><span class="math display">\[
+\text{Predicted class} = 1,\quad y = 1
+\]</span></p>
+<p>So Example 4 is classified correctly.</p>
+<p><strong><em>Final answers</em></strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Example</th>
+<th style="text-align: right;"><span class="math inline">\(z\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(\hat{y}\)</span></th>
+<th style="text-align: right;">Predicted class</th>
+<th style="text-align: right;">True <span class="math inline">\(y\)</span></th>
+<th>Correct?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: right;">-0.5</td>
+<td style="text-align: right;">0.3775</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">1.5</td>
+<td style="text-align: right;">0.8176</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: right;">-1.5</td>
+<td style="text-align: right;">0.1824</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: right;">0.6225</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>So the number classified correctly is:</p>
+<p><span class="math display">\[
+4
+\]</span></p>
+<p>out of 4.</p>
+<p><strong><em>Interpretation</em></strong></p>
+<p>With these parameter values, the neuron separates the two classes correctly on all four examples in this small dataset. That does not prove the model is perfect in general, but it does show that it fits this toy dataset well.</p>
+<hr>
+</section>
+</section>
+<section id="solutions-to-part-d-regression-backpropagation-exercises" class="level2" data-number="10.6">
+<h2 data-number="10.6" class="anchored" data-anchor-id="solutions-to-part-d-regression-backpropagation-exercises"><span class="header-section-number">10.6</span> Solutions to Part D: regression backpropagation exercises</h2>
+<section id="solution-d1" class="level3" data-number="10.6.1">
+<h3 data-number="10.6.1" class="anchored" data-anchor-id="solution-d1"><span class="header-section-number">10.6.1</span> Solution D1</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise D1</code></p>
+<p><strong>Given</strong></p>
+<p><span class="math display">\[
+x_1 = 2,\quad x_2 = 1,\quad y = 5
+\]</span></p>
+<p>Initial parameters:</p>
+<p><span class="math display">\[
+w_1 = 0.5,\quad w_2 = 1.0,\quad b = 0
+\]</span></p>
+<p>Learning rate:</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+<p>The model is:</p>
+<p><span class="math display">\[
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>The loss is:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>The exercise asks for:</p>
+<ol type="1">
+<li>the prediction <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the loss <span class="math inline">\(L\)</span>,</li>
+<li><span class="math inline">\(\frac{\partial L}{\partial \hat{y}}\)</span>,</li>
+<li><span class="math inline">\(\frac{\partial L}{\partial w_1}\)</span>,</li>
+<li><span class="math inline">\(\frac{\partial L}{\partial w_2}\)</span>,</li>
+<li><span class="math inline">\(\frac{\partial L}{\partial b}\)</span>,</li>
+<li>the updated parameters,</li>
+<li>the new prediction,</li>
+<li>the new loss.</li>
+</ol>
+<p><strong>Step 1: compute the prediction <span class="math inline">\(\hat{y}\)</span></strong></p>
+<p>Start with the model:</p>
+<p><span class="math display">\[
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\hat{y} = (0.5)(2) + (1.0)(1) + 0
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(0.5)(2) = 1.0
+\]</span></p>
+<p><span class="math display">\[
+(1.0)(1) = 1.0
+\]</span></p>
+<p>Now add them:</p>
+<p><span class="math display">\[
+\hat{y} = 1.0 + 1.0 + 0 = 2.0
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y} = 2.0
+\]</span></p>
+<p><strong>Step 2: compute the loss <span class="math inline">\(L\)</span></strong></p>
+<p>Use:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>Substitute <span class="math inline">\(y = 5\)</span> and <span class="math inline">\(\hat{y} = 2.0\)</span>:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(5 - 2.0)^2
+\]</span></p>
+<p>Compute the error:</p>
+<p><span class="math display">\[
+5 - 2.0 = 3.0
+\]</span></p>
+<p>Square it:</p>
+<p><span class="math display">\[
+(3.0)^2 = 9.0
+\]</span></p>
+<p>Multiply by <span class="math inline">\(\frac{1}{2}\)</span>:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(9.0) = 4.5
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+L = 4.5
+\]</span></p>
+<p><strong>Step 3: compute <span class="math inline">\(\frac{\partial L}{\partial \hat{y}}\)</span></strong></p>
+<p>For squared error loss:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}} = \hat{y} - y
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}} = 2.0 - 5
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}} = -3.0
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}} = -3.0
+\]</span></p>
+<p><strong>Step 4: compute the derivatives of <span class="math inline">\(\hat{y}\)</span> with respect to the parameters</strong></p>
+<p>Because:</p>
+<p><span class="math display">\[
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>we have:</p>
+<p><span class="math display">\[
+\frac{\partial \hat{y}}{\partial w_1} = x_1,\quad
+\frac{\partial \hat{y}}{\partial w_2} = x_2,\quad
+\frac{\partial \hat{y}}{\partial b} = 1
+\]</span></p>
+<p>Substitute the input values:</p>
+<p><span class="math display">\[
+\frac{\partial \hat{y}}{\partial w_1} = 2
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial \hat{y}}{\partial w_2} = 1
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial \hat{y}}{\partial b} = 1
+\]</span></p>
+<p><strong>Step 5: compute the gradients</strong></p>
+<p>Use the chain rule.</p>
+<p><strong><em>Gradient for <span class="math inline">\(w_1\)</span></em></strong></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial w_1}
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = (-3.0)(2)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = -6.0
+\]</span></p>
+<p><strong><em>Gradient for <span class="math inline">\(w_2\)</span></em></strong></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial w_2}
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} = (-3.0)(1)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} = -3.0
+\]</span></p>
+<p><strong><em>Gradient for <span class="math inline">\(b\)</span></em></strong></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial b}
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b} = (-3.0)(1)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b} = -3.0
+\]</span></p>
+<p>So the gradients are:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = -6.0,\quad
+\frac{\partial L}{\partial w_2} = -3.0,\quad
+\frac{\partial L}{\partial b} = -3.0
+\]</span></p>
+<p><strong>Step 6: update the parameters</strong></p>
+<p>Use gradient descent:</p>
+<p><span class="math display">\[
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+\]</span></p>
+<p>with:</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(w_1\)</span></em></strong></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 0.5 - 0.1(-6.0)
+\]</span></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 0.5 + 0.6
+\]</span></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 1.1
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(w_2\)</span></em></strong></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = 1.0 - 0.1(-3.0)
+\]</span></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = 1.0 + 0.3
+\]</span></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = 1.3
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(b\)</span></em></strong></p>
+<p><span class="math display">\[
+b^{\text{new}} = 0 - 0.1(-3.0)
+\]</span></p>
+<p><span class="math display">\[
+b^{\text{new}} = 0 + 0.3
+\]</span></p>
+<p><span class="math display">\[
+b^{\text{new}} = 0.3
+\]</span></p>
+<p>So the updated parameters are:</p>
+<p><span class="math display">\[
+w_1 = 1.1,\quad w_2 = 1.3,\quad b = 0.3
+\]</span></p>
+<p><strong>Step 7: compute the new prediction</strong></p>
+<p>Use the updated parameters:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = (1.1)(2) + (1.3)(1) + 0.3
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(1.1)(2) = 2.2
+\]</span></p>
+<p><span class="math display">\[
+(1.3)(1) = 1.3
+\]</span></p>
+<p>Now add them:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = 2.2 + 1.3 + 0.3
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = 3.8
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = 3.8
+\]</span></p>
+<p><strong>Step 8: compute the new loss</strong></p>
+<p>Use:</p>
+<p><span class="math display">\[
+L_{\text{new}} = \frac{1}{2}(y - \hat{y}_{\text{new}})^2
+\]</span></p>
+<p>Substitute <span class="math inline">\(y = 5\)</span> and <span class="math inline">\(\hat{y}_{\text{new}} = 3.8\)</span>:</p>
+<p><span class="math display">\[
+L_{\text{new}} = \frac{1}{2}(5 - 3.8)^2
+\]</span></p>
+<p>Compute the new error:</p>
+<p><span class="math display">\[
+5 - 3.8 = 1.2
+\]</span></p>
+<p>Square it:</p>
+<p><span class="math display">\[
+(1.2)^2 = 1.44
+\]</span></p>
+<p>Multiply by <span class="math inline">\(\frac{1}{2}\)</span>:</p>
+<p><span class="math display">\[
+L_{\text{new}} = \frac{1}{2}(1.44)
+\]</span></p>
+<p><span class="math display">\[
+L_{\text{new}} = 0.72
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+L_{\text{new}} = 0.72
+\]</span></p>
+<p><strong><em>Final answers</em></strong></p>
+<ol type="1">
+<li><p>Initial prediction:</p>
+<p><span class="math display">\[
+\hat{y} = 2.0
+\]</span></p></li>
+<li><p>Initial loss:</p>
+<p><span class="math display">\[
+L = 4.5
+\]</span></p></li>
+<li><p>Derivative with respect to prediction:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}} = -3.0
+\]</span></p></li>
+<li><p>Gradients:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = -6.0,\quad
+\frac{\partial L}{\partial w_2} = -3.0,\quad
+\frac{\partial L}{\partial b} = -3.0
+\]</span></p></li>
+<li><p>Updated parameters:</p>
+<p><span class="math display">\[
+w_1 = 1.1,\quad w_2 = 1.3,\quad b = 0.3
+\]</span></p></li>
+<li><p>New prediction:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = 3.8
+\]</span></p></li>
+<li><p>New loss:</p>
+<p><span class="math display">\[
+L_{\text{new}} = 0.72
+\]</span></p></li>
+</ol>
+<p><strong><em>Interpretation</em></strong></p>
+<p>The initial prediction is too low, so the gradients are negative. After the update, the parameters increase, the prediction moves closer to the target, and the loss drops from <span class="math inline">\(4.5\)</span> to <span class="math inline">\(0.72\)</span>.</p>
+<hr>
+</section>
+<section id="solution-d2" class="level3" data-number="10.6.2">
+<h3 data-number="10.6.2" class="anchored" data-anchor-id="solution-d2"><span class="header-section-number">10.6.2</span> Solution D2</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise D2</code></p>
+<p>This exercise repeats Exercise D1, but changes the learning rate from</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+<p>to</p>
+<p><span class="math display">\[
+\eta = 0.5
+\]</span></p>
+<p>So we use the same data and the same initial parameters:</p>
+<p><span class="math display">\[
+x_1 = 2,\quad x_2 = 1,\quad y = 5
+\]</span></p>
+<p><span class="math display">\[
+w_1 = 0.5,\quad w_2 = 1.0,\quad b = 0
+\]</span></p>
+<p>The model is:</p>
+<p><span class="math display">\[
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>The loss is:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(y - \hat{y})^2
+\]</span></p>
+<p>The exercise asks:</p>
+<ol type="1">
+<li>did the loss still decrease?</li>
+<li>did it decrease more or less than before?</li>
+<li>what does this suggest about learning-rate choice?</li>
+</ol>
+<p>Because this repeats Exercise D1 with only the learning rate changed, we can reuse the same initial forward pass and gradients.</p>
+<p><strong>Step 1: compute the initial prediction and loss</strong></p>
+<p>Start with the model:</p>
+<p><span class="math display">\[
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\hat{y} = (0.5)(2) + (1.0)(1) + 0
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} = 1.0 + 1.0 = 2.0
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y} = 2.0
+\]</span></p>
+<p>Now compute the initial loss:</p>
+<p><span class="math display">\[
+L = \frac{1}{2}(5 - 2.0)^2
+\]</span></p>
+<p><span class="math display">\[
+L = \frac{1}{2}(3.0)^2
+\]</span></p>
+<p><span class="math display">\[
+L = \frac{1}{2}(9.0) = 4.5
+\]</span></p>
+<p>So the initial loss is:</p>
+<p><span class="math display">\[
+L = 4.5
+\]</span></p>
+<p><strong>Step 2: reuse the gradients from Exercise D1</strong></p>
+<p>For squared error loss:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}} = \hat{y} - y
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}} = 2.0 - 5 = -3.0
+\]</span></p>
+<p>Because:</p>
+<p><span class="math display">\[
+\frac{\partial \hat{y}}{\partial w_1} = x_1 = 2,\quad
+\frac{\partial \hat{y}}{\partial w_2} = x_2 = 1,\quad
+\frac{\partial \hat{y}}{\partial b} = 1
+\]</span></p>
+<p>the gradients are:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = (-3.0)(2) = -6.0
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} = (-3.0)(1) = -3.0
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b} = (-3.0)(1) = -3.0
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = -6.0,\quad
+\frac{\partial L}{\partial w_2} = -3.0,\quad
+\frac{\partial L}{\partial b} = -3.0
+\]</span></p>
+<p><strong>Step 3: update the parameters using the larger learning rate</strong></p>
+<p>Now use:</p>
+<p><span class="math display">\[
+\eta = 0.5
+\]</span></p>
+<p>and the update rule:</p>
+<p><span class="math display">\[
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(w_1\)</span></em></strong></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 0.5 - 0.5(-6.0)
+\]</span></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 0.5 + 3.0
+\]</span></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 3.5
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(w_2\)</span></em></strong></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = 1.0 - 0.5(-3.0)
+\]</span></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = 1.0 + 1.5
+\]</span></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = 2.5
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(b\)</span></em></strong></p>
+<p><span class="math display">\[
+b^{\text{new}} = 0 - 0.5(-3.0)
+\]</span></p>
+<p><span class="math display">\[
+b^{\text{new}} = 0 + 1.5
+\]</span></p>
+<p><span class="math display">\[
+b^{\text{new}} = 1.5
+\]</span></p>
+<p>So the updated parameters are:</p>
+<p><span class="math display">\[
+w_1 = 3.5,\quad w_2 = 2.5,\quad b = 1.5
+\]</span></p>
+<p><strong>Step 4: compute the new prediction</strong></p>
+<p>Use the updated parameters:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = (3.5)(2) + (2.5)(1) + 1.5
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(3.5)(2) = 7.0
+\]</span></p>
+<p><span class="math display">\[
+(2.5)(1) = 2.5
+\]</span></p>
+<p>Now add them:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = 7.0 + 2.5 + 1.5
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = 11.0
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = 11.0
+\]</span></p>
+<p><strong>Step 5: compute the new loss</strong></p>
+<p>Use:</p>
+<p><span class="math display">\[
+L_{\text{new}} = \frac{1}{2}(y - \hat{y}_{\text{new}})^2
+\]</span></p>
+<p>Substitute <span class="math inline">\(y = 5\)</span> and <span class="math inline">\(\hat{y}_{\text{new}} = 11.0\)</span>:</p>
+<p><span class="math display">\[
+L_{\text{new}} = \frac{1}{2}(5 - 11.0)^2
+\]</span></p>
+<p>Compute the new error:</p>
+<p><span class="math display">\[
+5 - 11.0 = -6.0
+\]</span></p>
+<p>Square it:</p>
+<p><span class="math display">\[
+(-6.0)^2 = 36.0
+\]</span></p>
+<p>Multiply by <span class="math inline">\(\frac{1}{2}\)</span>:</p>
+<p><span class="math display">\[
+L_{\text{new}} = \frac{1}{2}(36.0)
+\]</span></p>
+<p><span class="math display">\[
+L_{\text{new}} = 18.0
+\]</span></p>
+<p>So the new loss is:</p>
+<p><span class="math display">\[
+L_{\text{new}} = 18.0
+\]</span></p>
+<p><strong><em>Answer the questions</em></strong></p>
+<p><strong>1. Did the loss still decrease?</strong></p>
+<p>No.</p>
+<p>The loss changed from:</p>
+<p><span class="math display">\[
+4.5 \to 18.0
+\]</span></p>
+<p>So the loss increased, not decreased.</p>
+<p><strong>2. Did it decrease more or less than before?</strong></p>
+<p>It did not decrease at all.</p>
+<p>In Exercise D1, with learning rate</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+<p>the loss changed from:</p>
+<p><span class="math display">\[
+4.5 \to 0.72
+\]</span></p>
+<p>That was a large improvement.</p>
+<p>In this exercise, with learning rate</p>
+<p><span class="math display">\[
+\eta = 0.5
+\]</span></p>
+<p>the update was too large, and the model overshot the target badly.</p>
+<p><strong>3. What does this suggest about learning-rate choice?</strong></p>
+<p>It suggests that the learning rate must be chosen carefully.</p>
+<p>A larger learning rate is not always better.</p>
+<p>If the learning rate is too large, the update step can overshoot and make the loss worse instead of better.</p>
+<p><strong><em>Final answers</em></strong></p>
+<ul>
+<li><p>Initial loss:</p>
+<p><span class="math display">\[
+L = 4.5
+\]</span></p></li>
+<li><p>Updated parameters with <span class="math inline">\(\eta = 0.5\)</span>:</p>
+<p><span class="math display">\[
+w_1 = 3.5,\quad w_2 = 2.5,\quad b = 1.5
+\]</span></p></li>
+<li><p>New prediction:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = 11.0
+\]</span></p></li>
+<li><p>New loss:</p>
+<p><span class="math display">\[
+L_{\text{new}} = 18.0
+\]</span></p></li>
+<li><p>Conclusion:</p>
+<p>The loss did not decrease. It increased sharply, which shows that this learning rate is too large for this update step.</p></li>
+</ul>
+<p><strong><em>Interpretation</em></strong></p>
+<p>This exercise shows why learning rate matters. A step that is too small can make learning slow, but a step that is too large can overshoot and make the model worse.</p>
+<hr>
+</section>
+</section>
+<section id="solutions-to-part-e-classification-backpropagation-exercises" class="level2" data-number="10.7">
+<h2 data-number="10.7" class="anchored" data-anchor-id="solutions-to-part-e-classification-backpropagation-exercises"><span class="header-section-number">10.7</span> Solutions to Part E: classification backpropagation exercises</h2>
+<section id="solution-e1" class="level3" data-number="10.7.1">
+<h3 data-number="10.7.1" class="anchored" data-anchor-id="solution-e1"><span class="header-section-number">10.7.1</span> Solution E1</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise E1</code></p>
+<p><strong>Given</strong></p>
+<p><span class="math display">\[
+x_1 = 1,\quad x_2 = 1,\quad y = 1
+\]</span></p>
+<p>Initial parameters:</p>
+<p><span class="math display">\[
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+\]</span></p>
+<p>Learning rate:</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+<p>The model is:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p>The loss is binary cross-entropy:</p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p>For sigmoid output with binary cross-entropy, we use the simplification:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial z} = \hat{y} - y
+\]</span></p>
+<p>The exercise asks for:</p>
+<ol type="1">
+<li>the score <span class="math inline">\(z\)</span>,</li>
+<li>the prediction <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the loss,</li>
+<li><span class="math inline">\(\hat{y} - y\)</span>,</li>
+<li>the gradients for <span class="math inline">\(w_1\)</span>, <span class="math inline">\(w_2\)</span>, and <span class="math inline">\(b\)</span>,</li>
+<li>the updated parameters,</li>
+<li>the new prediction,</li>
+<li>the new loss.</li>
+</ol>
+<p><strong>Step 1: compute the score <span class="math inline">\(z\)</span></strong></p>
+<p>Start with:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+z = (2)(1) + (-1)(1) + (-0.5)
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(2)(1) = 2
+\]</span></p>
+<p><span class="math display">\[
+(-1)(1) = -1
+\]</span></p>
+<p>Now add them:</p>
+<p><span class="math display">\[
+z = 2 + (-1) + (-0.5)
+\]</span></p>
+<p><span class="math display">\[
+z = 1 - 0.5
+\]</span></p>
+<p><span class="math display">\[
+z = 0.5
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+z = 0.5
+\]</span></p>
+<p><strong>Step 2: compute the prediction <span class="math inline">\(\hat{y}\)</span></strong></p>
+<p>Use the sigmoid formula:</p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p>Substitute <span class="math inline">\(z = 0.5\)</span>:</p>
+<p><span class="math display">\[
+\hat{y} = \frac{1}{1 + e^{-0.5}}
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+e^{-0.5} \approx 0.6065
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+\hat{y} \approx \frac{1}{1 + 0.6065}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} \approx \frac{1}{1.6065}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} \approx 0.6225
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.6225
+\]</span></p>
+<p><strong>Step 3: compute the loss</strong></p>
+<p>Because the target is:</p>
+<p><span class="math display">\[
+y = 1
+\]</span></p>
+<p>the binary cross-entropy loss simplifies to:</p>
+<p><span class="math display">\[
+L = -\log(\hat{y})
+\]</span></p>
+<p>Substitute <span class="math inline">\(\hat{y} \approx 0.6225\)</span>:</p>
+<p><span class="math display">\[
+L \approx -\log(0.6225)
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+\log(0.6225) \approx -0.4741
+\]</span></p>
+<p>Therefore:</p>
+<p><span class="math display">\[
+L \approx 0.4741
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+L \approx 0.4741
+\]</span></p>
+<p><strong>Step 4: compute <span class="math inline">\(\hat{y} - y\)</span></strong></p>
+<p>Use:</p>
+<p><span class="math display">\[
+\hat{y} - y
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\hat{y} - y \approx 0.6225 - 1
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} - y \approx -0.3775
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y} - y \approx -0.3775
+\]</span></p>
+<p><strong>Step 5: compute the gradients</strong></p>
+<p>For sigmoid output with binary cross-entropy:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial z} = \hat{y} - y
+\]</span></p>
+<p>and because</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>the gradients are:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = (\hat{y} - y)x_1
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} = (\hat{y} - y)x_2
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b} = \hat{y} - y
+\]</span></p>
+<p>Substitute <span class="math inline">\(x_1 = 1\)</span>, <span class="math inline">\(x_2 = 1\)</span>, and <span class="math inline">\(\hat{y} - y \approx -0.3775\)</span>.</p>
+<p><strong><em>Gradient for <span class="math inline">\(w_1\)</span></em></strong></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} \approx (-0.3775)(1)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} \approx -0.3775
+\]</span></p>
+<p><strong><em>Gradient for <span class="math inline">\(w_2\)</span></em></strong></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} \approx (-0.3775)(1)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} \approx -0.3775
+\]</span></p>
+<p><strong><em>Gradient for <span class="math inline">\(b\)</span></em></strong></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b} \approx -0.3775
+\]</span></p>
+<p>So the gradients are:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} \approx -0.3775,\quad
+\frac{\partial L}{\partial w_2} \approx -0.3775,\quad
+\frac{\partial L}{\partial b} \approx -0.3775
+\]</span></p>
+<p><strong>Step 6: update the parameters</strong></p>
+<p>Use gradient descent:</p>
+<p><span class="math display">\[
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+\]</span></p>
+<p>with:</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(w_1\)</span></em></strong></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 2 - 0.1(-0.3775)
+\]</span></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 2 + 0.03775
+\]</span></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 2.03775
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(w_2\)</span></em></strong></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = -1 - 0.1(-0.3775)
+\]</span></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = -1 + 0.03775
+\]</span></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = -0.96225
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(b\)</span></em></strong></p>
+<p><span class="math display">\[
+b^{\text{new}} = -0.5 - 0.1(-0.3775)
+\]</span></p>
+<p><span class="math display">\[
+b^{\text{new}} = -0.5 + 0.03775
+\]</span></p>
+<p><span class="math display">\[
+b^{\text{new}} = -0.46225
+\]</span></p>
+<p>So the updated parameters are:</p>
+<p><span class="math display">\[
+w_1 \approx 2.03775,\quad w_2 \approx -0.96225,\quad b \approx -0.46225
+\]</span></p>
+<p><strong>Step 7: compute the new prediction</strong></p>
+<p>First compute the new score:</p>
+<p><span class="math display">\[
+z_{\text{new}} = w_1^{\text{new}}x_1 + w_2^{\text{new}}x_2 + b^{\text{new}}
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+z_{\text{new}} = (2.03775)(1) + (-0.96225)(1) + (-0.46225)
+\]</span></p>
+<p>Compute step by step:</p>
+<p><span class="math display">\[
+z_{\text{new}} = 2.03775 - 0.96225 - 0.46225
+\]</span></p>
+<p><span class="math display">\[
+z_{\text{new}} = 1.0755 - 0.46225
+\]</span></p>
+<p><span class="math display">\[
+z_{\text{new}} = 0.61325
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+z_{\text{new}} = 0.61325
+\]</span></p>
+<p>Now compute the new prediction:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = \sigma(z_{\text{new}}) = \frac{1}{1 + e^{-0.61325}}
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+e^{-0.61325} \approx 0.5416
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} \approx \frac{1}{1 + 0.5416}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} \approx \frac{1}{1.5416}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} \approx 0.6487
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} \approx 0.6487
+\]</span></p>
+<p><strong>Step 8: compute the new loss</strong></p>
+<p>Because <span class="math inline">\(y = 1\)</span>, the new loss is:</p>
+<p><span class="math display">\[
+L_{\text{new}} = -\log(\hat{y}_{\text{new}})
+\]</span></p>
+<p>Substitute <span class="math inline">\(\hat{y}_{\text{new}} \approx 0.6487\)</span>:</p>
+<p><span class="math display">\[
+L_{\text{new}} \approx -\log(0.6487)
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+\log(0.6487) \approx -0.4328
+\]</span></p>
+<p>Therefore:</p>
+<p><span class="math display">\[
+L_{\text{new}} \approx 0.4328
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+L_{\text{new}} \approx 0.4328
+\]</span></p>
+<p><strong><em>Final answers</em></strong></p>
+<ol type="1">
+<li><p>Score:</p>
+<p><span class="math display">\[
+z = 0.5
+\]</span></p></li>
+<li><p>Prediction:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.6225
+\]</span></p></li>
+<li><p>Loss:</p>
+<p><span class="math display">\[
+L \approx 0.4741
+\]</span></p></li>
+<li><p>Simplified error term:</p>
+<p><span class="math display">\[
+\hat{y} - y \approx -0.3775
+\]</span></p></li>
+<li><p>Gradients:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} \approx -0.3775,\quad
+\frac{\partial L}{\partial w_2} \approx -0.3775,\quad
+\frac{\partial L}{\partial b} \approx -0.3775
+\]</span></p></li>
+<li><p>Updated parameters:</p>
+<p><span class="math display">\[
+w_1 \approx 2.03775,\quad
+w_2 \approx -0.96225,\quad
+b \approx -0.46225
+\]</span></p></li>
+<li><p>New prediction:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} \approx 0.6487
+\]</span></p></li>
+<li><p>New loss:</p>
+<p><span class="math display">\[
+L_{\text{new}} \approx 0.4328
+\]</span></p></li>
+</ol>
+<p><strong><em>Interpretation</em></strong></p>
+<p>Because the target is 1, the model should push its prediction upward. The negative value of <span class="math inline">\(\hat{y} - y\)</span> causes the update to increase the score <span class="math inline">\(z\)</span>, which increases the sigmoid output and lowers the loss.</p>
+<hr>
+</section>
+<section id="solution-e2" class="level3" data-number="10.7.2">
+<h3 data-number="10.7.2" class="anchored" data-anchor-id="solution-e2"><span class="header-section-number">10.7.2</span> Solution E2</h3>
+<p><strong>Question source:</strong> <code>practice-exercises.qmd</code>, section <code>Exercise E2</code></p>
+<p><strong>Given</strong></p>
+<p><span class="math display">\[
+x_1 = 0,\quad x_2 = 1,\quad y = 0
+\]</span></p>
+<p>Initial parameters:</p>
+<p><span class="math display">\[
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+\]</span></p>
+<p>Learning rate:</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+<p>The model is:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p>The loss is binary cross-entropy:</p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p>For sigmoid output with binary cross-entropy, we use the simplification:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial z} = \hat{y} - y
+\]</span></p>
+<p>The exercise asks for:</p>
+<ol type="1">
+<li>the score <span class="math inline">\(z\)</span>,</li>
+<li>the prediction <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the loss,</li>
+<li><span class="math inline">\(\hat{y} - y\)</span>,</li>
+<li>the gradients for <span class="math inline">\(w_1\)</span>, <span class="math inline">\(w_2\)</span>, and <span class="math inline">\(b\)</span>,</li>
+<li>the updated parameters,</li>
+</ol>
+<p>and then asks you to explain why a parameter gradient is zero only when the corresponding derivative factor makes it zero, such as when an input is zero in this one-neuron setup.</p>
+<p><strong>Step 1: compute the score <span class="math inline">\(z\)</span></strong></p>
+<p>Start with:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+z = (2)(0) + (-1)(1) + (-0.5)
+\]</span></p>
+<p>Compute each term:</p>
+<p><span class="math display">\[
+(2)(0) = 0
+\]</span></p>
+<p><span class="math display">\[
+(-1)(1) = -1
+\]</span></p>
+<p>Now add them:</p>
+<p><span class="math display">\[
+z = 0 + (-1) + (-0.5)
+\]</span></p>
+<p><span class="math display">\[
+z = -1 - 0.5
+\]</span></p>
+<p><span class="math display">\[
+z = -1.5
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+z = -1.5
+\]</span></p>
+<p><strong>Step 2: compute the prediction <span class="math inline">\(\hat{y}\)</span></strong></p>
+<p>Use the sigmoid formula:</p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p>Substitute <span class="math inline">\(z = -1.5\)</span>:</p>
+<p><span class="math display">\[
+\hat{y} = \frac{1}{1 + e^{-(-1.5)}}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} = \frac{1}{1 + e^{1.5}}
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+e^{1.5} \approx 4.4817
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+\hat{y} \approx \frac{1}{1 + 4.4817}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} \approx \frac{1}{5.4817}
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} \approx 0.1824
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.1824
+\]</span></p>
+<p><strong>Step 3: compute the loss</strong></p>
+<p>Because the target is:</p>
+<p><span class="math display">\[
+y = 0
+\]</span></p>
+<p>the binary cross-entropy loss simplifies to:</p>
+<p><span class="math display">\[
+L = -\log(1-\hat{y})
+\]</span></p>
+<p>Substitute <span class="math inline">\(\hat{y} \approx 0.1824\)</span>:</p>
+<p><span class="math display">\[
+L \approx -\log(1 - 0.1824)
+\]</span></p>
+<p><span class="math display">\[
+L \approx -\log(0.8176)
+\]</span></p>
+<p>Use the approximation:</p>
+<p><span class="math display">\[
+\log(0.8176) \approx -0.2014
+\]</span></p>
+<p>Therefore:</p>
+<p><span class="math display">\[
+L \approx 0.2014
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+L \approx 0.2014
+\]</span></p>
+<p><strong>Step 4: compute <span class="math inline">\(\hat{y} - y\)</span></strong></p>
+<p>Use:</p>
+<p><span class="math display">\[
+\hat{y} - y
+\]</span></p>
+<p>Substitute the values:</p>
+<p><span class="math display">\[
+\hat{y} - y \approx 0.1824 - 0
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} - y \approx 0.1824
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y} - y \approx 0.1824
+\]</span></p>
+<p><strong>Step 5: compute the gradients</strong></p>
+<p>For sigmoid output with binary cross-entropy:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial z} = \hat{y} - y
+\]</span></p>
+<p>and because</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>the gradients are:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = (\hat{y} - y)x_1
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} = (\hat{y} - y)x_2
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b} = \hat{y} - y
+\]</span></p>
+<p>Substitute <span class="math inline">\(x_1 = 0\)</span>, <span class="math inline">\(x_2 = 1\)</span>, and <span class="math inline">\(\hat{y} - y \approx 0.1824\)</span>.</p>
+<p><strong><em>Gradient for <span class="math inline">\(w_1\)</span></em></strong></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} \approx (0.1824)(0)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = 0
+\]</span></p>
+<p><strong><em>Gradient for <span class="math inline">\(w_2\)</span></em></strong></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} \approx (0.1824)(1)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} \approx 0.1824
+\]</span></p>
+<p><strong><em>Gradient for <span class="math inline">\(b\)</span></em></strong></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b} \approx 0.1824
+\]</span></p>
+<p>So the gradients are:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = 0,\quad
+\frac{\partial L}{\partial w_2} \approx 0.1824,\quad
+\frac{\partial L}{\partial b} \approx 0.1824
+\]</span></p>
+<p><strong>Step 6: update the parameters</strong></p>
+<p>Use gradient descent:</p>
+<p><span class="math display">\[
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+\]</span></p>
+<p>with:</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(w_1\)</span></em></strong></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 2 - 0.1(0)
+\]</span></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 2
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(w_2\)</span></em></strong></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = -1 - 0.1(0.1824)
+\]</span></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = -1 - 0.01824
+\]</span></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = -1.01824
+\]</span></p>
+<p><strong><em>Update <span class="math inline">\(b\)</span></em></strong></p>
+<p><span class="math display">\[
+b^{\text{new}} = -0.5 - 0.1(0.1824)
+\]</span></p>
+<p><span class="math display">\[
+b^{\text{new}} = -0.5 - 0.01824
+\]</span></p>
+<p><span class="math display">\[
+b^{\text{new}} = -0.51824
+\]</span></p>
+<p>So the updated parameters are:</p>
+<p><span class="math display">\[
+w_1 = 2,\quad w_2 \approx -1.01824,\quad b \approx -0.51824
+\]</span></p>
+<p><strong><em>Explanation of the zero-input effect</em></strong></p>
+<p>In this one-neuron setup,</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = (\hat{y} - y)x_1
+\]</span></p>
+<p>For this example:</p>
+<p><span class="math display">\[
+x_1 = 0
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = (\hat{y} - y)(0) = 0
+\]</span></p>
+<p>That is why the gradient for <span class="math inline">\(w_1\)</span> is zero.</p>
+<p>This does <strong>not</strong> mean gradients are zero in general.</p>
+<p>It means that, for this specific example, the input attached to <span class="math inline">\(w_1\)</span> contributes nothing to the score, so this example provides no update signal for <span class="math inline">\(w_1\)</span>.</p>
+<p>By contrast:</p>
+<ul>
+<li><span class="math inline">\(x_2 = 1\)</span>, so <span class="math inline">\(w_2\)</span> does receive a gradient,</li>
+<li>the bias derivative is always multiplied by 1, so <span class="math inline">\(b\)</span> also receives a gradient unless <span class="math inline">\(\hat{y} - y = 0\)</span>.</li>
+</ul>
+<p><strong><em>Final answers</em></strong></p>
+<ol type="1">
+<li><p>Score:</p>
+<p><span class="math display">\[
+z = -1.5
+\]</span></p></li>
+<li><p>Prediction:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.1824
+\]</span></p></li>
+<li><p>Loss:</p>
+<p><span class="math display">\[
+L \approx 0.2014
+\]</span></p></li>
+<li><p>Simplified error term:</p>
+<p><span class="math display">\[
+\hat{y} - y \approx 0.1824
+\]</span></p></li>
+<li><p>Gradients:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = 0,\quad
+\frac{\partial L}{\partial w_2} \approx 0.1824,\quad
+\frac{\partial L}{\partial b} \approx 0.1824
+\]</span></p></li>
+<li><p>Updated parameters:</p>
+<p><span class="math display">\[
+w_1 = 2,\quad
+w_2 \approx -1.01824,\quad
+b \approx -0.51824
+\]</span></p></li>
+</ol>
+<p><strong><em>Interpretation</em></strong></p>
+<p>Because the true target is 0, the model should push its prediction downward. Since <span class="math inline">\(x_1 = 0\)</span>, the weight <span class="math inline">\(w_1\)</span> does not affect the score for this example and therefore receives zero gradient. The parameters <span class="math inline">\(w_2\)</span> and <span class="math inline">\(b\)</span> do affect the score, so they are updated.</p>
+<hr>
+</section>
+</section>
+<section id="final-note" class="level2" data-number="10.8">
+<h2 data-number="10.8" class="anchored" data-anchor-id="final-note"><span class="header-section-number">10.8</span> Final note</h2>
+<p>Use these solutions to check your reasoning, not to replace it.</p>
+<p>The goal of this book is not only to get the final number correct, but to understand why each step works.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/learn\.walsoftcomputers\.com\/educational_platform\/neural-networks-from-first-principles\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./solutions-suggested-exercises.html" class="pagination-link" aria-label="Solutions to Suggested Exercises">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Solutions to Suggested Exercises</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./glossary.html" class="pagination-link" aria-label="Glossary">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Glossary</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,308 @@
+---
+title: "Basics of Neural Networks"
+---
+
+## Why this chapter exists
+
+Before we train a neural network, we must know what its basic parts are.
+
+A neural network is not magic. It is a sequence of numerical operations, and each operation has a purpose. If we understand the parts clearly, then forward propagation and backpropagation become easier to follow.
+
+This chapter defines the basic objects and symbols that will be used throughout the book.
+
+## The central idea
+
+A neural network takes input values, combines them with adjustable parameters, and produces an output.
+
+During training, those adjustable parameters are changed so that predictions become better.
+
+At the smallest scale, the core object is a **neuron**.
+
+## What is a neuron?
+
+A neuron is a computational unit that:
+
+1. receives one or more inputs,
+2. multiplies each input by a weight,
+3. adds the results together,
+4. adds a bias,
+5. optionally applies an activation function.
+
+This produces either a prediction or an intermediate transformed value.
+
+## Symbols and meanings
+
+We will use the following symbols throughout the book.
+
+| Symbol | Meaning | Plain-language meaning |
+|---|---|---|
+| $x$ | input | information given to the model |
+| $w$ | weight | how strongly an input matters |
+| $b$ | bias | a shift term added before activation |
+| $z$ | pre-activation | weighted sum before activation |
+| $f(\cdot)$ | activation function | transformation applied to $z$ |
+| $a$ | activation output | the output after activation |
+| $\hat{y}$ | prediction | the model's estimated output |
+| $y$ | true target | the correct answer |
+| $L$ | loss | a number measuring prediction error |
+| $\eta$ | learning rate | step size in gradient descent |
+
+## A single-neuron formula
+
+For a neuron with two inputs, we can write:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Then the neuron output is:
+
+$$
+a = f(z)
+$$
+
+In some settings, we also write the prediction as:
+
+$$
+\hat{y} = a
+$$
+
+So the neuron first computes a weighted sum and then transforms it.
+
+## Why weights exist
+
+Weights tell the network how important each input is.
+
+If a weight is large and positive, then increasing that input tends to increase the neuron's pre-activation value.
+
+If a weight is negative, then increasing that input tends to decrease the neuron's pre-activation value.
+
+So a weight is not just a number. It expresses directional influence.
+
+## Why bias exists
+
+The bias allows the neuron to shift its decision rule or prediction rule.
+
+Without the bias, the weighted sum would always be forced through the origin in a simple linear setting. The bias adds flexibility.
+
+You can think of the bias as a starting offset.
+
+## What an activation function does
+
+An activation function takes the pre-activation value $z$ and transforms it.
+
+Why do this?
+
+Because we often want the neuron output to have a particular shape or interpretation.
+
+Examples:
+
+- in regression, we may use the identity activation:
+
+  $$
+  f(z) = z
+  $$
+
+- in binary classification, we often use the sigmoid activation:
+
+  $$
+  f(z) = \frac{1}{1 + e^{-z}}
+  $$
+
+The activation function helps determine the kind of prediction the network makes.
+
+These ideas are standard in introductory neural-network treatments [@goodfellow2016deep; @bishop2006pattern; @haykin2009neural].
+
+## Identity activation
+
+The identity activation does nothing to the input:
+
+$$
+f(z) = z
+$$
+
+So the output becomes:
+
+$$
+a = z
+$$
+
+This is common in regression when we want the prediction to be any real number.
+
+## Sigmoid activation
+
+The sigmoid function is:
+
+$$
+f(z) = \frac{1}{1 + e^{-z}}
+$$
+
+This maps any real number into the interval $(0, 1)$.
+
+That makes it useful for binary classification, where we want the output to behave like a probability.
+
+
+## Forward propagation: the big idea
+
+Forward propagation means computing the prediction from the current inputs and current parameter values.
+
+In the simplest case, the process is:
+
+1. start with the inputs,
+2. multiply each input by its weight,
+3. add the products,
+4. add the bias,
+5. apply the activation function,
+6. obtain the prediction.
+
+So forward propagation is the act of moving from input to output.
+
+## A tiny numeric example
+
+Suppose:
+
+$$
+x_1 = 2, \quad x_2 = 3, \quad w_1 = 0.5, \quad w_2 = -1, \quad b = 0.25
+$$
+
+Then:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the numbers:
+
+$$
+z = (0.5)(2) + (-1)(3) + 0.25
+$$
+
+Compute each part:
+
+$$
+(0.5)(2) = 1
+$$
+
+$$
+(-1)(3) = -3
+$$
+
+So:
+
+$$
+z = 1 - 3 + 0.25 = -1.75
+$$
+
+If we use the identity activation, then:
+
+$$
+a = z = -1.75
+$$
+
+If we use sigmoid, then:
+
+$$
+a = \frac{1}{1 + e^{-(-1.75)}} = \frac{1}{1 + e^{1.75}}
+$$
+
+So the same pre-activation value can produce different final outputs depending on the activation function.
+
+## Why loss is needed
+
+A neural network must know how wrong its prediction is.
+
+That is the job of the loss function.
+
+The loss function compares:
+
+- the prediction $\hat{y}$,
+- the true answer $y$.
+
+If the prediction is close to the true answer, the loss is small.  
+If the prediction is far away, the loss is larger.
+
+Training tries to reduce loss.
+
+## Why gradients are needed
+
+If loss tells us how bad the prediction is, the gradient tells us how to change the weights and bias to improve it.
+
+A gradient answers questions such as:
+
+- If I increase $w_1$ a little, what happens to the loss?
+- If I decrease $b$ a little, does the loss improve?
+
+This is why gradients are central to learning.
+
+## The training loop in words
+
+A simple training cycle is:
+
+1. compute the prediction,
+2. compute the loss,
+3. compute gradients,
+4. update parameters,
+5. repeat.
+
+This cycle is the heart of neural-network learning.
+
+## Common mistakes
+
+### Mistake 1: confusing $z$ and $a$
+
+- $z$ is the value before activation.
+- $a$ is the value after activation.
+
+These are not always the same.
+
+They are the same only when the activation is the identity function.
+
+### Mistake 2: forgetting the bias
+
+A learner may compute:
+
+$$
+z = w_1 x_1 + w_2 x_2
+$$
+
+and forget the $+ b$ term.
+
+That changes the result.
+
+### Mistake 3: using sigmoid for unrestricted regression output
+
+Sigmoid forces outputs into $(0, 1)$, so it is usually not suitable when regression targets can be any real number.
+
+### Mistake 4: thinking the neuron “understands”
+
+A neuron does not understand. It computes.
+
+The apparent intelligence comes from repeated parameter adjustment across many examples.
+
+## Chapter checklist
+
+By the end of this chapter, you should be able to answer:
+
+1. What is a weight?
+2. What is a bias?
+3. What is the difference between $z$ and $a$?
+4. What does an activation function do?
+5. Why is sigmoid useful for binary classification?
+6. Why do we need a loss function?
+7. Why do we need gradients?
+
+## Suggested by-hand exercise
+
+Using:
+
+$$
+x_1 = 1,\quad x_2 = 4,\quad w_1 = 2,\quad w_2 = -0.5,\quad b = 1
+$$
+
+compute:
+
+1. the pre-activation value $z$,
+2. the output using identity activation,
+3. the output using sigmoid activation.
+
+Write every intermediate step by hand before checking with code.

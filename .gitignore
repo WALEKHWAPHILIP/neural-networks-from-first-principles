@@ -1,0 +1,6 @@
+.quarto/
+.Rproj.user/
+*.log
+*.tmp
+Thumbs.db
+desktop.ini

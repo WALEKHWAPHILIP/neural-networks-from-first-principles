@@ -1,0 +1,3488 @@
+---
+title: "Solutions to Practice Exercises"
+---
+
+## Why this chapter exists
+
+This chapter provides fully worked solutions to the exercises in the Practice Exercises chapter.
+
+Work through each question yourself before reading the solution.
+
+## How to use this chapter
+
+For each solution:
+
+1. identify the source question,
+2. restate the given values,
+3. write the formula before substitution,
+4. show every intermediate step,
+5. state the final answer,
+6. explain briefly what the result means.
+
+
+
+## Solutions to Part A: concept and symbol checks
+
+### Solution A1
+**Question source:** `practice-exercises.qmd`, section `Exercise A1: identify the symbols`
+
+The exercise asks you to define each symbol in your own words.
+
+A good solution is not just a one-word label. It should state what the symbol means and what role it plays in the model.
+
+**1. Symbol: $x$**
+
+**Definition:** $x$ denotes an input variable.
+
+**Meaning in plain language:** It is a number fed into the model.
+
+**Example:** In a two-input neuron, we may write the inputs as $x_1$ and $x_2$.
+
+**2. Symbol: $w$**
+
+**Definition:** $w$ denotes a weight parameter.
+
+**Meaning in plain language:** It tells the model how strongly an input affects the score.
+
+**Example:** In the expression $w_1 x_1 + w_2 x_2$, the weights are $w_1$ and $w_2$.
+
+**3. Symbol: $b$**
+
+**Definition:** $b$ denotes the bias parameter.
+
+**Meaning in plain language:** It is a shift term added to the weighted sum.
+
+**Example:** In
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+the term $b$ shifts the value of $z$ up or down.
+
+**4. Symbol: $z$**
+
+**Definition:** $z$ denotes the pre-activation value, or linear score.
+
+**Meaning in plain language:** It is the weighted sum before the activation function is applied.
+
+**Example:**
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+**5. Symbol: $\hat{y}$**
+
+**Definition:** $\hat{y}$ denotes the model prediction.
+
+**Meaning in plain language:** It is the output produced by the model.
+
+**Example in regression:**
+
+$$
+\hat{y} = z
+$$
+
+**Example in classification:**
+
+$$
+\hat{y} = \sigma(z)
+$$
+
+**6. Symbol: $y$**
+
+**Definition:** $y$ denotes the true target value.
+
+**Meaning in plain language:** It is the correct answer from the data.
+
+**Example:** In regression, $y$ may be a value such as 5.7. In binary classification, $y$ may be 0 or 1.
+
+**7. Symbol: $L$**
+
+**Definition:** $L$ denotes the loss.
+
+**Meaning in plain language:** It is a number that measures how wrong the model currently is.
+
+**Example in regression:**
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+**Example in classification:**
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+**8. Symbol: $\eta$**
+
+**Definition:** $\eta$ denotes the learning rate.
+
+**Meaning in plain language:** It is the step size used when updating parameters.
+
+**Example:**
+
+$$
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+$$
+
+***Final answer summary***
+
+A concise correct answer is:
+
+- $x$: input variable
+- $w$: weight parameter
+- $b$: bias parameter
+- $z$: pre-activation value or linear score
+- $\hat{y}$: model prediction
+- $y$: true target value
+- $L$: loss
+- $\eta$: learning rate
+
+***Interpretation***
+
+These symbols are the core language of the book. If you know what each one means, the formulas in later chapters become much easier to read and understand.
+
+---
+
+### Solution A2
+
+**Question source:** `practice-exercises.qmd`, section `Exercise A2: explain the difference`
+
+This exercise asks you to distinguish between pairs of ideas that learners often confuse.
+
+A strong answer should not just say that they are “different.” It should explain what each object is and what role it plays.
+
+**1. Difference between $z$ and $\hat{y}$**
+
+**$z$:** The pre-activation value, or linear score.
+
+**$\hat{y}$:** The model prediction.
+
+**Key idea:** $z$ is the value before the activation function is applied, while $\hat{y}$ is the value after the model has produced its output.
+
+**Example in regression:**
+
+With identity activation,
+
+$$
+\hat{y} = z
+$$
+
+so the two are the same.
+
+**Example in classification:**
+
+With sigmoid activation,
+
+$$
+\hat{y} = \sigma(z)
+$$
+
+so $\hat{y}$ is a transformed version of $z$.
+
+**Conclusion:** $z$ is the score before activation; $\hat{y}$ is the final output used as the prediction.
+
+**2. Difference between error and loss**
+
+**Error:** A raw difference between the true target and the prediction.
+
+A common example is:
+
+$$
+y - \hat{y}
+$$
+
+**Loss:** A formal function that converts prediction mismatch into a quantity that the model tries to minimize.
+
+**Example in regression:**
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+**Key idea:** Error is a direct mismatch. Loss is a function built from that mismatch.
+
+**Conclusion:** Error is the raw difference; loss is the quantity used for optimization.
+
+**3. Difference between regression output and classification output**
+
+**Regression output:** A numeric prediction that can, in principle, take any real value.
+
+**Examples:** house price, temperature, sales, exam score.
+
+In a simple one-neuron regression model:
+
+$$
+\hat{y} = z
+$$
+
+**Classification output:** A probability-like score, usually between 0 and 1 in binary classification.
+
+In a simple one-neuron classification model:
+
+$$
+\hat{y} = \sigma(z)
+$$
+
+**Key idea:** Regression predicts a numeric quantity, while binary classification predicts how strongly the model leans toward one class.
+
+**Conclusion:** Regression output is an unrestricted numeric prediction; classification output is a probability-like score used to decide a class.
+
+**4. Difference between weight and bias**
+
+**Weight:** A parameter attached to an input.
+
+It controls how strongly that input affects the score.
+
+**Bias:** A separate parameter added after the weighted inputs are combined.
+
+It shifts the score upward or downward.
+
+**Example:**
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Here:
+
+- $w_1$ and $w_2$ are weights,
+- $b$ is the bias.
+
+**Key idea:** A weight scales an input contribution, while the bias shifts the whole expression.
+
+**Conclusion:** Weights control input influence; the bias provides an offset.
+
+***Final answer summary***
+
+A concise correct answer is:
+
+- $z$ is the value before activation; $\hat{y}$ is the final prediction.
+- Error is a raw mismatch such as $y - \hat{y}$; loss is a function of that mismatch.
+- Regression output is a numeric prediction; classification output is a probability-like score.
+- A weight multiplies an input; a bias shifts the total score.
+
+***Interpretation***
+
+These distinctions matter because many later mistakes in neural networks come from mixing up objects that play different roles in the computation.
+
+---
+
+### Solution A3
+
+**Question source:** `practice-exercises.qmd`, section `Exercise A3: activation choice`
+
+This exercise asks you to choose the more appropriate activation function in each situation and explain why.
+
+In this book, the key rule is:
+
+- use **identity activation** for simple regression when the output should be a numeric value,
+- use **sigmoid activation** for binary classification when the output should be a probability-like value between 0 and 1.
+
+**1. Predicting house price**
+
+The more appropriate activation is:
+
+**Identity activation**
+
+$$
+f(z) = z
+$$
+
+**Why?**
+
+House price is a numeric target.
+
+In regression, we want the model output to behave like a numerical value rather than a class probability.
+
+A house price is not restricted to the interval $(0,1)$, so sigmoid would be inappropriate here.
+
+**Conclusion:** Use identity activation because house price is a regression problem.
+
+**2. Predicting whether an email is spam**
+
+The more appropriate activation is:
+
+**Sigmoid activation**
+
+$$
+\sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+**Why?**
+
+This is a binary classification problem.
+
+The possible outcomes are something like:
+
+- spam,
+- not spam.
+
+Sigmoid is appropriate because it maps the score into a value between 0 and 1, which can be interpreted as a probability-like output.
+
+**Conclusion:** Use sigmoid activation because spam detection is a binary classification problem.
+
+**3. Predicting annual sales**
+
+The more appropriate activation is:
+
+**Identity activation**
+
+$$
+f(z) = z
+$$
+
+**Why?**
+
+Annual sales is a numeric quantity.
+
+The goal is to predict an amount, not a class label.
+
+So this is a regression task, and the output should not be restricted to $(0,1)$.
+
+**Conclusion:** Use identity activation because annual sales is a regression problem.
+
+**4. Predicting whether a customer clicks an ad**
+
+The more appropriate activation is:
+
+**Sigmoid activation**
+
+$$
+\sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+**Why?**
+
+This is a binary classification problem.
+
+The outcomes are something like:
+
+- click,
+- no click.
+
+Sigmoid is appropriate because it produces a probability-like output between 0 and 1, which can then be thresholded into a class decision.
+
+**Conclusion:** Use sigmoid activation because click prediction is a binary classification problem.
+
+***Final answer summary***
+
+A concise correct answer is:
+
+1. predicting house price → identity activation
+2. predicting whether an email is spam → sigmoid activation
+3. predicting annual sales → identity activation
+4. predicting whether a customer clicks an ad → sigmoid activation
+
+***Interpretation***
+
+The activation function should match the kind of target you are predicting. Numeric targets suggest regression with identity activation, while two-class targets suggest binary classification with sigmoid activation.
+
+---
+
+## Solutions to Part B: regression forward-pass exercises
+
+### Solution B1
+
+**Question source:** `practice-exercises.qmd`, section `Exercise B1`
+
+**Given**
+
+$$
+x_1 = 1,\quad x_2 = 3,\quad y = 5
+$$
+
+and:
+
+$$
+w_1 = 1,\quad w_2 = 0.5,\quad b = 0
+$$
+
+In these regression exercises, we use identity activation, so the model is:
+
+$$
+\hat{y} = z = w_1 x_1 + w_2 x_2 + b
+$$
+
+The loss is squared error:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+The exercise asks for:
+
+1. the prediction $\hat{y}$,
+2. the error $y - \hat{y}$,
+3. the loss $L$.
+
+**Step 1: compute the prediction $\hat{y}$**
+
+Start with the model:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+\hat{y} = (1)(1) + (0.5)(3) + 0
+$$
+
+Compute each term:
+
+$$
+(1)(1) = 1
+$$
+
+$$
+(0.5)(3) = 1.5
+$$
+
+Now add them:
+
+$$
+\hat{y} = 1 + 1.5 + 0
+$$
+
+$$
+\hat{y} = 2.5
+$$
+
+So the prediction is:
+
+$$
+\hat{y} = 2.5
+$$
+
+**Step 2: compute the error**
+
+Use:
+
+$$
+y - \hat{y}
+$$
+
+Substitute the values:
+
+$$
+y - \hat{y} = 5 - 2.5
+$$
+
+$$
+y - \hat{y} = 2.5
+$$
+
+So the error is:
+
+$$
+y - \hat{y} = 2.5
+$$
+
+**Step 3: compute the loss**
+
+Use the squared error loss:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+Substitute the error:
+
+$$
+L = \frac{1}{2}(2.5)^2
+$$
+
+Square the error:
+
+$$
+(2.5)^2 = 6.25
+$$
+
+Multiply by $\frac{1}{2}$:
+
+$$
+L = \frac{1}{2}(6.25)
+$$
+
+$$
+L = 3.125
+$$
+
+So the loss is:
+
+$$
+L = 3.125
+$$
+
+***Final answers***
+
+1. Prediction:
+
+   $$
+   \hat{y} = 2.5
+   $$
+
+2. Error:
+
+   $$
+   y - \hat{y} = 2.5
+   $$
+
+3. Loss:
+
+   $$
+   L = 3.125
+   $$
+
+***Interpretation***
+
+The model predicts $2.5$ while the true target is $5$, so the prediction is too low. That produces a positive error of $2.5$ and a squared error loss of $3.125$.
+
+---
+
+### Solution B2
+
+**Question source:** `practice-exercises.qmd`, section `Exercise B2`
+
+**Given**
+
+$$
+x_1 = 2,\quad x_2 = 1,\quad y = 4
+$$
+
+and:
+
+$$
+w_1 = 0.5,\quad w_2 = 1.5,\quad b = -0.5
+$$
+
+In these regression exercises, we use identity activation, so the model is:
+
+$$
+\hat{y} = z = w_1 x_1 + w_2 x_2 + b
+$$
+
+The loss is squared error:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+The exercise asks for:
+
+1. the prediction $\hat{y}$,
+2. the error $y - \hat{y}$,
+3. the loss $L$.
+
+**Step 1: compute the prediction $\hat{y}$**
+
+Start with the model:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+\hat{y} = (0.5)(2) + (1.5)(1) + (-0.5)
+$$
+
+Compute each term:
+
+$$
+(0.5)(2) = 1.0
+$$
+
+$$
+(1.5)(1) = 1.5
+$$
+
+Now add them:
+
+$$
+\hat{y} = 1.0 + 1.5 - 0.5
+$$
+
+$$
+\hat{y} = 2.0
+$$
+
+So the prediction is:
+
+$$
+\hat{y} = 2.0
+$$
+
+**Step 2: compute the error**
+
+Use:
+
+$$
+y - \hat{y}
+$$
+
+Substitute the values:
+
+$$
+y - \hat{y} = 4 - 2.0
+$$
+
+$$
+y - \hat{y} = 2.0
+$$
+
+So the error is:
+
+$$
+y - \hat{y} = 2.0
+$$
+
+**Step 3: compute the loss**
+
+Use the squared error loss:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+Substitute the error:
+
+$$
+L = \frac{1}{2}(2.0)^2
+$$
+
+Square the error:
+
+$$
+(2.0)^2 = 4.0
+$$
+
+Multiply by $\frac{1}{2}$:
+
+$$
+L = \frac{1}{2}(4.0)
+$$
+
+$$
+L = 2.0
+$$
+
+So the loss is:
+
+$$
+L = 2.0
+$$
+
+***Final answers***
+
+1. Prediction:
+
+   $$
+   \hat{y} = 2.0
+   $$
+
+2. Error:
+
+   $$
+   y - \hat{y} = 2.0
+   $$
+
+3. Loss:
+
+   $$
+   L = 2.0
+   $$
+
+***Interpretation***
+
+The model predicts $2.0$ while the true target is $4$, so the prediction is too low by $2.0$. After squaring that error and multiplying by $\frac{1}{2}$, the loss is $2.0$.
+
+---
+
+### Solution B3
+
+**Question source:** `practice-exercises.qmd`, section `Exercise B3`
+
+**Given**
+
+The dataset is:
+
+| Example | $x_1$ | $x_2$ | $y$ |
+|---|---:|---:|---:|
+| 1 | 1 | 0 | 2 |
+| 2 | 0 | 2 | 3 |
+| 3 | 2 | 1 | 5 |
+
+The parameters are:
+
+$$
+w_1 = 1,\quad w_2 = 1,\quad b = 0
+$$
+
+In these regression exercises, we use identity activation, so the model is:
+
+$$
+\hat{y} = z = w_1 x_1 + w_2 x_2 + b
+$$
+
+The loss for one example is:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+The exercise asks for:
+
+1. the prediction for each example,
+2. the loss for each example,
+3. the mean loss across the dataset.
+
+**Step 1: compute the prediction for each example**
+
+**Example 1**
+
+Given:
+
+$$
+x_1 = 1,\quad x_2 = 0,\quad y = 2
+$$
+
+Use the model:
+
+$$
+\hat{y}_1 = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+\hat{y}_1 = (1)(1) + (1)(0) + 0
+$$
+
+Compute each term:
+
+$$
+(1)(1) = 1
+$$
+
+$$
+(1)(0) = 0
+$$
+
+So:
+
+$$
+\hat{y}_1 = 1 + 0 + 0 = 1
+$$
+
+**Example 2**
+
+Given:
+
+$$
+x_1 = 0,\quad x_2 = 2,\quad y = 3
+$$
+
+Use the model:
+
+$$
+\hat{y}_2 = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+\hat{y}_2 = (1)(0) + (1)(2) + 0
+$$
+
+Compute each term:
+
+$$
+(1)(0) = 0
+$$
+
+$$
+(1)(2) = 2
+$$
+
+So:
+
+$$
+\hat{y}_2 = 0 + 2 + 0 = 2
+$$
+
+**Example 3**
+
+Given:
+
+$$
+x_1 = 2,\quad x_2 = 1,\quad y = 5
+$$
+
+Use the model:
+
+$$
+\hat{y}_3 = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+\hat{y}_3 = (1)(2) + (1)(1) + 0
+$$
+
+Compute each term:
+
+$$
+(1)(2) = 2
+$$
+
+$$
+(1)(1) = 1
+$$
+
+So:
+
+$$
+\hat{y}_3 = 2 + 1 + 0 = 3
+$$
+
+**Step 2: compute the loss for each example**
+
+Use:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+**Example 1 loss**
+
+For Example 1:
+
+$$
+y = 2,\quad \hat{y}_1 = 1
+$$
+
+Substitute into the loss formula:
+
+$$
+L_1 = \frac{1}{2}(2 - 1)^2
+$$
+
+Compute the error:
+
+$$
+2 - 1 = 1
+$$
+
+Square it:
+
+$$
+1^2 = 1
+$$
+
+Multiply by $\frac{1}{2}$:
+
+$$
+L_1 = \frac{1}{2}(1) = 0.5
+$$
+
+**Example 2 loss**
+
+For Example 2:
+
+$$
+y = 3,\quad \hat{y}_2 = 2
+$$
+
+Substitute into the loss formula:
+
+$$
+L_2 = \frac{1}{2}(3 - 2)^2
+$$
+
+Compute the error:
+
+$$
+3 - 2 = 1
+$$
+
+Square it:
+
+$$
+1^2 = 1
+$$
+
+Multiply by $\frac{1}{2}$:
+
+$$
+L_2 = \frac{1}{2}(1) = 0.5
+$$
+
+**Example 3 loss**
+
+For Example 3:
+
+$$
+y = 5,\quad \hat{y}_3 = 3
+$$
+
+Substitute into the loss formula:
+
+$$
+L_3 = \frac{1}{2}(5 - 3)^2
+$$
+
+Compute the error:
+
+$$
+5 - 3 = 2
+$$
+
+Square it:
+
+$$
+2^2 = 4
+$$
+
+Multiply by $\frac{1}{2}$:
+
+$$
+L_3 = \frac{1}{2}(4) = 2
+$$
+
+**Step 3: compute the mean loss**
+
+The mean loss is:
+
+$$
+\text{Mean Loss} = \frac{L_1 + L_2 + L_3}{3}
+$$
+
+Substitute the loss values:
+
+$$
+\text{Mean Loss} = \frac{0.5 + 0.5 + 2}{3}
+$$
+
+Add the numerator:
+
+$$
+0.5 + 0.5 + 2 = 3
+$$
+
+So:
+
+$$
+\text{Mean Loss} = \frac{3}{3}
+$$
+
+$$
+\text{Mean Loss} = 1
+$$
+
+***Final answers***
+
+***Predictions***
+
+$$
+\hat{y}_1 = 1,\quad \hat{y}_2 = 2,\quad \hat{y}_3 = 3
+$$
+
+***Losses***
+
+$$
+L_1 = 0.5,\quad L_2 = 0.5,\quad L_3 = 2
+$$
+
+***Mean loss***
+
+$$
+\text{Mean Loss} = 1
+$$
+
+***Interpretation***
+
+With these parameter values, the model underpredicts all three targets. The first two examples have smaller errors, while the third example has the largest error and therefore contributes the largest loss.
+
+---
+
+## Solutions to Part C: classification forward-pass exercises
+
+### Solution C1
+
+**Question source:** `practice-exercises.qmd`, section `Exercise C1`
+
+**Given**
+
+$$
+x_1 = 1,\quad x_2 = 0,\quad y = 1
+$$
+
+and:
+
+$$
+w_1 = 1,\quad w_2 = -1,\quad b = 0
+$$
+
+In these classification exercises, we use the model:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+The predicted class uses threshold 0.5:
+
+- predict class 1 if $\hat{y} \ge 0.5$,
+- predict class 0 if $\hat{y} < 0.5$.
+
+The loss is binary cross-entropy:
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+The exercise asks for:
+
+1. the linear score $z$,
+2. the prediction $\hat{y}$,
+3. the predicted class,
+4. the loss.
+
+**Step 1: compute the linear score $z$**
+
+Start with:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+z = (1)(1) + (-1)(0) + 0
+$$
+
+Compute each term:
+
+$$
+(1)(1) = 1
+$$
+
+$$
+(-1)(0) = 0
+$$
+
+So:
+
+$$
+z = 1 + 0 + 0 = 1
+$$
+
+Therefore:
+
+$$
+z = 1
+$$
+
+**Step 2: compute the prediction $\hat{y}$**
+
+Use the sigmoid formula:
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+Substitute $z = 1$:
+
+$$
+\hat{y} = \frac{1}{1 + e^{-1}}
+$$
+
+Use the approximation:
+
+$$
+e^{-1} \approx 0.3679
+$$
+
+Then:
+
+$$
+\hat{y} \approx \frac{1}{1 + 0.3679}
+$$
+
+$$
+\hat{y} \approx \frac{1}{1.3679}
+$$
+
+$$
+\hat{y} \approx 0.7311
+$$
+
+So the prediction is:
+
+$$
+\hat{y} \approx 0.7311
+$$
+
+**Step 3: compute the predicted class**
+
+Use threshold 0.5.
+
+Since:
+
+$$
+0.7311 \ge 0.5
+$$
+
+the predicted class is:
+
+$$
+1
+$$
+
+**Step 4: compute the loss**
+
+Use binary cross-entropy:
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+Substitute $y = 1$:
+
+$$
+L = -\log(\hat{y})
+$$
+
+Now substitute $\hat{y} \approx 0.7311$:
+
+$$
+L \approx -\log(0.7311)
+$$
+
+Use the approximation:
+
+$$
+\log(0.7311) \approx -0.3133
+$$
+
+Therefore:
+
+$$
+L \approx 0.3133
+$$
+
+So the loss is:
+
+$$
+L \approx 0.3133
+$$
+
+***Final answers***
+
+1. Linear score:
+
+   $$
+   z = 1
+   $$
+
+2. Prediction:
+
+   $$
+   \hat{y} \approx 0.7311
+   $$
+
+3. Predicted class:
+
+   $$
+   1
+   $$
+
+4. Loss:
+
+   $$
+   L \approx 0.3133
+   $$
+
+***Interpretation***
+
+The model produces a score of $1$, which sigmoid turns into a probability-like output of about $0.7311$. Since this is above $0.5$, the model predicts class 1, which matches the true target.
+
+---
+
+### Solution C2
+
+**Question source:** `practice-exercises.qmd`, section `Exercise C2`
+
+**Given**
+
+$$
+x_1 = 0,\quad x_2 = 1,\quad y = 0
+$$
+
+and:
+
+$$
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+$$
+
+In these classification exercises, we use the model:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+The predicted class uses threshold 0.5:
+
+- predict class 1 if $\hat{y} \ge 0.5$,
+- predict class 0 if $\hat{y} < 0.5$.
+
+The loss is binary cross-entropy:
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+The exercise asks for:
+
+1. the linear score $z$,
+2. the prediction $\hat{y}$,
+3. the predicted class,
+4. the loss.
+
+**Step 1: compute the linear score $z$**
+
+Start with:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+z = (2)(0) + (-1)(1) + (-0.5)
+$$
+
+Compute each term:
+
+$$
+(2)(0) = 0
+$$
+
+$$
+(-1)(1) = -1
+$$
+
+Now add them:
+
+$$
+z = 0 + (-1) + (-0.5)
+$$
+
+$$
+z = -1 - 0.5
+$$
+
+$$
+z = -1.5
+$$
+
+Therefore:
+
+$$
+z = -1.5
+$$
+
+**Step 2: compute the prediction $\hat{y}$**
+
+Use the sigmoid formula:
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+Substitute $z = -1.5$:
+
+$$
+\hat{y} = \frac{1}{1 + e^{-(-1.5)}}
+$$
+
+$$
+\hat{y} = \frac{1}{1 + e^{1.5}}
+$$
+
+Use the approximation:
+
+$$
+e^{1.5} \approx 4.4817
+$$
+
+Then:
+
+$$
+\hat{y} \approx \frac{1}{1 + 4.4817}
+$$
+
+$$
+\hat{y} \approx \frac{1}{5.4817}
+$$
+
+$$
+\hat{y} \approx 0.1824
+$$
+
+So the prediction is:
+
+$$
+\hat{y} \approx 0.1824
+$$
+
+**Step 3: compute the predicted class**
+
+Use threshold 0.5.
+
+Since:
+
+$$
+0.1824 < 0.5
+$$
+
+the predicted class is:
+
+$$
+0
+$$
+
+**Step 4: compute the loss**
+
+Use binary cross-entropy:
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+Substitute $y = 0$:
+
+$$
+L = -\log(1-\hat{y})
+$$
+
+Now substitute $\hat{y} \approx 0.1824$:
+
+$$
+L \approx -\log(1 - 0.1824)
+$$
+
+$$
+L \approx -\log(0.8176)
+$$
+
+Use the approximation:
+
+$$
+\log(0.8176) \approx -0.2014
+$$
+
+Therefore:
+
+$$
+L \approx 0.2014
+$$
+
+So the loss is:
+
+$$
+L \approx 0.2014
+$$
+
+***Final answers***
+
+1. Linear score:
+
+   $$
+   z = -1.5
+   $$
+
+2. Prediction:
+
+   $$
+   \hat{y} \approx 0.1824
+   $$
+
+3. Predicted class:
+
+   $$
+   0
+   $$
+
+4. Loss:
+
+   $$
+   L \approx 0.2014
+   $$
+
+***Interpretation***
+
+The model produces a negative score, so sigmoid returns a value well below $0.5$. That leads to predicted class 0, which matches the true target. Because the model gives fairly low probability to class 1, the loss is also reasonably small.
+
+---
+
+### Solution C3
+
+**Question source:** `practice-exercises.qmd`, section `Exercise C3`
+
+**Given**
+
+The dataset is:
+
+| Example | $x_1$ | $x_2$ | $y$ |
+|---|---:|---:|---:|
+| 1 | 0 | 0 | 0 |
+| 2 | 1 | 0 | 1 |
+| 3 | 0 | 1 | 0 |
+| 4 | 1 | 1 | 1 |
+
+The parameters are:
+
+$$
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+$$
+
+In these classification exercises, we use the model:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+Use threshold 0.5 for the predicted class:
+
+- predict class 1 if $\hat{y} \ge 0.5$,
+- predict class 0 if $\hat{y} < 0.5$.
+
+The exercise asks for all four examples:
+
+1. the score $z$,
+2. the prediction $\hat{y}$,
+3. the predicted class,
+
+and then asks how many of the four examples are classified correctly.
+
+**Step 1: Example 1**
+
+Given:
+
+$$
+x_1 = 0,\quad x_2 = 0,\quad y = 0
+$$
+
+Compute the score:
+
+$$
+z_1 = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+z_1 = (2)(0) + (-1)(0) + (-0.5)
+$$
+
+$$
+z_1 = 0 + 0 - 0.5 = -0.5
+$$
+
+Now compute the prediction:
+
+$$
+\hat{y}_1 = \sigma(-0.5) = \frac{1}{1 + e^{0.5}}
+$$
+
+Use the approximation:
+
+$$
+e^{0.5} \approx 1.6487
+$$
+
+Then:
+
+$$
+\hat{y}_1 \approx \frac{1}{1 + 1.6487}
+$$
+
+$$
+\hat{y}_1 \approx \frac{1}{2.6487}
+$$
+
+$$
+\hat{y}_1 \approx 0.3775
+$$
+
+Now classify using threshold 0.5:
+
+$$
+0.3775 < 0.5
+$$
+
+So the predicted class is:
+
+$$
+0
+$$
+
+Compare with the true target:
+
+$$
+\text{Predicted class} = 0,\quad y = 0
+$$
+
+So Example 1 is classified correctly.
+
+**Step 2: Example 2**
+
+Given:
+
+$$
+x_1 = 1,\quad x_2 = 0,\quad y = 1
+$$
+
+Compute the score:
+
+$$
+z_2 = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+z_2 = (2)(1) + (-1)(0) + (-0.5)
+$$
+
+$$
+z_2 = 2 + 0 - 0.5 = 1.5
+$$
+
+Now compute the prediction:
+
+$$
+\hat{y}_2 = \sigma(1.5) = \frac{1}{1 + e^{-1.5}}
+$$
+
+Use the approximation:
+
+$$
+e^{-1.5} \approx 0.2231
+$$
+
+Then:
+
+$$
+\hat{y}_2 \approx \frac{1}{1 + 0.2231}
+$$
+
+$$
+\hat{y}_2 \approx \frac{1}{1.2231}
+$$
+
+$$
+\hat{y}_2 \approx 0.8176
+$$
+
+Now classify using threshold 0.5:
+
+$$
+0.8176 \ge 0.5
+$$
+
+So the predicted class is:
+
+$$
+1
+$$
+
+Compare with the true target:
+
+$$
+\text{Predicted class} = 1,\quad y = 1
+$$
+
+So Example 2 is classified correctly.
+
+**Step 3: Example 3**
+
+Given:
+
+$$
+x_1 = 0,\quad x_2 = 1,\quad y = 0
+$$
+
+Compute the score:
+
+$$
+z_3 = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+z_3 = (2)(0) + (-1)(1) + (-0.5)
+$$
+
+$$
+z_3 = 0 - 1 - 0.5 = -1.5
+$$
+
+Now compute the prediction:
+
+$$
+\hat{y}_3 = \sigma(-1.5) = \frac{1}{1 + e^{1.5}}
+$$
+
+Use the approximation:
+
+$$
+e^{1.5} \approx 4.4817
+$$
+
+Then:
+
+$$
+\hat{y}_3 \approx \frac{1}{1 + 4.4817}
+$$
+
+$$
+\hat{y}_3 \approx \frac{1}{5.4817}
+$$
+
+$$
+\hat{y}_3 \approx 0.1824
+$$
+
+Now classify using threshold 0.5:
+
+$$
+0.1824 < 0.5
+$$
+
+So the predicted class is:
+
+$$
+0
+$$
+
+Compare with the true target:
+
+$$
+\text{Predicted class} = 0,\quad y = 0
+$$
+
+So Example 3 is classified correctly.
+
+**Step 4: Example 4**
+
+Given:
+
+$$
+x_1 = 1,\quad x_2 = 1,\quad y = 1
+$$
+
+Compute the score:
+
+$$
+z_4 = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+z_4 = (2)(1) + (-1)(1) + (-0.5)
+$$
+
+$$
+z_4 = 2 - 1 - 0.5 = 0.5
+$$
+
+Now compute the prediction:
+
+$$
+\hat{y}_4 = \sigma(0.5) = \frac{1}{1 + e^{-0.5}}
+$$
+
+Use the approximation:
+
+$$
+e^{-0.5} \approx 0.6065
+$$
+
+Then:
+
+$$
+\hat{y}_4 \approx \frac{1}{1 + 0.6065}
+$$
+
+$$
+\hat{y}_4 \approx \frac{1}{1.6065}
+$$
+
+$$
+\hat{y}_4 \approx 0.6225
+$$
+
+Now classify using threshold 0.5:
+
+$$
+0.6225 \ge 0.5
+$$
+
+So the predicted class is:
+
+$$
+1
+$$
+
+Compare with the true target:
+
+$$
+\text{Predicted class} = 1,\quad y = 1
+$$
+
+So Example 4 is classified correctly.
+
+***Final answers***
+
+| Example | $z$ | $\hat{y}$ | Predicted class | True $y$ | Correct? |
+|---|---:|---:|---:|---:|---|
+| 1 | -0.5 | 0.3775 | 0 | 0 | Yes |
+| 2 | 1.5 | 0.8176 | 1 | 1 | Yes |
+| 3 | -1.5 | 0.1824 | 0 | 0 | Yes |
+| 4 | 0.5 | 0.6225 | 1 | 1 | Yes |
+
+So the number classified correctly is:
+
+$$
+4
+$$
+
+out of 4.
+
+***Interpretation***
+
+With these parameter values, the neuron separates the two classes correctly on all four examples in this small dataset. That does not prove the model is perfect in general, but it does show that it fits this toy dataset well.
+
+---
+
+## Solutions to Part D: regression backpropagation exercises
+
+### Solution D1
+
+**Question source:** `practice-exercises.qmd`, section `Exercise D1`
+
+**Given**
+
+$$
+x_1 = 2,\quad x_2 = 1,\quad y = 5
+$$
+
+Initial parameters:
+
+$$
+w_1 = 0.5,\quad w_2 = 1.0,\quad b = 0
+$$
+
+Learning rate:
+
+$$
+\eta = 0.1
+$$
+
+The model is:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+The loss is:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+The exercise asks for:
+
+1. the prediction $\hat{y}$,
+2. the loss $L$,
+3. $\frac{\partial L}{\partial \hat{y}}$,
+4. $\frac{\partial L}{\partial w_1}$,
+5. $\frac{\partial L}{\partial w_2}$,
+6. $\frac{\partial L}{\partial b}$,
+7. the updated parameters,
+8. the new prediction,
+9. the new loss.
+
+**Step 1: compute the prediction $\hat{y}$**
+
+Start with the model:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+\hat{y} = (0.5)(2) + (1.0)(1) + 0
+$$
+
+Compute each term:
+
+$$
+(0.5)(2) = 1.0
+$$
+
+$$
+(1.0)(1) = 1.0
+$$
+
+Now add them:
+
+$$
+\hat{y} = 1.0 + 1.0 + 0 = 2.0
+$$
+
+So:
+
+$$
+\hat{y} = 2.0
+$$
+
+**Step 2: compute the loss $L$**
+
+Use:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+Substitute $y = 5$ and $\hat{y} = 2.0$:
+
+$$
+L = \frac{1}{2}(5 - 2.0)^2
+$$
+
+Compute the error:
+
+$$
+5 - 2.0 = 3.0
+$$
+
+Square it:
+
+$$
+(3.0)^2 = 9.0
+$$
+
+Multiply by $\frac{1}{2}$:
+
+$$
+L = \frac{1}{2}(9.0) = 4.5
+$$
+
+So:
+
+$$
+L = 4.5
+$$
+
+**Step 3: compute $\frac{\partial L}{\partial \hat{y}}$**
+
+For squared error loss:
+
+$$
+\frac{\partial L}{\partial \hat{y}} = \hat{y} - y
+$$
+
+Substitute the values:
+
+$$
+\frac{\partial L}{\partial \hat{y}} = 2.0 - 5
+$$
+
+$$
+\frac{\partial L}{\partial \hat{y}} = -3.0
+$$
+
+So:
+
+$$
+\frac{\partial L}{\partial \hat{y}} = -3.0
+$$
+
+**Step 4: compute the derivatives of $\hat{y}$ with respect to the parameters**
+
+Because:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+we have:
+
+$$
+\frac{\partial \hat{y}}{\partial w_1} = x_1,\quad
+\frac{\partial \hat{y}}{\partial w_2} = x_2,\quad
+\frac{\partial \hat{y}}{\partial b} = 1
+$$
+
+Substitute the input values:
+
+$$
+\frac{\partial \hat{y}}{\partial w_1} = 2
+$$
+
+$$
+\frac{\partial \hat{y}}{\partial w_2} = 1
+$$
+
+$$
+\frac{\partial \hat{y}}{\partial b} = 1
+$$
+
+**Step 5: compute the gradients**
+
+Use the chain rule.
+
+***Gradient for $w_1$***
+
+$$
+\frac{\partial L}{\partial w_1}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial w_1}
+$$
+
+Substitute the values:
+
+$$
+\frac{\partial L}{\partial w_1} = (-3.0)(2)
+$$
+
+$$
+\frac{\partial L}{\partial w_1} = -6.0
+$$
+
+***Gradient for $w_2$***
+
+$$
+\frac{\partial L}{\partial w_2}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial w_2}
+$$
+
+Substitute the values:
+
+$$
+\frac{\partial L}{\partial w_2} = (-3.0)(1)
+$$
+
+$$
+\frac{\partial L}{\partial w_2} = -3.0
+$$
+
+***Gradient for $b$***
+
+$$
+\frac{\partial L}{\partial b}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial b}
+$$
+
+Substitute the values:
+
+$$
+\frac{\partial L}{\partial b} = (-3.0)(1)
+$$
+
+$$
+\frac{\partial L}{\partial b} = -3.0
+$$
+
+So the gradients are:
+
+$$
+\frac{\partial L}{\partial w_1} = -6.0,\quad
+\frac{\partial L}{\partial w_2} = -3.0,\quad
+\frac{\partial L}{\partial b} = -3.0
+$$
+
+**Step 6: update the parameters**
+
+Use gradient descent:
+
+$$
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+$$
+
+with:
+
+$$
+\eta = 0.1
+$$
+
+***Update $w_1$***
+
+$$
+w_1^{\text{new}} = 0.5 - 0.1(-6.0)
+$$
+
+$$
+w_1^{\text{new}} = 0.5 + 0.6
+$$
+
+$$
+w_1^{\text{new}} = 1.1
+$$
+
+***Update $w_2$***
+
+$$
+w_2^{\text{new}} = 1.0 - 0.1(-3.0)
+$$
+
+$$
+w_2^{\text{new}} = 1.0 + 0.3
+$$
+
+$$
+w_2^{\text{new}} = 1.3
+$$
+
+***Update $b$***
+
+$$
+b^{\text{new}} = 0 - 0.1(-3.0)
+$$
+
+$$
+b^{\text{new}} = 0 + 0.3
+$$
+
+$$
+b^{\text{new}} = 0.3
+$$
+
+So the updated parameters are:
+
+$$
+w_1 = 1.1,\quad w_2 = 1.3,\quad b = 0.3
+$$
+
+**Step 7: compute the new prediction**
+
+Use the updated parameters:
+
+$$
+\hat{y}_{\text{new}} = (1.1)(2) + (1.3)(1) + 0.3
+$$
+
+Compute each term:
+
+$$
+(1.1)(2) = 2.2
+$$
+
+$$
+(1.3)(1) = 1.3
+$$
+
+Now add them:
+
+$$
+\hat{y}_{\text{new}} = 2.2 + 1.3 + 0.3
+$$
+
+$$
+\hat{y}_{\text{new}} = 3.8
+$$
+
+So:
+
+$$
+\hat{y}_{\text{new}} = 3.8
+$$
+
+**Step 8: compute the new loss**
+
+Use:
+
+$$
+L_{\text{new}} = \frac{1}{2}(y - \hat{y}_{\text{new}})^2
+$$
+
+Substitute $y = 5$ and $\hat{y}_{\text{new}} = 3.8$:
+
+$$
+L_{\text{new}} = \frac{1}{2}(5 - 3.8)^2
+$$
+
+Compute the new error:
+
+$$
+5 - 3.8 = 1.2
+$$
+
+Square it:
+
+$$
+(1.2)^2 = 1.44
+$$
+
+Multiply by $\frac{1}{2}$:
+
+$$
+L_{\text{new}} = \frac{1}{2}(1.44)
+$$
+
+$$
+L_{\text{new}} = 0.72
+$$
+
+So:
+
+$$
+L_{\text{new}} = 0.72
+$$
+
+***Final answers***
+
+1. Initial prediction:
+
+   $$
+   \hat{y} = 2.0
+   $$
+
+2. Initial loss:
+
+   $$
+   L = 4.5
+   $$
+
+3. Derivative with respect to prediction:
+
+   $$
+   \frac{\partial L}{\partial \hat{y}} = -3.0
+   $$
+
+4. Gradients:
+
+   $$
+   \frac{\partial L}{\partial w_1} = -6.0,\quad
+   \frac{\partial L}{\partial w_2} = -3.0,\quad
+   \frac{\partial L}{\partial b} = -3.0
+   $$
+
+5. Updated parameters:
+
+   $$
+   w_1 = 1.1,\quad w_2 = 1.3,\quad b = 0.3
+   $$
+
+6. New prediction:
+
+   $$
+   \hat{y}_{\text{new}} = 3.8
+   $$
+
+7. New loss:
+
+   $$
+   L_{\text{new}} = 0.72
+   $$
+
+***Interpretation***
+
+The initial prediction is too low, so the gradients are negative. After the update, the parameters increase, the prediction moves closer to the target, and the loss drops from $4.5$ to $0.72$.
+
+---
+
+### Solution D2
+
+**Question source:** `practice-exercises.qmd`, section `Exercise D2`
+
+This exercise repeats Exercise D1, but changes the learning rate from
+
+$$
+\eta = 0.1
+$$
+
+to
+
+$$
+\eta = 0.5
+$$
+
+So we use the same data and the same initial parameters:
+
+$$
+x_1 = 2,\quad x_2 = 1,\quad y = 5
+$$
+
+$$
+w_1 = 0.5,\quad w_2 = 1.0,\quad b = 0
+$$
+
+The model is:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+The loss is:
+
+$$
+L = \frac{1}{2}(y - \hat{y})^2
+$$
+
+The exercise asks:
+
+1. did the loss still decrease?
+2. did it decrease more or less than before?
+3. what does this suggest about learning-rate choice?
+
+Because this repeats Exercise D1 with only the learning rate changed, we can reuse the same initial forward pass and gradients.
+
+**Step 1: compute the initial prediction and loss**
+
+Start with the model:
+
+$$
+\hat{y} = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+\hat{y} = (0.5)(2) + (1.0)(1) + 0
+$$
+
+$$
+\hat{y} = 1.0 + 1.0 = 2.0
+$$
+
+So:
+
+$$
+\hat{y} = 2.0
+$$
+
+Now compute the initial loss:
+
+$$
+L = \frac{1}{2}(5 - 2.0)^2
+$$
+
+$$
+L = \frac{1}{2}(3.0)^2
+$$
+
+$$
+L = \frac{1}{2}(9.0) = 4.5
+$$
+
+So the initial loss is:
+
+$$
+L = 4.5
+$$
+
+**Step 2: reuse the gradients from Exercise D1**
+
+For squared error loss:
+
+$$
+\frac{\partial L}{\partial \hat{y}} = \hat{y} - y
+$$
+
+Substitute the values:
+
+$$
+\frac{\partial L}{\partial \hat{y}} = 2.0 - 5 = -3.0
+$$
+
+Because:
+
+$$
+\frac{\partial \hat{y}}{\partial w_1} = x_1 = 2,\quad
+\frac{\partial \hat{y}}{\partial w_2} = x_2 = 1,\quad
+\frac{\partial \hat{y}}{\partial b} = 1
+$$
+
+the gradients are:
+
+$$
+\frac{\partial L}{\partial w_1} = (-3.0)(2) = -6.0
+$$
+
+$$
+\frac{\partial L}{\partial w_2} = (-3.0)(1) = -3.0
+$$
+
+$$
+\frac{\partial L}{\partial b} = (-3.0)(1) = -3.0
+$$
+
+So:
+
+$$
+\frac{\partial L}{\partial w_1} = -6.0,\quad
+\frac{\partial L}{\partial w_2} = -3.0,\quad
+\frac{\partial L}{\partial b} = -3.0
+$$
+
+**Step 3: update the parameters using the larger learning rate**
+
+Now use:
+
+$$
+\eta = 0.5
+$$
+
+and the update rule:
+
+$$
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+$$
+
+***Update $w_1$***
+
+$$
+w_1^{\text{new}} = 0.5 - 0.5(-6.0)
+$$
+
+$$
+w_1^{\text{new}} = 0.5 + 3.0
+$$
+
+$$
+w_1^{\text{new}} = 3.5
+$$
+
+***Update $w_2$***
+
+$$
+w_2^{\text{new}} = 1.0 - 0.5(-3.0)
+$$
+
+$$
+w_2^{\text{new}} = 1.0 + 1.5
+$$
+
+$$
+w_2^{\text{new}} = 2.5
+$$
+
+***Update $b$***
+
+$$
+b^{\text{new}} = 0 - 0.5(-3.0)
+$$
+
+$$
+b^{\text{new}} = 0 + 1.5
+$$
+
+$$
+b^{\text{new}} = 1.5
+$$
+
+So the updated parameters are:
+
+$$
+w_1 = 3.5,\quad w_2 = 2.5,\quad b = 1.5
+$$
+
+**Step 4: compute the new prediction**
+
+Use the updated parameters:
+
+$$
+\hat{y}_{\text{new}} = (3.5)(2) + (2.5)(1) + 1.5
+$$
+
+Compute each term:
+
+$$
+(3.5)(2) = 7.0
+$$
+
+$$
+(2.5)(1) = 2.5
+$$
+
+Now add them:
+
+$$
+\hat{y}_{\text{new}} = 7.0 + 2.5 + 1.5
+$$
+
+$$
+\hat{y}_{\text{new}} = 11.0
+$$
+
+So:
+
+$$
+\hat{y}_{\text{new}} = 11.0
+$$
+
+**Step 5: compute the new loss**
+
+Use:
+
+$$
+L_{\text{new}} = \frac{1}{2}(y - \hat{y}_{\text{new}})^2
+$$
+
+Substitute $y = 5$ and $\hat{y}_{\text{new}} = 11.0$:
+
+$$
+L_{\text{new}} = \frac{1}{2}(5 - 11.0)^2
+$$
+
+Compute the new error:
+
+$$
+5 - 11.0 = -6.0
+$$
+
+Square it:
+
+$$
+(-6.0)^2 = 36.0
+$$
+
+Multiply by $\frac{1}{2}$:
+
+$$
+L_{\text{new}} = \frac{1}{2}(36.0)
+$$
+
+$$
+L_{\text{new}} = 18.0
+$$
+
+So the new loss is:
+
+$$
+L_{\text{new}} = 18.0
+$$
+
+***Answer the questions***
+
+**1. Did the loss still decrease?**
+
+No.
+
+The loss changed from:
+
+$$
+4.5 \to 18.0
+$$
+
+So the loss increased, not decreased.
+
+**2. Did it decrease more or less than before?**
+
+It did not decrease at all.
+
+In Exercise D1, with learning rate
+
+$$
+\eta = 0.1
+$$
+
+the loss changed from:
+
+$$
+4.5 \to 0.72
+$$
+
+That was a large improvement.
+
+In this exercise, with learning rate
+
+$$
+\eta = 0.5
+$$
+
+the update was too large, and the model overshot the target badly.
+
+**3. What does this suggest about learning-rate choice?**
+
+It suggests that the learning rate must be chosen carefully.
+
+A larger learning rate is not always better.
+
+If the learning rate is too large, the update step can overshoot and make the loss worse instead of better.
+
+***Final answers***
+
+- Initial loss:
+
+  $$
+  L = 4.5
+  $$
+
+- Updated parameters with $\eta = 0.5$:
+
+  $$
+  w_1 = 3.5,\quad w_2 = 2.5,\quad b = 1.5
+  $$
+
+- New prediction:
+
+  $$
+  \hat{y}_{\text{new}} = 11.0
+  $$
+
+- New loss:
+
+  $$
+  L_{\text{new}} = 18.0
+  $$
+
+- Conclusion:
+
+  The loss did not decrease. It increased sharply, which shows that this learning rate is too large for this update step.
+
+***Interpretation***
+
+This exercise shows why learning rate matters. A step that is too small can make learning slow, but a step that is too large can overshoot and make the model worse.
+
+---
+
+## Solutions to Part E: classification backpropagation exercises
+
+### Solution E1
+
+**Question source:** `practice-exercises.qmd`, section `Exercise E1`
+
+**Given**
+
+$$
+x_1 = 1,\quad x_2 = 1,\quad y = 1
+$$
+
+Initial parameters:
+
+$$
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+$$
+
+Learning rate:
+
+$$
+\eta = 0.1
+$$
+
+The model is:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+The loss is binary cross-entropy:
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+For sigmoid output with binary cross-entropy, we use the simplification:
+
+$$
+\frac{\partial L}{\partial z} = \hat{y} - y
+$$
+
+The exercise asks for:
+
+1. the score $z$,
+2. the prediction $\hat{y}$,
+3. the loss,
+4. $\hat{y} - y$,
+5. the gradients for $w_1$, $w_2$, and $b$,
+6. the updated parameters,
+7. the new prediction,
+8. the new loss.
+
+**Step 1: compute the score $z$**
+
+Start with:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+z = (2)(1) + (-1)(1) + (-0.5)
+$$
+
+Compute each term:
+
+$$
+(2)(1) = 2
+$$
+
+$$
+(-1)(1) = -1
+$$
+
+Now add them:
+
+$$
+z = 2 + (-1) + (-0.5)
+$$
+
+$$
+z = 1 - 0.5
+$$
+
+$$
+z = 0.5
+$$
+
+So:
+
+$$
+z = 0.5
+$$
+
+**Step 2: compute the prediction $\hat{y}$**
+
+Use the sigmoid formula:
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+Substitute $z = 0.5$:
+
+$$
+\hat{y} = \frac{1}{1 + e^{-0.5}}
+$$
+
+Use the approximation:
+
+$$
+e^{-0.5} \approx 0.6065
+$$
+
+Then:
+
+$$
+\hat{y} \approx \frac{1}{1 + 0.6065}
+$$
+
+$$
+\hat{y} \approx \frac{1}{1.6065}
+$$
+
+$$
+\hat{y} \approx 0.6225
+$$
+
+So:
+
+$$
+\hat{y} \approx 0.6225
+$$
+
+**Step 3: compute the loss**
+
+Because the target is:
+
+$$
+y = 1
+$$
+
+the binary cross-entropy loss simplifies to:
+
+$$
+L = -\log(\hat{y})
+$$
+
+Substitute $\hat{y} \approx 0.6225$:
+
+$$
+L \approx -\log(0.6225)
+$$
+
+Use the approximation:
+
+$$
+\log(0.6225) \approx -0.4741
+$$
+
+Therefore:
+
+$$
+L \approx 0.4741
+$$
+
+So:
+
+$$
+L \approx 0.4741
+$$
+
+**Step 4: compute $\hat{y} - y$**
+
+Use:
+
+$$
+\hat{y} - y
+$$
+
+Substitute the values:
+
+$$
+\hat{y} - y \approx 0.6225 - 1
+$$
+
+$$
+\hat{y} - y \approx -0.3775
+$$
+
+So:
+
+$$
+\hat{y} - y \approx -0.3775
+$$
+
+**Step 5: compute the gradients**
+
+For sigmoid output with binary cross-entropy:
+
+$$
+\frac{\partial L}{\partial z} = \hat{y} - y
+$$
+
+and because
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+the gradients are:
+
+$$
+\frac{\partial L}{\partial w_1} = (\hat{y} - y)x_1
+$$
+
+$$
+\frac{\partial L}{\partial w_2} = (\hat{y} - y)x_2
+$$
+
+$$
+\frac{\partial L}{\partial b} = \hat{y} - y
+$$
+
+Substitute $x_1 = 1$, $x_2 = 1$, and $\hat{y} - y \approx -0.3775$.
+
+***Gradient for $w_1$***
+
+$$
+\frac{\partial L}{\partial w_1} \approx (-0.3775)(1)
+$$
+
+$$
+\frac{\partial L}{\partial w_1} \approx -0.3775
+$$
+
+***Gradient for $w_2$***
+
+$$
+\frac{\partial L}{\partial w_2} \approx (-0.3775)(1)
+$$
+
+$$
+\frac{\partial L}{\partial w_2} \approx -0.3775
+$$
+
+***Gradient for $b$***
+
+$$
+\frac{\partial L}{\partial b} \approx -0.3775
+$$
+
+So the gradients are:
+
+$$
+\frac{\partial L}{\partial w_1} \approx -0.3775,\quad
+\frac{\partial L}{\partial w_2} \approx -0.3775,\quad
+\frac{\partial L}{\partial b} \approx -0.3775
+$$
+
+**Step 6: update the parameters**
+
+Use gradient descent:
+
+$$
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+$$
+
+with:
+
+$$
+\eta = 0.1
+$$
+
+***Update $w_1$***
+
+$$
+w_1^{\text{new}} = 2 - 0.1(-0.3775)
+$$
+
+$$
+w_1^{\text{new}} = 2 + 0.03775
+$$
+
+$$
+w_1^{\text{new}} = 2.03775
+$$
+
+***Update $w_2$***
+
+$$
+w_2^{\text{new}} = -1 - 0.1(-0.3775)
+$$
+
+$$
+w_2^{\text{new}} = -1 + 0.03775
+$$
+
+$$
+w_2^{\text{new}} = -0.96225
+$$
+
+***Update $b$***
+
+$$
+b^{\text{new}} = -0.5 - 0.1(-0.3775)
+$$
+
+$$
+b^{\text{new}} = -0.5 + 0.03775
+$$
+
+$$
+b^{\text{new}} = -0.46225
+$$
+
+So the updated parameters are:
+
+$$
+w_1 \approx 2.03775,\quad w_2 \approx -0.96225,\quad b \approx -0.46225
+$$
+
+**Step 7: compute the new prediction**
+
+First compute the new score:
+
+$$
+z_{\text{new}} = w_1^{\text{new}}x_1 + w_2^{\text{new}}x_2 + b^{\text{new}}
+$$
+
+Substitute the values:
+
+$$
+z_{\text{new}} = (2.03775)(1) + (-0.96225)(1) + (-0.46225)
+$$
+
+Compute step by step:
+
+$$
+z_{\text{new}} = 2.03775 - 0.96225 - 0.46225
+$$
+
+$$
+z_{\text{new}} = 1.0755 - 0.46225
+$$
+
+$$
+z_{\text{new}} = 0.61325
+$$
+
+So:
+
+$$
+z_{\text{new}} = 0.61325
+$$
+
+Now compute the new prediction:
+
+$$
+\hat{y}_{\text{new}} = \sigma(z_{\text{new}}) = \frac{1}{1 + e^{-0.61325}}
+$$
+
+Use the approximation:
+
+$$
+e^{-0.61325} \approx 0.5416
+$$
+
+Then:
+
+$$
+\hat{y}_{\text{new}} \approx \frac{1}{1 + 0.5416}
+$$
+
+$$
+\hat{y}_{\text{new}} \approx \frac{1}{1.5416}
+$$
+
+$$
+\hat{y}_{\text{new}} \approx 0.6487
+$$
+
+So:
+
+$$
+\hat{y}_{\text{new}} \approx 0.6487
+$$
+
+**Step 8: compute the new loss**
+
+Because $y = 1$, the new loss is:
+
+$$
+L_{\text{new}} = -\log(\hat{y}_{\text{new}})
+$$
+
+Substitute $\hat{y}_{\text{new}} \approx 0.6487$:
+
+$$
+L_{\text{new}} \approx -\log(0.6487)
+$$
+
+Use the approximation:
+
+$$
+\log(0.6487) \approx -0.4328
+$$
+
+Therefore:
+
+$$
+L_{\text{new}} \approx 0.4328
+$$
+
+So:
+
+$$
+L_{\text{new}} \approx 0.4328
+$$
+
+***Final answers***
+
+1. Score:
+
+   $$
+   z = 0.5
+   $$
+
+2. Prediction:
+
+   $$
+   \hat{y} \approx 0.6225
+   $$
+
+3. Loss:
+
+   $$
+   L \approx 0.4741
+   $$
+
+4. Simplified error term:
+
+   $$
+   \hat{y} - y \approx -0.3775
+   $$
+
+5. Gradients:
+
+   $$
+   \frac{\partial L}{\partial w_1} \approx -0.3775,\quad
+   \frac{\partial L}{\partial w_2} \approx -0.3775,\quad
+   \frac{\partial L}{\partial b} \approx -0.3775
+   $$
+
+6. Updated parameters:
+
+   $$
+   w_1 \approx 2.03775,\quad
+   w_2 \approx -0.96225,\quad
+   b \approx -0.46225
+   $$
+
+7. New prediction:
+
+   $$
+   \hat{y}_{\text{new}} \approx 0.6487
+   $$
+
+8. New loss:
+
+   $$
+   L_{\text{new}} \approx 0.4328
+   $$
+
+***Interpretation***
+
+Because the target is 1, the model should push its prediction upward. The negative value of $\hat{y} - y$ causes the update to increase the score $z$, which increases the sigmoid output and lowers the loss.
+
+---
+
+### Solution E2
+
+**Question source:** `practice-exercises.qmd`, section `Exercise E2`
+
+**Given**
+
+$$
+x_1 = 0,\quad x_2 = 1,\quad y = 0
+$$
+
+Initial parameters:
+
+$$
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+$$
+
+Learning rate:
+
+$$
+\eta = 0.1
+$$
+
+The model is:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+The loss is binary cross-entropy:
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+For sigmoid output with binary cross-entropy, we use the simplification:
+
+$$
+\frac{\partial L}{\partial z} = \hat{y} - y
+$$
+
+The exercise asks for:
+
+1. the score $z$,
+2. the prediction $\hat{y}$,
+3. the loss,
+4. $\hat{y} - y$,
+5. the gradients for $w_1$, $w_2$, and $b$,
+6. the updated parameters,
+
+and then asks you to explain why a parameter gradient is zero only when the corresponding derivative factor makes it zero, such as when an input is zero in this one-neuron setup.
+
+**Step 1: compute the score $z$**
+
+Start with:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute the values:
+
+$$
+z = (2)(0) + (-1)(1) + (-0.5)
+$$
+
+Compute each term:
+
+$$
+(2)(0) = 0
+$$
+
+$$
+(-1)(1) = -1
+$$
+
+Now add them:
+
+$$
+z = 0 + (-1) + (-0.5)
+$$
+
+$$
+z = -1 - 0.5
+$$
+
+$$
+z = -1.5
+$$
+
+So:
+
+$$
+z = -1.5
+$$
+
+**Step 2: compute the prediction $\hat{y}$**
+
+Use the sigmoid formula:
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+Substitute $z = -1.5$:
+
+$$
+\hat{y} = \frac{1}{1 + e^{-(-1.5)}}
+$$
+
+$$
+\hat{y} = \frac{1}{1 + e^{1.5}}
+$$
+
+Use the approximation:
+
+$$
+e^{1.5} \approx 4.4817
+$$
+
+Then:
+
+$$
+\hat{y} \approx \frac{1}{1 + 4.4817}
+$$
+
+$$
+\hat{y} \approx \frac{1}{5.4817}
+$$
+
+$$
+\hat{y} \approx 0.1824
+$$
+
+So:
+
+$$
+\hat{y} \approx 0.1824
+$$
+
+**Step 3: compute the loss**
+
+Because the target is:
+
+$$
+y = 0
+$$
+
+the binary cross-entropy loss simplifies to:
+
+$$
+L = -\log(1-\hat{y})
+$$
+
+Substitute $\hat{y} \approx 0.1824$:
+
+$$
+L \approx -\log(1 - 0.1824)
+$$
+
+$$
+L \approx -\log(0.8176)
+$$
+
+Use the approximation:
+
+$$
+\log(0.8176) \approx -0.2014
+$$
+
+Therefore:
+
+$$
+L \approx 0.2014
+$$
+
+So:
+
+$$
+L \approx 0.2014
+$$
+
+**Step 4: compute $\hat{y} - y$**
+
+Use:
+
+$$
+\hat{y} - y
+$$
+
+Substitute the values:
+
+$$
+\hat{y} - y \approx 0.1824 - 0
+$$
+
+$$
+\hat{y} - y \approx 0.1824
+$$
+
+So:
+
+$$
+\hat{y} - y \approx 0.1824
+$$
+
+**Step 5: compute the gradients**
+
+For sigmoid output with binary cross-entropy:
+
+$$
+\frac{\partial L}{\partial z} = \hat{y} - y
+$$
+
+and because
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+the gradients are:
+
+$$
+\frac{\partial L}{\partial w_1} = (\hat{y} - y)x_1
+$$
+
+$$
+\frac{\partial L}{\partial w_2} = (\hat{y} - y)x_2
+$$
+
+$$
+\frac{\partial L}{\partial b} = \hat{y} - y
+$$
+
+Substitute $x_1 = 0$, $x_2 = 1$, and $\hat{y} - y \approx 0.1824$.
+
+***Gradient for $w_1$***
+
+$$
+\frac{\partial L}{\partial w_1} \approx (0.1824)(0)
+$$
+
+$$
+\frac{\partial L}{\partial w_1} = 0
+$$
+
+***Gradient for $w_2$***
+
+$$
+\frac{\partial L}{\partial w_2} \approx (0.1824)(1)
+$$
+
+$$
+\frac{\partial L}{\partial w_2} \approx 0.1824
+$$
+
+***Gradient for $b$***
+
+$$
+\frac{\partial L}{\partial b} \approx 0.1824
+$$
+
+So the gradients are:
+
+$$
+\frac{\partial L}{\partial w_1} = 0,\quad
+\frac{\partial L}{\partial w_2} \approx 0.1824,\quad
+\frac{\partial L}{\partial b} \approx 0.1824
+$$
+
+**Step 6: update the parameters**
+
+Use gradient descent:
+
+$$
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+$$
+
+with:
+
+$$
+\eta = 0.1
+$$
+
+***Update $w_1$***
+
+$$
+w_1^{\text{new}} = 2 - 0.1(0)
+$$
+
+$$
+w_1^{\text{new}} = 2
+$$
+
+***Update $w_2$***
+
+$$
+w_2^{\text{new}} = -1 - 0.1(0.1824)
+$$
+
+$$
+w_2^{\text{new}} = -1 - 0.01824
+$$
+
+$$
+w_2^{\text{new}} = -1.01824
+$$
+
+***Update $b$***
+
+$$
+b^{\text{new}} = -0.5 - 0.1(0.1824)
+$$
+
+$$
+b^{\text{new}} = -0.5 - 0.01824
+$$
+
+$$
+b^{\text{new}} = -0.51824
+$$
+
+So the updated parameters are:
+
+$$
+w_1 = 2,\quad w_2 \approx -1.01824,\quad b \approx -0.51824
+$$
+
+***Explanation of the zero-input effect***
+
+In this one-neuron setup,
+
+$$
+\frac{\partial L}{\partial w_1} = (\hat{y} - y)x_1
+$$
+
+For this example:
+
+$$
+x_1 = 0
+$$
+
+So:
+
+$$
+\frac{\partial L}{\partial w_1} = (\hat{y} - y)(0) = 0
+$$
+
+That is why the gradient for $w_1$ is zero.
+
+This does **not** mean gradients are zero in general.
+
+It means that, for this specific example, the input attached to $w_1$ contributes nothing to the score, so this example provides no update signal for $w_1$.
+
+By contrast:
+
+- $x_2 = 1$, so $w_2$ does receive a gradient,
+- the bias derivative is always multiplied by 1, so $b$ also receives a gradient unless $\hat{y} - y = 0$.
+
+***Final answers***
+
+1. Score:
+
+   $$
+   z = -1.5
+   $$
+
+2. Prediction:
+
+   $$
+   \hat{y} \approx 0.1824
+   $$
+
+3. Loss:
+
+   $$
+   L \approx 0.2014
+   $$
+
+4. Simplified error term:
+
+   $$
+   \hat{y} - y \approx 0.1824
+   $$
+
+5. Gradients:
+
+   $$
+   \frac{\partial L}{\partial w_1} = 0,\quad
+   \frac{\partial L}{\partial w_2} \approx 0.1824,\quad
+   \frac{\partial L}{\partial b} \approx 0.1824
+   $$
+
+6. Updated parameters:
+
+   $$
+   w_1 = 2,\quad
+   w_2 \approx -1.01824,\quad
+   b \approx -0.51824
+   $$
+
+***Interpretation***
+
+Because the true target is 0, the model should push its prediction downward. Since $x_1 = 0$, the weight $w_1$ does not affect the score for this example and therefore receives zero gradient. The parameters $w_2$ and $b$ do affect the score, so they are updated.
+
+---
+
+## Final note
+
+Use these solutions to check your reasoning, not to replace it.
+
+The goal of this book is not only to get the final number correct, but to understand why each step works.

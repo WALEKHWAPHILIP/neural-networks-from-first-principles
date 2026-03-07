@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.24">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="keywords" content="neural networks, backpropagation, regression, classification, sigmoid, gradient descent, machine learning, educational book">
+<meta name="description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+
+<title>7&nbsp; Backpropagation for Classification – Neural Networks from First Principles</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./practice-exercises.html" rel="next">
+<link href="./backpropagation-1-regression.html" rel="prev">
+<link href="./images/favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-697d4de1eee3a11a7bce293067f0aa8c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="author" content="Walekhwa Tambiti Leo Philip">
+<meta name="description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta property="og:title" content="Neural Networks from First Principles">
+<meta property="og:description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<meta property="og:image" content="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/images/og-neural-networks-book.png">
+<meta property="og:site_name" content="Neural Networks from First Principles">
+<meta property="og:image:alt" content="Cover image for Neural Networks from First Principles">
+<meta property="og:image:height" content="630">
+<meta property="og:image:width" content="1200">
+<meta name="twitter:title" content="Neural Networks from First Principles">
+<meta name="twitter:description" content="A first-principles, hand-calculable introduction to neural networks covering one-neuron regression, binary classification, forward propagation, loss functions, backpropagation, and worked exercises.">
+<meta name="twitter:image" content="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/images/og-neural-networks-book.png">
+<meta name="twitter:image:alt" content="Cover image for Neural Networks from First Principles">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image-height" content="630">
+<meta name="twitter:image-width" content="1200">
+<link rel="canonical" href="https://learn.walsoftcomputers.com/educational_platform/neural-networks-from-first-principles/backpropagation-2-classification.html">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./backpropagation-2-classification.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Backpropagation for Classification</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Neural Networks from First Principles</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Welcome</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./about-this-book.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">About This Book</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basics-of-neural-networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basics of Neural Networks</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./single-neuron-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Single Neuron Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./single-neuron-classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Single Neuron Classification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backpropagation-1-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Backpropagation for Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./backpropagation-2-classification.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Backpropagation for Classification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./practice-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Practice Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./solutions-suggested-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Solutions to Suggested Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./solutions-practice-exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Solutions to Practice Exercises</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./glossary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Glossary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">References</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-this-chapter-exists" id="toc-why-this-chapter-exists" class="nav-link active" data-scroll-target="#why-this-chapter-exists"><span class="header-section-number">7.1</span> Why this chapter exists</a></li>
+  <li><a href="#our-setup" id="toc-our-setup" class="nav-link" data-scroll-target="#our-setup"><span class="header-section-number">7.2</span> Our setup</a></li>
+  <li><a href="#one-training-example" id="toc-one-training-example" class="nav-link" data-scroll-target="#one-training-example"><span class="header-section-number">7.3</span> One training example</a></li>
+  <li><a href="#step-1-forward-pass" id="toc-step-1-forward-pass" class="nav-link" data-scroll-target="#step-1-forward-pass"><span class="header-section-number">7.4</span> Step 1: forward pass</a></li>
+  <li><a href="#step-2-compute-the-loss" id="toc-step-2-compute-the-loss" class="nav-link" data-scroll-target="#step-2-compute-the-loss"><span class="header-section-number">7.5</span> Step 2: compute the loss</a></li>
+  <li><a href="#step-3-understand-the-computation-chain" id="toc-step-3-understand-the-computation-chain" class="nav-link" data-scroll-target="#step-3-understand-the-computation-chain"><span class="header-section-number">7.6</span> Step 3: understand the computation chain</a></li>
+  <li><a href="#step-4-the-chain-rule-for-this-model" id="toc-step-4-the-chain-rule-for-this-model" class="nav-link" data-scroll-target="#step-4-the-chain-rule-for-this-model"><span class="header-section-number">7.7</span> Step 4: the chain rule for this model</a></li>
+  <li><a href="#step-5-derivative-of-the-loss-with-respect-to-the-prediction" id="toc-step-5-derivative-of-the-loss-with-respect-to-the-prediction" class="nav-link" data-scroll-target="#step-5-derivative-of-the-loss-with-respect-to-the-prediction"><span class="header-section-number">7.8</span> Step 5: derivative of the loss with respect to the prediction</a></li>
+  <li><a href="#why-this-sign-makes-sense" id="toc-why-this-sign-makes-sense" class="nav-link" data-scroll-target="#why-this-sign-makes-sense"><span class="header-section-number">7.9</span> Why this sign makes sense</a></li>
+  <li><a href="#step-6-derivative-of-the-sigmoid-output-with-respect-to-the-score" id="toc-step-6-derivative-of-the-sigmoid-output-with-respect-to-the-score" class="nav-link" data-scroll-target="#step-6-derivative-of-the-sigmoid-output-with-respect-to-the-score"><span class="header-section-number">7.10</span> Step 6: derivative of the sigmoid output with respect to the score</a></li>
+  <li><a href="#why-this-derivative-matters" id="toc-why-this-derivative-matters" class="nav-link" data-scroll-target="#why-this-derivative-matters"><span class="header-section-number">7.11</span> Why this derivative matters</a></li>
+  <li><a href="#step-7-derivative-of-the-linear-score-with-respect-to-the-parameters" id="toc-step-7-derivative-of-the-linear-score-with-respect-to-the-parameters" class="nav-link" data-scroll-target="#step-7-derivative-of-the-linear-score-with-respect-to-the-parameters"><span class="header-section-number">7.12</span> Step 7: derivative of the linear score with respect to the parameters</a>
+  <ul class="collapse">
+  <li><a href="#with-respect-to-w_1" id="toc-with-respect-to-w_1" class="nav-link" data-scroll-target="#with-respect-to-w_1"><span class="header-section-number">7.12.1</span> With respect to <span class="math inline">\(w_1\)</span></a></li>
+  <li><a href="#with-respect-to-w_2" id="toc-with-respect-to-w_2" class="nav-link" data-scroll-target="#with-respect-to-w_2"><span class="header-section-number">7.12.2</span> With respect to <span class="math inline">\(w_2\)</span></a></li>
+  <li><a href="#with-respect-to-the-bias" id="toc-with-respect-to-the-bias" class="nav-link" data-scroll-target="#with-respect-to-the-bias"><span class="header-section-number">7.12.3</span> With respect to the bias</a></li>
+  </ul></li>
+  <li><a href="#why-partial-z-partial-w_2-0-here" id="toc-why-partial-z-partial-w_2-0-here" class="nav-link" data-scroll-target="#why-partial-z-partial-w_2-0-here"><span class="header-section-number">7.13</span> Why <span class="math inline">\(\partial z / \partial w_2 = 0\)</span> here</a></li>
+  <li><a href="#step-8-combine-the-pieces-using-the-chain-rule" id="toc-step-8-combine-the-pieces-using-the-chain-rule" class="nav-link" data-scroll-target="#step-8-combine-the-pieces-using-the-chain-rule"><span class="header-section-number">7.14</span> Step 8: combine the pieces using the chain rule</a>
+  <ul class="collapse">
+  <li><a href="#gradient-for-w_1" id="toc-gradient-for-w_1" class="nav-link" data-scroll-target="#gradient-for-w_1"><span class="header-section-number">7.14.1</span> Gradient for <span class="math inline">\(w_1\)</span></a></li>
+  <li><a href="#gradient-for-w_2" id="toc-gradient-for-w_2" class="nav-link" data-scroll-target="#gradient-for-w_2"><span class="header-section-number">7.14.2</span> Gradient for <span class="math inline">\(w_2\)</span></a></li>
+  <li><a href="#gradient-for-b" id="toc-gradient-for-b" class="nav-link" data-scroll-target="#gradient-for-b"><span class="header-section-number">7.14.3</span> Gradient for <span class="math inline">\(b\)</span></a></li>
+  </ul></li>
+  <li><a href="#step-9-an-important-simplification" id="toc-step-9-an-important-simplification" class="nav-link" data-scroll-target="#step-9-an-important-simplification"><span class="header-section-number">7.15</span> Step 9: an important simplification</a></li>
+  <li><a href="#why-this-simplification-is-powerful" id="toc-why-this-simplification-is-powerful" class="nav-link" data-scroll-target="#why-this-simplification-is-powerful"><span class="header-section-number">7.16</span> Why this simplification is powerful</a></li>
+  <li><a href="#step-10-update-the-parameters" id="toc-step-10-update-the-parameters" class="nav-link" data-scroll-target="#step-10-update-the-parameters"><span class="header-section-number">7.17</span> Step 10: update the parameters</a>
+  <ul class="collapse">
+  <li><a href="#update-w_1" id="toc-update-w_1" class="nav-link" data-scroll-target="#update-w_1"><span class="header-section-number">7.17.1</span> Update <span class="math inline">\(w_1\)</span></a></li>
+  <li><a href="#update-w_2" id="toc-update-w_2" class="nav-link" data-scroll-target="#update-w_2"><span class="header-section-number">7.17.2</span> Update <span class="math inline">\(w_2\)</span></a></li>
+  <li><a href="#update-b" id="toc-update-b" class="nav-link" data-scroll-target="#update-b"><span class="header-section-number">7.17.3</span> Update <span class="math inline">\(b\)</span></a></li>
+  </ul></li>
+  <li><a href="#step-11-check-whether-the-loss-decreased" id="toc-step-11-check-whether-the-loss-decreased" class="nav-link" data-scroll-target="#step-11-check-whether-the-loss-decreased"><span class="header-section-number">7.18</span> Step 11: check whether the loss decreased</a></li>
+  <li><a href="#why-the-loss-decreased" id="toc-why-the-loss-decreased" class="nav-link" data-scroll-target="#why-the-loss-decreased"><span class="header-section-number">7.19</span> Why the loss decreased</a></li>
+  <li><a href="#a-small-python-check" id="toc-a-small-python-check" class="nav-link" data-scroll-target="#a-small-python-check"><span class="header-section-number">7.20</span> A small Python check</a></li>
+  <li><a href="#why-this-chapter-matters-so-much" id="toc-why-this-chapter-matters-so-much" class="nav-link" data-scroll-target="#why-this-chapter-matters-so-much"><span class="header-section-number">7.21</span> Why this chapter matters so much</a></li>
+  <li><a href="#common-mistakes" id="toc-common-mistakes" class="nav-link" data-scroll-target="#common-mistakes"><span class="header-section-number">7.22</span> Common mistakes</a>
+  <ul class="collapse">
+  <li><a href="#mistake-1-differentiating-binary-cross-entropy-incorrectly" id="toc-mistake-1-differentiating-binary-cross-entropy-incorrectly" class="nav-link" data-scroll-target="#mistake-1-differentiating-binary-cross-entropy-incorrectly"><span class="header-section-number">7.22.1</span> Mistake 1: differentiating binary cross-entropy incorrectly</a></li>
+  <li><a href="#mistake-2-forgetting-the-sigmoid-derivative" id="toc-mistake-2-forgetting-the-sigmoid-derivative" class="nav-link" data-scroll-target="#mistake-2-forgetting-the-sigmoid-derivative"><span class="header-section-number">7.22.2</span> Mistake 2: forgetting the sigmoid derivative</a></li>
+  <li><a href="#mistake-3-forgetting-the-simplification-applies-to-this-specific-pairing" id="toc-mistake-3-forgetting-the-simplification-applies-to-this-specific-pairing" class="nav-link" data-scroll-target="#mistake-3-forgetting-the-simplification-applies-to-this-specific-pairing"><span class="header-section-number">7.22.3</span> Mistake 3: forgetting the simplification applies to this specific pairing</a></li>
+  <li><a href="#mistake-4-being-confused-by-w_2-having-zero-gradient-here" id="toc-mistake-4-being-confused-by-w_2-having-zero-gradient-here" class="nav-link" data-scroll-target="#mistake-4-being-confused-by-w_2-having-zero-gradient-here"><span class="header-section-number">7.22.4</span> Mistake 4: being confused by <span class="math inline">\(w_2\)</span> having zero gradient here</a></li>
+  </ul></li>
+  <li><a href="#chapter-checklist" id="toc-chapter-checklist" class="nav-link" data-scroll-target="#chapter-checklist"><span class="header-section-number">7.23</span> Chapter checklist</a></li>
+  <li><a href="#suggested-by-hand-exercise" id="toc-suggested-by-hand-exercise" class="nav-link" data-scroll-target="#suggested-by-hand-exercise"><span class="header-section-number">7.24</span> Suggested by-hand exercise</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Backpropagation for Classification</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+<div>
+  <div class="keywords">
+    <div class="block-title">Keywords</div>
+    <p>neural networks, backpropagation, regression, classification, sigmoid, gradient descent, machine learning, educational book</p>
+  </div>
+</div>
+
+</header>
+
+
+<section id="why-this-chapter-exists" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="why-this-chapter-exists"><span class="header-section-number">7.1</span> Why this chapter exists</h2>
+<p>In the previous chapter, we studied backpropagation for a regression neuron with identity activation.</p>
+<p>This chapter extends the same logic to binary classification.</p>
+<p>Now the computation has one more important step:</p>
+<ol type="1">
+<li>compute the linear score <span class="math inline">\(z\)</span>,</li>
+<li>apply sigmoid to obtain <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>compute binary cross-entropy loss,</li>
+<li>propagate gradients backward,</li>
+<li>update the parameters.</li>
+</ol>
+<p>This chapter matters because it shows how learning works when the output is probability-like rather than unrestricted.</p>
+</section>
+<section id="our-setup" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="our-setup"><span class="header-section-number">7.2</span> Our setup</h2>
+<p>We use one neuron with two inputs:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>The prediction is the sigmoid output:</p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+\]</span></p>
+<p>The loss for one example is binary cross-entropy:</p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p>This sigmoid-plus-cross-entropy setup is standard in binary neural-network classification <span class="citation" data-cites="bishop2006pattern goodfellow2016deep haykin2009neural">(<a href="references.html#ref-bishop2006pattern" role="doc-biblioref">Bishop, 2006</a>; <a href="references.html#ref-goodfellow2016deep" role="doc-biblioref">Goodfellow et al., 2016</a>; <a href="references.html#ref-haykin2009neural" role="doc-biblioref">Haykin, 2009</a>)</span>.</p>
+</section>
+<section id="one-training-example" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="one-training-example"><span class="header-section-number">7.3</span> One training example</h2>
+<p>Use this example:</p>
+<p><span class="math display">\[
+x_1 = 1,\quad x_2 = 0,\quad y = 1
+\]</span></p>
+<p>and initial parameters:</p>
+<p><span class="math display">\[
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+\]</span></p>
+<p>Let the learning rate be:</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+</section>
+<section id="step-1-forward-pass" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="step-1-forward-pass"><span class="header-section-number">7.4</span> Step 1: forward pass</h2>
+<p>First compute the linear score:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>Substitute:</p>
+<p><span class="math display">\[
+z = (2)(1) + (-1)(0) + (-0.5)
+\]</span></p>
+<p><span class="math display">\[
+z = 2 + 0 - 0.5 = 1.5
+\]</span></p>
+<p>Now apply sigmoid:</p>
+<p><span class="math display">\[
+\hat{y} = \sigma(1.5) = \frac{1}{1 + e^{-1.5}}
+\]</span></p>
+<p>Using:</p>
+<p><span class="math display">\[
+e^{-1.5} \approx 0.2231
+\]</span></p>
+<p>we get:</p>
+<p><span class="math display">\[
+\hat{y} \approx \frac{1}{1 + 0.2231}
+= \frac{1}{1.2231}
+\approx 0.8176
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.8176
+\]</span></p>
+</section>
+<section id="step-2-compute-the-loss" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="step-2-compute-the-loss"><span class="header-section-number">7.5</span> Step 2: compute the loss</h2>
+<p>The true target is:</p>
+<p><span class="math display">\[
+y = 1
+\]</span></p>
+<p>So binary cross-entropy becomes:</p>
+<p><span class="math display">\[
+L = -\log(\hat{y})
+\]</span></p>
+<p>Substitute:</p>
+<p><span class="math display">\[
+L = -\log(0.8176)
+\]</span></p>
+<p>Using:</p>
+<p><span class="math display">\[
+\log(0.8176) \approx -0.2014
+\]</span></p>
+<p>we get:</p>
+<p><span class="math display">\[
+L \approx 0.2014
+\]</span></p>
+<p>So the current loss is:</p>
+<p><span class="math display">\[
+L \approx 0.2014
+\]</span></p>
+</section>
+<section id="step-3-understand-the-computation-chain" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="step-3-understand-the-computation-chain"><span class="header-section-number">7.6</span> Step 3: understand the computation chain</h2>
+<p>Before computing gradients, we must understand how the loss depends on the parameters.</p>
+<p>The loss is not a direct function of the weights and bias. Instead, the parameters influence the loss through intermediate quantities.</p>
+<p>The sequence of computations is:</p>
+<p><span class="math display">\[
+(w_1, w_2, b) \rightarrow z \rightarrow \hat{y} \rightarrow L
+\]</span></p>
+<p>This means:</p>
+<ul>
+<li>the parameters determine the linear score <span class="math inline">\(z\)</span>,</li>
+<li>the score determines the prediction <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the prediction determines the loss <span class="math inline">\(L\)</span>.</li>
+</ul>
+<p>Written as explicit formulas:</p>
+<ol type="1">
+<li><p>Linear score:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p></li>
+<li><p>Sigmoid prediction:</p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z)
+\]</span></p></li>
+<li><p>Binary cross-entropy loss:</p>
+<p><span class="math display">\[
+L = -\left[y\log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p></li>
+</ol>
+<p>So the loss is a function of a function of a function.</p>
+<p>Because of this layered dependency, we must apply the chain rule when computing gradients.</p>
+</section>
+<section id="step-4-the-chain-rule-for-this-model" class="level2" data-number="7.7">
+<h2 data-number="7.7" class="anchored" data-anchor-id="step-4-the-chain-rule-for-this-model"><span class="header-section-number">7.7</span> Step 4: the chain rule for this model</h2>
+<p>Suppose we want the gradient with respect to <span class="math inline">\(w_1\)</span>.</p>
+<p>A change in <span class="math inline">\(w_1\)</span>:</p>
+<ol type="1">
+<li>changes <span class="math inline">\(z\)</span>,</li>
+<li>which changes <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>which changes the loss <span class="math inline">\(L\)</span>.</li>
+</ol>
+<p>Therefore:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial z}
+\cdot
+\frac{\partial z}{\partial w_1}
+\]</span></p>
+<p>Each factor represents one link in the dependency chain.</p>
+<p>We now compute these pieces one by one.</p>
+</section>
+<section id="step-5-derivative-of-the-loss-with-respect-to-the-prediction" class="level2" data-number="7.8">
+<h2 data-number="7.8" class="anchored" data-anchor-id="step-5-derivative-of-the-loss-with-respect-to-the-prediction"><span class="header-section-number">7.8</span> Step 5: derivative of the loss with respect to the prediction</h2>
+<p>Start from the binary cross-entropy definition:</p>
+<p><span class="math display">\[
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+\]</span></p>
+<p>Differentiate with respect to <span class="math inline">\(\hat{y}\)</span>:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}}
+=
+-\left(\frac{y}{\hat{y}} - \frac{1-y}{1-\hat{y}}\right)
+\]</span></p>
+<p>For this example the true target is:</p>
+<p><span class="math display">\[
+y = 1
+\]</span></p>
+<p>So the formula simplifies to:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}} = -\frac{1}{\hat{y}}
+\]</span></p>
+<p>Substitute the prediction:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.8176
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}} \approx -\frac{1}{0.8176}
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial \hat{y}} \approx -1.2231
+\]</span></p>
+</section>
+<section id="why-this-sign-makes-sense" class="level2" data-number="7.9">
+<h2 data-number="7.9" class="anchored" data-anchor-id="why-this-sign-makes-sense"><span class="header-section-number">7.9</span> Why this sign makes sense</h2>
+<p>The derivative is negative because the target is <span class="math inline">\(1\)</span> but the prediction is still below <span class="math inline">\(1\)</span>.</p>
+<p>So if <span class="math inline">\(\hat{y}\)</span> increases a little, the loss should decrease.</p>
+<p>That is why the slope with respect to <span class="math inline">\(\hat{y}\)</span> is negative here.</p>
+</section>
+<section id="step-6-derivative-of-the-sigmoid-output-with-respect-to-the-score" class="level2" data-number="7.10">
+<h2 data-number="7.10" class="anchored" data-anchor-id="step-6-derivative-of-the-sigmoid-output-with-respect-to-the-score"><span class="header-section-number">7.10</span> Step 6: derivative of the sigmoid output with respect to the score</h2>
+<p>The sigmoid function is:</p>
+<p><span class="math display">\[
+\hat{y} = \sigma(z)
+\]</span></p>
+<p>A useful property of sigmoid is that its derivative has a simple form:</p>
+<p><span class="math display">\[
+\frac{\partial \hat{y}}{\partial z} = \hat{y}(1-\hat{y})
+\]</span></p>
+<p>Substitute the prediction:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.8176
+\]</span></p>
+<p>Compute:</p>
+<p><span class="math display">\[
+\frac{\partial \hat{y}}{\partial z}
+\approx 0.8176(1-0.8176)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial \hat{y}}{\partial z}
+\approx 0.8176(0.1824)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial \hat{y}}{\partial z} \approx 0.1491
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\frac{\partial \hat{y}}{\partial z} \approx 0.1491
+\]</span></p>
+</section>
+<section id="why-this-derivative-matters" class="level2" data-number="7.11">
+<h2 data-number="7.11" class="anchored" data-anchor-id="why-this-derivative-matters"><span class="header-section-number">7.11</span> Why this derivative matters</h2>
+<p>This derivative tells us how sensitive the prediction is to the score <span class="math inline">\(z\)</span>.</p>
+<p>If this value is small, then even a noticeable change in <span class="math inline">\(z\)</span> produces only a small change in <span class="math inline">\(\hat{y}\)</span>.</p>
+<p>That is why sigmoid can sometimes learn slowly when it saturates near 0 or 1.</p>
+</section>
+<section id="step-7-derivative-of-the-linear-score-with-respect-to-the-parameters" class="level2" data-number="7.12">
+<h2 data-number="7.12" class="anchored" data-anchor-id="step-7-derivative-of-the-linear-score-with-respect-to-the-parameters"><span class="header-section-number">7.12</span> Step 7: derivative of the linear score with respect to the parameters</h2>
+<p>The linear score is:</p>
+<p><span class="math display">\[
+z = w_1 x_1 + w_2 x_2 + b
+\]</span></p>
+<p>The derivatives are simple because this expression is linear.</p>
+<section id="with-respect-to-w_1" class="level3" data-number="7.12.1">
+<h3 data-number="7.12.1" class="anchored" data-anchor-id="with-respect-to-w_1"><span class="header-section-number">7.12.1</span> With respect to <span class="math inline">\(w_1\)</span></h3>
+<p><span class="math display">\[
+\frac{\partial z}{\partial w_1} = x_1
+\]</span></p>
+<p>Given:</p>
+<p><span class="math display">\[
+x_1 = 1
+\]</span></p>
+<p>so:</p>
+<p><span class="math display">\[
+\frac{\partial z}{\partial w_1} = 1
+\]</span></p>
+</section>
+<section id="with-respect-to-w_2" class="level3" data-number="7.12.2">
+<h3 data-number="7.12.2" class="anchored" data-anchor-id="with-respect-to-w_2"><span class="header-section-number">7.12.2</span> With respect to <span class="math inline">\(w_2\)</span></h3>
+<p><span class="math display">\[
+\frac{\partial z}{\partial w_2} = x_2
+\]</span></p>
+<p>Given:</p>
+<p><span class="math display">\[
+x_2 = 0
+\]</span></p>
+<p>so:</p>
+<p><span class="math display">\[
+\frac{\partial z}{\partial w_2} = 0
+\]</span></p>
+</section>
+<section id="with-respect-to-the-bias" class="level3" data-number="7.12.3">
+<h3 data-number="7.12.3" class="anchored" data-anchor-id="with-respect-to-the-bias"><span class="header-section-number">7.12.3</span> With respect to the bias</h3>
+<p><span class="math display">\[
+\frac{\partial z}{\partial b} = 1
+\]</span></p>
+</section>
+</section>
+<section id="why-partial-z-partial-w_2-0-here" class="level2" data-number="7.13">
+<h2 data-number="7.13" class="anchored" data-anchor-id="why-partial-z-partial-w_2-0-here"><span class="header-section-number">7.13</span> Why <span class="math inline">\(\partial z / \partial w_2 = 0\)</span> here</h2>
+<p>This is an important teaching moment.</p>
+<p>The input <span class="math inline">\(x_2\)</span> for this example is:</p>
+<p><span class="math display">\[
+x_2 = 0
+\]</span></p>
+<p>So no matter what value <span class="math inline">\(w_2\)</span> has, the product <span class="math inline">\(w_2 x_2\)</span> contributes nothing to the score for this one training case.</p>
+<p>That is why this example gives no update signal for <span class="math inline">\(w_2\)</span>.</p>
+</section>
+<section id="step-8-combine-the-pieces-using-the-chain-rule" class="level2" data-number="7.14">
+<h2 data-number="7.14" class="anchored" data-anchor-id="step-8-combine-the-pieces-using-the-chain-rule"><span class="header-section-number">7.14</span> Step 8: combine the pieces using the chain rule</h2>
+<p>Now multiply the derivatives along the chain.</p>
+<section id="gradient-for-w_1" class="level3" data-number="7.14.1">
+<h3 data-number="7.14.1" class="anchored" data-anchor-id="gradient-for-w_1"><span class="header-section-number">7.14.1</span> Gradient for <span class="math inline">\(w_1\)</span></h3>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial z}
+\cdot
+\frac{\partial z}{\partial w_1}
+\]</span></p>
+<p>Substitute values:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1}
+\approx (-1.2231)(0.1491)(1)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} \approx -0.1823
+\]</span></p>
+</section>
+<section id="gradient-for-w_2" class="level3" data-number="7.14.2">
+<h3 data-number="7.14.2" class="anchored" data-anchor-id="gradient-for-w_2"><span class="header-section-number">7.14.2</span> Gradient for <span class="math inline">\(w_2\)</span></h3>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial z}
+\cdot
+\frac{\partial z}{\partial w_2}
+\]</span></p>
+<p>Substitute values:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2}
+\approx (-1.2231)(0.1491)(0)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} = 0
+\]</span></p>
+</section>
+<section id="gradient-for-b" class="level3" data-number="7.14.3">
+<h3 data-number="7.14.3" class="anchored" data-anchor-id="gradient-for-b"><span class="header-section-number">7.14.3</span> Gradient for <span class="math inline">\(b\)</span></h3>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial z}
+\cdot
+\frac{\partial z}{\partial b}
+\]</span></p>
+<p>Substitute values:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b}
+\approx (-1.2231)(0.1491)(1)
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b} \approx -0.1823
+\]</span></p>
+<p>So approximately:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} \approx -0.1823
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} = 0
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b} \approx -0.1823
+\]</span></p>
+</section>
+</section>
+<section id="step-9-an-important-simplification" class="level2" data-number="7.15">
+<h2 data-number="7.15" class="anchored" data-anchor-id="step-9-an-important-simplification"><span class="header-section-number">7.15</span> Step 9: an important simplification</h2>
+<p>For sigmoid output combined with binary cross-entropy, the gradient simplifies to a very elegant result:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial z} = \hat{y} - y
+\]</span></p>
+<p>For sigmoid output with binary cross-entropy loss, this gradient simplification is standard <span class="citation" data-cites="goodfellow2016deep bishop2006pattern rumelhart1986learning">(<a href="references.html#ref-bishop2006pattern" role="doc-biblioref">Bishop, 2006</a>; <a href="references.html#ref-goodfellow2016deep" role="doc-biblioref">Goodfellow et al., 2016</a>; <a href="references.html#ref-rumelhart1986learning" role="doc-biblioref">Rumelhart et al., 1986</a>)</span>.</p>
+<p>Let us verify it numerically.</p>
+<p>We had:</p>
+<p><span class="math display">\[
+\hat{y} \approx 0.8176
+\]</span></p>
+<p>and:</p>
+<p><span class="math display">\[
+y = 1
+\]</span></p>
+<p>So:</p>
+<p><span class="math display">\[
+\hat{y} - y = 0.8176 - 1
+\]</span></p>
+<p><span class="math display">\[
+\hat{y} - y \approx -0.1824
+\]</span></p>
+<p>This matches the chain-rule result above up to rounding.</p>
+<p>Because of this property, we can write the gradients more simply:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_1} = (\hat{y}-y)x_1
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial w_2} = (\hat{y}-y)x_2
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial b} = \hat{y}-y
+\]</span></p>
+</section>
+<section id="why-this-simplification-is-powerful" class="level2" data-number="7.16">
+<h2 data-number="7.16" class="anchored" data-anchor-id="why-this-simplification-is-powerful"><span class="header-section-number">7.16</span> Why this simplification is powerful</h2>
+<p>Without simplification, we must compute:</p>
+<ul>
+<li>the derivative of the loss with respect to <span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the derivative of sigmoid with respect to <span class="math inline">\(z\)</span>,</li>
+<li>the derivative of <span class="math inline">\(z\)</span> with respect to each parameter.</li>
+</ul>
+<p>With the simplification, the middle pieces collapse into one neat term:</p>
+<p><span class="math display">\[
+\hat{y} - y
+\]</span></p>
+<p>This makes classification backpropagation much easier to implement and teach.</p>
+</section>
+<section id="step-10-update-the-parameters" class="level2" data-number="7.17">
+<h2 data-number="7.17" class="anchored" data-anchor-id="step-10-update-the-parameters"><span class="header-section-number">7.17</span> Step 10: update the parameters</h2>
+<p>Gradient descent updates parameters using:</p>
+<p><span class="math display">\[
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+\]</span></p>
+<p>The learning rate is:</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+<p>We computed:</p>
+<p><span class="math display">\[
+\hat{y} - y \approx -0.1824
+\]</span></p>
+<section id="update-w_1" class="level3" data-number="7.17.1">
+<h3 data-number="7.17.1" class="anchored" data-anchor-id="update-w_1"><span class="header-section-number">7.17.1</span> Update <span class="math inline">\(w_1\)</span></h3>
+<p><span class="math display">\[
+w_1^{\text{new}} = 2 - 0.1(-0.1824)
+\]</span></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 2 + 0.01824
+\]</span></p>
+<p><span class="math display">\[
+w_1^{\text{new}} = 2.01824
+\]</span></p>
+</section>
+<section id="update-w_2" class="level3" data-number="7.17.2">
+<h3 data-number="7.17.2" class="anchored" data-anchor-id="update-w_2"><span class="header-section-number">7.17.2</span> Update <span class="math inline">\(w_2\)</span></h3>
+<p><span class="math display">\[
+w_2^{\text{new}} = -1 - 0.1(0)
+\]</span></p>
+<p><span class="math display">\[
+w_2^{\text{new}} = -1
+\]</span></p>
+</section>
+<section id="update-b" class="level3" data-number="7.17.3">
+<h3 data-number="7.17.3" class="anchored" data-anchor-id="update-b"><span class="header-section-number">7.17.3</span> Update <span class="math inline">\(b\)</span></h3>
+<p><span class="math display">\[
+b^{\text{new}} = -0.5 - 0.1(-0.1824)
+\]</span></p>
+<p><span class="math display">\[
+b^{\text{new}} = -0.5 + 0.01824
+\]</span></p>
+<p><span class="math display">\[
+b^{\text{new}} = -0.48176
+\]</span></p>
+<p>So the updated parameters are approximately:</p>
+<p><span class="math display">\[
+w_1 = 2.0182
+\]</span></p>
+<p><span class="math display">\[
+w_2 = -1.0
+\]</span></p>
+<p><span class="math display">\[
+b = -0.4818
+\]</span></p>
+</section>
+</section>
+<section id="step-11-check-whether-the-loss-decreased" class="level2" data-number="7.18">
+<h2 data-number="7.18" class="anchored" data-anchor-id="step-11-check-whether-the-loss-decreased"><span class="header-section-number">7.18</span> Step 11: check whether the loss decreased</h2>
+<p>Now compute the new score:</p>
+<p><span class="math display">\[
+z_{\text{new}} = (2.01824)(1) + (-1)(0) + (-0.48176)
+\]</span></p>
+<p><span class="math display">\[
+z_{\text{new}} = 1.53648
+\]</span></p>
+<p>Now compute the new prediction:</p>
+<p><span class="math display">\[
+\hat{y}_{\text{new}} = \sigma(1.53648) \approx 0.8230
+\]</span></p>
+<p>Because the true target is 1, the prediction moved slightly closer to 1.</p>
+<p>Now compute the new loss:</p>
+<p><span class="math display">\[
+L_{\text{new}} = -\log(0.8230) \approx 0.1949
+\]</span></p>
+<p>So the loss decreased approximately:</p>
+<p><span class="math display">\[
+0.2014 \to 0.1949
+\]</span></p>
+</section>
+<section id="why-the-loss-decreased" class="level2" data-number="7.19">
+<h2 data-number="7.19" class="anchored" data-anchor-id="why-the-loss-decreased"><span class="header-section-number">7.19</span> Why the loss decreased</h2>
+<p>The target is:</p>
+<p><span class="math display">\[
+y = 1
+\]</span></p>
+<p>The original prediction was:</p>
+<p><span class="math display">\[
+0.8176
+\]</span></p>
+<p>The new prediction became slightly larger:</p>
+<p><span class="math display">\[
+0.8230
+\]</span></p>
+<p>That moves the model in the correct direction for this example.</p>
+<p>So the loss decreases.</p>
+</section>
+<section id="a-small-python-check" class="level2" data-number="7.20">
+<h2 data-number="7.20" class="anchored" data-anchor-id="a-small-python-check"><span class="header-section-number">7.20</span> A small Python check</h2>
+<div id="769afadb" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>w1 <span class="op">=</span> <span class="fl">2.0</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>w2 <span class="op">=</span> <span class="op">-</span><span class="fl">1.0</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>eta <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sigmoid(z):</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> math.exp(<span class="op">-</span>z))</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward pass</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> w1 <span class="op">*</span> x1 <span class="op">+</span> w2 <span class="op">*</span> x2 <span class="op">+</span> b</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>y_hat <span class="op">=</span> sigmoid(z)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>loss <span class="op">=</span> <span class="op">-</span>(y <span class="op">*</span> math.log(y_hat) <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> y) <span class="op">*</span> math.log(<span class="dv">1</span> <span class="op">-</span> y_hat))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Simplified gradient for sigmoid + BCE</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>dL_dz <span class="op">=</span> y_hat <span class="op">-</span> y</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>dL_dw1 <span class="op">=</span> dL_dz <span class="op">*</span> x1</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>dL_dw2 <span class="op">=</span> dL_dz <span class="op">*</span> x2</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>dL_db <span class="op">=</span> dL_dz</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Update</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>w1_new <span class="op">=</span> w1 <span class="op">-</span> eta <span class="op">*</span> dL_dw1</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>w2_new <span class="op">=</span> w2 <span class="op">-</span> eta <span class="op">*</span> dL_dw2</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>b_new <span class="op">=</span> b <span class="op">-</span> eta <span class="op">*</span> dL_db</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># New forward pass</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>z_new <span class="op">=</span> w1_new <span class="op">*</span> x1 <span class="op">+</span> w2_new <span class="op">*</span> x2 <span class="op">+</span> b_new</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>y_hat_new <span class="op">=</span> sigmoid(z_new)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>loss_new <span class="op">=</span> <span class="op">-</span>(y <span class="op">*</span> math.log(y_hat_new) <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> y) <span class="op">*</span> math.log(<span class="dv">1</span> <span class="op">-</span> y_hat_new))</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Initial z:"</span>, <span class="bu">round</span>(z, <span class="dv">4</span>))</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Initial prediction:"</span>, <span class="bu">round</span>(y_hat, <span class="dv">4</span>))</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Initial loss:"</span>, <span class="bu">round</span>(loss, <span class="dv">4</span>))</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Gradients:"</span>)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  dL/dz  ="</span>, <span class="bu">round</span>(dL_dz, <span class="dv">4</span>))</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  dL/dw1 ="</span>, <span class="bu">round</span>(dL_dw1, <span class="dv">4</span>))</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  dL/dw2 ="</span>, <span class="bu">round</span>(dL_dw2, <span class="dv">4</span>))</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  dL/db  ="</span>, <span class="bu">round</span>(dL_db, <span class="dv">4</span>))</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Updated parameters:"</span>)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  w1 ="</span>, <span class="bu">round</span>(w1_new, <span class="dv">4</span>))</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  w2 ="</span>, <span class="bu">round</span>(w2_new, <span class="dv">4</span>))</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"  b  ="</span>, <span class="bu">round</span>(b_new, <span class="dv">4</span>))</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"New z:"</span>, <span class="bu">round</span>(z_new, <span class="dv">4</span>))</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"New prediction:"</span>, <span class="bu">round</span>(y_hat_new, <span class="dv">4</span>))</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"New loss:"</span>, <span class="bu">round</span>(loss_new, <span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Initial z: 1.5
+Initial prediction: 0.8176
+Initial loss: 0.2014
+
+Gradients:
+  dL/dz  = -0.1824
+  dL/dw1 = -0.1824
+  dL/dw2 = -0.0
+  dL/db  = -0.1824
+
+Updated parameters:
+  w1 = 2.0182
+  w2 = -1.0
+  b  = -0.4818
+
+New z: 1.5365
+New prediction: 0.823
+New loss: 0.1949</code></pre>
+</div>
+</div>
+</section>
+<section id="why-this-chapter-matters-so-much" class="level2" data-number="7.21">
+<h2 data-number="7.21" class="anchored" data-anchor-id="why-this-chapter-matters-so-much"><span class="header-section-number">7.21</span> Why this chapter matters so much</h2>
+<p>This chapter shows a very important truth:</p>
+<p>Backpropagation is still the chain rule, but some combinations of activation and loss produce elegant simplifications.</p>
+<p>For binary classification with sigmoid and cross-entropy:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial z} = \hat{y} - y
+\]</span></p>
+<p>That is one of the most useful formulas in introductory neural-network learning.</p>
+</section>
+<section id="common-mistakes" class="level2" data-number="7.22">
+<h2 data-number="7.22" class="anchored" data-anchor-id="common-mistakes"><span class="header-section-number">7.22</span> Common mistakes</h2>
+<section id="mistake-1-differentiating-binary-cross-entropy-incorrectly" class="level3" data-number="7.22.1">
+<h3 data-number="7.22.1" class="anchored" data-anchor-id="mistake-1-differentiating-binary-cross-entropy-incorrectly"><span class="header-section-number">7.22.1</span> Mistake 1: differentiating binary cross-entropy incorrectly</h3>
+<p>The logarithms and signs matter. One missing minus sign changes the result.</p>
+</section>
+<section id="mistake-2-forgetting-the-sigmoid-derivative" class="level3" data-number="7.22.2">
+<h3 data-number="7.22.2" class="anchored" data-anchor-id="mistake-2-forgetting-the-sigmoid-derivative"><span class="header-section-number">7.22.2</span> Mistake 2: forgetting the sigmoid derivative</h3>
+<p>If you do the long chain-rule route, you must include:</p>
+<p><span class="math display">\[
+\hat{y}(1-\hat{y})
+\]</span></p>
+</section>
+<section id="mistake-3-forgetting-the-simplification-applies-to-this-specific-pairing" class="level3" data-number="7.22.3">
+<h3 data-number="7.22.3" class="anchored" data-anchor-id="mistake-3-forgetting-the-simplification-applies-to-this-specific-pairing"><span class="header-section-number">7.22.3</span> Mistake 3: forgetting the simplification applies to this specific pairing</h3>
+<p>The simplification:</p>
+<p><span class="math display">\[
+\frac{\partial L}{\partial z} = \hat{y} - y
+\]</span></p>
+<p>depends on using sigmoid output together with binary cross-entropy.</p>
+<p>It is not a universal formula for every activation-loss combination.</p>
+</section>
+<section id="mistake-4-being-confused-by-w_2-having-zero-gradient-here" class="level3" data-number="7.22.4">
+<h3 data-number="7.22.4" class="anchored" data-anchor-id="mistake-4-being-confused-by-w_2-having-zero-gradient-here"><span class="header-section-number">7.22.4</span> Mistake 4: being confused by <span class="math inline">\(w_2\)</span> having zero gradient here</h3>
+<p>That happened only because:</p>
+<p><span class="math display">\[
+x_2 = 0
+\]</span></p>
+<p>So this example gives no immediate update signal for <span class="math inline">\(w_2\)</span>.</p>
+</section>
+</section>
+<section id="chapter-checklist" class="level2" data-number="7.23">
+<h2 data-number="7.23" class="anchored" data-anchor-id="chapter-checklist"><span class="header-section-number">7.23</span> Chapter checklist</h2>
+<p>By the end of this chapter, you should be able to answer:</p>
+<ol type="1">
+<li>What is the computation chain in classification backpropagation?</li>
+<li>Why do we use sigmoid here?</li>
+<li>What is binary cross-entropy measuring?</li>
+<li>Why does the gradient simplify to <span class="math inline">\(\hat{y} - y\)</span>?</li>
+<li>Why was <span class="math inline">\(\frac{\partial L}{\partial w_2} = 0\)</span> in this example?</li>
+<li>Why did the loss decrease after the update?</li>
+</ol>
+</section>
+<section id="suggested-by-hand-exercise" class="level2" data-number="7.24">
+<h2 data-number="7.24" class="anchored" data-anchor-id="suggested-by-hand-exercise"><span class="header-section-number">7.24</span> Suggested by-hand exercise</h2>
+<p>Use:</p>
+<p><span class="math display">\[
+x_1 = 1,\quad x_2 = 1,\quad y = 1
+\]</span></p>
+<p>with initial parameters:</p>
+<p><span class="math display">\[
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+\]</span></p>
+<p>and learning rate:</p>
+<p><span class="math display">\[
+\eta = 0.1
+\]</span></p>
+<p>Compute by hand:</p>
+<ol type="1">
+<li><span class="math inline">\(z\)</span>,</li>
+<li><span class="math inline">\(\hat{y}\)</span>,</li>
+<li>the binary cross-entropy loss,</li>
+<li><span class="math inline">\(\hat{y} - y\)</span>,</li>
+<li>the gradients for <span class="math inline">\(w_1\)</span>, <span class="math inline">\(w_2\)</span>, and <span class="math inline">\(b\)</span>,</li>
+<li>the updated parameters,</li>
+<li>the new prediction and new loss.</li>
+</ol>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-bishop2006pattern" class="csl-entry" role="listitem">
+Bishop, C. M. (2006). <em>Pattern recognition and machine learning</em>. Springer.
+</div>
+<div id="ref-goodfellow2016deep" class="csl-entry" role="listitem">
+Goodfellow, I., Bengio, Y., &amp; Courville, A. (2016). <em>Deep learning</em>. MIT Press. <a href="https://www.deeplearningbook.org/">https://www.deeplearningbook.org/</a>
+</div>
+<div id="ref-haykin2009neural" class="csl-entry" role="listitem">
+Haykin, S. (2009). <em>Neural networks and learning machines</em> (3rd ed.). Pearson.
+</div>
+<div id="ref-rumelhart1986learning" class="csl-entry" role="listitem">
+Rumelhart, D. E., Hinton, G. E., &amp; Williams, R. J. (1986). Learning representations by back-propagating errors. <em>Nature</em>, <em>323</em>(6088), 533–536. <a href="https://doi.org/10.1038/323533a0">https://doi.org/10.1038/323533a0</a>
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/learn\.walsoftcomputers\.com\/educational_platform\/neural-networks-from-first-principles\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./backpropagation-1-regression.html" class="pagination-link" aria-label="Backpropagation for Regression">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Backpropagation for Regression</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./practice-exercises.html" class="pagination-link" aria-label="Practice Exercises">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Practice Exercises</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

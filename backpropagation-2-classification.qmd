@@ -1,0 +1,810 @@
+---
+title: "Backpropagation for Classification"
+---
+
+## Why this chapter exists
+
+In the previous chapter, we studied backpropagation for a regression neuron with identity activation.
+
+This chapter extends the same logic to binary classification.
+
+Now the computation has one more important step:
+
+1. compute the linear score $z$,
+2. apply sigmoid to obtain $\hat{y}$,
+3. compute binary cross-entropy loss,
+4. propagate gradients backward,
+5. update the parameters.
+
+This chapter matters because it shows how learning works when the output is probability-like rather than unrestricted.
+
+## Our setup
+
+We use one neuron with two inputs:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+The prediction is the sigmoid output:
+
+$$
+\hat{y} = \sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+The loss for one example is binary cross-entropy:
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+This sigmoid-plus-cross-entropy setup is standard in binary neural-network classification [@bishop2006pattern; @goodfellow2016deep; @haykin2009neural].
+
+## One training example
+
+Use this example:
+
+$$
+x_1 = 1,\quad x_2 = 0,\quad y = 1
+$$
+
+and initial parameters:
+
+$$
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+$$
+
+Let the learning rate be:
+
+$$
+\eta = 0.1
+$$
+
+## Step 1: forward pass
+
+First compute the linear score:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+Substitute:
+
+$$
+z = (2)(1) + (-1)(0) + (-0.5)
+$$
+
+$$
+z = 2 + 0 - 0.5 = 1.5
+$$
+
+Now apply sigmoid:
+
+$$
+\hat{y} = \sigma(1.5) = \frac{1}{1 + e^{-1.5}}
+$$
+
+Using:
+
+$$
+e^{-1.5} \approx 0.2231
+$$
+
+we get:
+
+$$
+\hat{y} \approx \frac{1}{1 + 0.2231}
+= \frac{1}{1.2231}
+\approx 0.8176
+$$
+
+So:
+
+$$
+\hat{y} \approx 0.8176
+$$
+
+## Step 2: compute the loss
+
+The true target is:
+
+$$
+y = 1
+$$
+
+So binary cross-entropy becomes:
+
+$$
+L = -\log(\hat{y})
+$$
+
+Substitute:
+
+$$
+L = -\log(0.8176)
+$$
+
+Using:
+
+$$
+\log(0.8176) \approx -0.2014
+$$
+
+we get:
+
+$$
+L \approx 0.2014
+$$
+
+So the current loss is:
+
+$$
+L \approx 0.2014
+$$
+
+## Step 3: understand the computation chain
+
+Before computing gradients, we must understand how the loss depends on the parameters.
+
+The loss is not a direct function of the weights and bias. Instead, the parameters influence the loss through intermediate quantities.
+
+The sequence of computations is:
+
+$$
+(w_1, w_2, b) \rightarrow z \rightarrow \hat{y} \rightarrow L
+$$
+
+This means:
+
+- the parameters determine the linear score $z$,
+- the score determines the prediction $\hat{y}$,
+- the prediction determines the loss $L$.
+
+Written as explicit formulas:
+
+1. Linear score:
+
+   $$
+   z = w_1 x_1 + w_2 x_2 + b
+   $$
+
+2. Sigmoid prediction:
+
+   $$
+   \hat{y} = \sigma(z)
+   $$
+
+3. Binary cross-entropy loss:
+
+   $$
+   L = -\left[y\log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+   $$
+
+So the loss is a function of a function of a function.
+
+Because of this layered dependency, we must apply the chain rule when computing gradients.
+
+## Step 4: the chain rule for this model
+
+Suppose we want the gradient with respect to $w_1$.
+
+A change in $w_1$:
+
+1. changes $z$,
+2. which changes $\hat{y}$,
+3. which changes the loss $L$.
+
+Therefore:
+
+$$
+\frac{\partial L}{\partial w_1}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial z}
+\cdot
+\frac{\partial z}{\partial w_1}
+$$
+
+Each factor represents one link in the dependency chain.
+
+We now compute these pieces one by one.
+
+## Step 5: derivative of the loss with respect to the prediction
+
+Start from the binary cross-entropy definition:
+
+$$
+L = -\left[y \log(\hat{y}) + (1-y)\log(1-\hat{y})\right]
+$$
+
+Differentiate with respect to $\hat{y}$:
+
+$$
+\frac{\partial L}{\partial \hat{y}}
+=
+-\left(\frac{y}{\hat{y}} - \frac{1-y}{1-\hat{y}}\right)
+$$
+
+For this example the true target is:
+
+$$
+y = 1
+$$
+
+So the formula simplifies to:
+
+$$
+\frac{\partial L}{\partial \hat{y}} = -\frac{1}{\hat{y}}
+$$
+
+Substitute the prediction:
+
+$$
+\hat{y} \approx 0.8176
+$$
+
+Then:
+
+$$
+\frac{\partial L}{\partial \hat{y}} \approx -\frac{1}{0.8176}
+$$
+
+$$
+\frac{\partial L}{\partial \hat{y}} \approx -1.2231
+$$
+
+## Why this sign makes sense
+
+The derivative is negative because the target is $1$ but the prediction is still below $1$.
+
+So if $\hat{y}$ increases a little, the loss should decrease.
+
+That is why the slope with respect to $\hat{y}$ is negative here.
+
+## Step 6: derivative of the sigmoid output with respect to the score
+
+The sigmoid function is:
+
+$$
+\hat{y} = \sigma(z)
+$$
+
+A useful property of sigmoid is that its derivative has a simple form:
+
+$$
+\frac{\partial \hat{y}}{\partial z} = \hat{y}(1-\hat{y})
+$$
+
+Substitute the prediction:
+
+$$
+\hat{y} \approx 0.8176
+$$
+
+Compute:
+
+$$
+\frac{\partial \hat{y}}{\partial z}
+\approx 0.8176(1-0.8176)
+$$
+
+$$
+\frac{\partial \hat{y}}{\partial z}
+\approx 0.8176(0.1824)
+$$
+
+$$
+\frac{\partial \hat{y}}{\partial z} \approx 0.1491
+$$
+
+So:
+
+$$
+\frac{\partial \hat{y}}{\partial z} \approx 0.1491
+$$
+
+## Why this derivative matters
+
+This derivative tells us how sensitive the prediction is to the score $z$.
+
+If this value is small, then even a noticeable change in $z$ produces only a small change in $\hat{y}$.
+
+That is why sigmoid can sometimes learn slowly when it saturates near 0 or 1.
+
+## Step 7: derivative of the linear score with respect to the parameters
+
+The linear score is:
+
+$$
+z = w_1 x_1 + w_2 x_2 + b
+$$
+
+The derivatives are simple because this expression is linear.
+
+### With respect to $w_1$
+
+$$
+\frac{\partial z}{\partial w_1} = x_1
+$$
+
+Given:
+
+$$
+x_1 = 1
+$$
+
+so:
+
+$$
+\frac{\partial z}{\partial w_1} = 1
+$$
+
+### With respect to $w_2$
+
+$$
+\frac{\partial z}{\partial w_2} = x_2
+$$
+
+Given:
+
+$$
+x_2 = 0
+$$
+
+so:
+
+$$
+\frac{\partial z}{\partial w_2} = 0
+$$
+
+### With respect to the bias
+
+$$
+\frac{\partial z}{\partial b} = 1
+$$
+
+## Why $\partial z / \partial w_2 = 0$ here
+
+This is an important teaching moment.
+
+The input $x_2$ for this example is:
+
+$$
+x_2 = 0
+$$
+
+So no matter what value $w_2$ has, the product $w_2 x_2$ contributes nothing to the score for this one training case.
+
+That is why this example gives no update signal for $w_2$.
+
+## Step 8: combine the pieces using the chain rule
+
+Now multiply the derivatives along the chain.
+
+### Gradient for $w_1$
+
+$$
+\frac{\partial L}{\partial w_1}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial z}
+\cdot
+\frac{\partial z}{\partial w_1}
+$$
+
+Substitute values:
+
+$$
+\frac{\partial L}{\partial w_1}
+\approx (-1.2231)(0.1491)(1)
+$$
+
+$$
+\frac{\partial L}{\partial w_1} \approx -0.1823
+$$
+
+### Gradient for $w_2$
+
+$$
+\frac{\partial L}{\partial w_2}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial z}
+\cdot
+\frac{\partial z}{\partial w_2}
+$$
+
+Substitute values:
+
+$$
+\frac{\partial L}{\partial w_2}
+\approx (-1.2231)(0.1491)(0)
+$$
+
+$$
+\frac{\partial L}{\partial w_2} = 0
+$$
+
+### Gradient for $b$
+
+$$
+\frac{\partial L}{\partial b}
+=
+\frac{\partial L}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial z}
+\cdot
+\frac{\partial z}{\partial b}
+$$
+
+Substitute values:
+
+$$
+\frac{\partial L}{\partial b}
+\approx (-1.2231)(0.1491)(1)
+$$
+
+$$
+\frac{\partial L}{\partial b} \approx -0.1823
+$$
+
+So approximately:
+
+$$
+\frac{\partial L}{\partial w_1} \approx -0.1823
+$$
+
+$$
+\frac{\partial L}{\partial w_2} = 0
+$$
+
+$$
+\frac{\partial L}{\partial b} \approx -0.1823
+$$
+
+## Step 9: an important simplification
+
+For sigmoid output combined with binary cross-entropy, the gradient simplifies to a very elegant result:
+
+$$
+\frac{\partial L}{\partial z} = \hat{y} - y
+$$
+
+For sigmoid output with binary cross-entropy loss, this gradient simplification is standard [@goodfellow2016deep; @bishop2006pattern; @rumelhart1986learning].
+
+Let us verify it numerically.
+
+We had:
+
+$$
+\hat{y} \approx 0.8176
+$$
+
+and:
+
+$$
+y = 1
+$$
+
+So:
+
+$$
+\hat{y} - y = 0.8176 - 1
+$$
+
+$$
+\hat{y} - y \approx -0.1824
+$$
+
+This matches the chain-rule result above up to rounding.
+
+Because of this property, we can write the gradients more simply:
+
+$$
+\frac{\partial L}{\partial w_1} = (\hat{y}-y)x_1
+$$
+
+$$
+\frac{\partial L}{\partial w_2} = (\hat{y}-y)x_2
+$$
+
+$$
+\frac{\partial L}{\partial b} = \hat{y}-y
+$$
+
+## Why this simplification is powerful
+
+Without simplification, we must compute:
+
+- the derivative of the loss with respect to $\hat{y}$,
+- the derivative of sigmoid with respect to $z$,
+- the derivative of $z$ with respect to each parameter.
+
+With the simplification, the middle pieces collapse into one neat term:
+
+$$
+\hat{y} - y
+$$
+
+This makes classification backpropagation much easier to implement and teach.
+
+## Step 10: update the parameters
+
+Gradient descent updates parameters using:
+
+$$
+\theta_{\text{new}} = \theta_{\text{old}} - \eta \frac{\partial L}{\partial \theta}
+$$
+
+The learning rate is:
+
+$$
+\eta = 0.1
+$$
+
+We computed:
+
+$$
+\hat{y} - y \approx -0.1824
+$$
+
+### Update $w_1$
+
+$$
+w_1^{\text{new}} = 2 - 0.1(-0.1824)
+$$
+
+$$
+w_1^{\text{new}} = 2 + 0.01824
+$$
+
+$$
+w_1^{\text{new}} = 2.01824
+$$
+
+### Update $w_2$
+
+$$
+w_2^{\text{new}} = -1 - 0.1(0)
+$$
+
+$$
+w_2^{\text{new}} = -1
+$$
+
+### Update $b$
+
+$$
+b^{\text{new}} = -0.5 - 0.1(-0.1824)
+$$
+
+$$
+b^{\text{new}} = -0.5 + 0.01824
+$$
+
+$$
+b^{\text{new}} = -0.48176
+$$
+
+So the updated parameters are approximately:
+
+$$
+w_1 = 2.0182
+$$
+
+$$
+w_2 = -1.0
+$$
+
+$$
+b = -0.4818
+$$
+
+## Step 11: check whether the loss decreased
+
+Now compute the new score:
+
+$$
+z_{\text{new}} = (2.01824)(1) + (-1)(0) + (-0.48176)
+$$
+
+$$
+z_{\text{new}} = 1.53648
+$$
+
+Now compute the new prediction:
+
+$$
+\hat{y}_{\text{new}} = \sigma(1.53648) \approx 0.8230
+$$
+
+Because the true target is 1, the prediction moved slightly closer to 1.
+
+Now compute the new loss:
+
+$$
+L_{\text{new}} = -\log(0.8230) \approx 0.1949
+$$
+
+So the loss decreased approximately:
+
+$$
+0.2014 \to 0.1949
+$$
+
+## Why the loss decreased
+
+The target is:
+
+$$
+y = 1
+$$
+
+The original prediction was:
+
+$$
+0.8176
+$$
+
+The new prediction became slightly larger:
+
+$$
+0.8230
+$$
+
+That moves the model in the correct direction for this example.
+
+So the loss decreases.
+
+## A small Python check
+
+```{python}
+import math
+
+x1 = 1
+x2 = 0
+y = 1
+
+w1 = 2.0
+w2 = -1.0
+b = -0.5
+eta = 0.1
+
+def sigmoid(z):
+    return 1 / (1 + math.exp(-z))
+
+# Forward pass
+z = w1 * x1 + w2 * x2 + b
+y_hat = sigmoid(z)
+loss = -(y * math.log(y_hat) + (1 - y) * math.log(1 - y_hat))
+
+# Simplified gradient for sigmoid + BCE
+dL_dz = y_hat - y
+dL_dw1 = dL_dz * x1
+dL_dw2 = dL_dz * x2
+dL_db = dL_dz
+
+# Update
+w1_new = w1 - eta * dL_dw1
+w2_new = w2 - eta * dL_dw2
+b_new = b - eta * dL_db
+
+# New forward pass
+z_new = w1_new * x1 + w2_new * x2 + b_new
+y_hat_new = sigmoid(z_new)
+loss_new = -(y * math.log(y_hat_new) + (1 - y) * math.log(1 - y_hat_new))
+
+print("Initial z:", round(z, 4))
+print("Initial prediction:", round(y_hat, 4))
+print("Initial loss:", round(loss, 4))
+print()
+print("Gradients:")
+print("  dL/dz  =", round(dL_dz, 4))
+print("  dL/dw1 =", round(dL_dw1, 4))
+print("  dL/dw2 =", round(dL_dw2, 4))
+print("  dL/db  =", round(dL_db, 4))
+print()
+print("Updated parameters:")
+print("  w1 =", round(w1_new, 4))
+print("  w2 =", round(w2_new, 4))
+print("  b  =", round(b_new, 4))
+print()
+print("New z:", round(z_new, 4))
+print("New prediction:", round(y_hat_new, 4))
+print("New loss:", round(loss_new, 4))
+```
+
+## Why this chapter matters so much
+
+This chapter shows a very important truth:
+
+Backpropagation is still the chain rule, but some combinations of activation and loss produce elegant simplifications.
+
+For binary classification with sigmoid and cross-entropy:
+
+$$
+\frac{\partial L}{\partial z} = \hat{y} - y
+$$
+
+That is one of the most useful formulas in introductory neural-network learning.
+
+## Common mistakes
+
+### Mistake 1: differentiating binary cross-entropy incorrectly
+
+The logarithms and signs matter. One missing minus sign changes the result.
+
+### Mistake 2: forgetting the sigmoid derivative
+
+If you do the long chain-rule route, you must include:
+
+$$
+\hat{y}(1-\hat{y})
+$$
+
+### Mistake 3: forgetting the simplification applies to this specific pairing
+
+The simplification:
+
+$$
+\frac{\partial L}{\partial z} = \hat{y} - y
+$$
+
+depends on using sigmoid output together with binary cross-entropy.
+
+It is not a universal formula for every activation-loss combination.
+
+### Mistake 4: being confused by $w_2$ having zero gradient here
+
+That happened only because:
+
+$$
+x_2 = 0
+$$
+
+So this example gives no immediate update signal for $w_2$.
+
+## Chapter checklist
+
+By the end of this chapter, you should be able to answer:
+
+1. What is the computation chain in classification backpropagation?
+2. Why do we use sigmoid here?
+3. What is binary cross-entropy measuring?
+4. Why does the gradient simplify to $\hat{y} - y$?
+5. Why was $\frac{\partial L}{\partial w_2} = 0$ in this example?
+6. Why did the loss decrease after the update?
+
+## Suggested by-hand exercise
+
+Use:
+
+$$
+x_1 = 1,\quad x_2 = 1,\quad y = 1
+$$
+
+with initial parameters:
+
+$$
+w_1 = 2,\quad w_2 = -1,\quad b = -0.5
+$$
+
+and learning rate:
+
+$$
+\eta = 0.1
+$$
+
+Compute by hand:
+
+1. $z$,
+2. $\hat{y}$,
+3. the binary cross-entropy loss,
+4. $\hat{y} - y$,
+5. the gradients for $w_1$, $w_2$, and $b$,
+6. the updated parameters,
+7. the new prediction and new loss.
+
