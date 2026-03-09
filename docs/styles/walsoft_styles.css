@@ -1,0 +1,188 @@
+/* =========================================================
+   Walsoft custom styles for Quarto book
+   Focus: sidebar footer + page footer
+   Style goal: calm, professional, 2026+ academic-tech feel
+   ========================================================= */
+
+/* ---------- Brand tokens ---------- */
+:root {
+  --walsoft-brand: #0b6efd;
+  --walsoft-brand-dark: #0a58ca;
+  --walsoft-text: #1f2937;
+  --walsoft-muted: #6b7280;
+  --walsoft-border: rgba(15, 23, 42, 0.10);
+  --walsoft-surface: rgba(255, 255, 255, 0.82);
+  --walsoft-surface-strong: rgba(255, 255, 255, 0.92);
+  --walsoft-shadow-sm: 0 4px 16px rgba(15, 23, 42, 0.06);
+  --walsoft-shadow-md: 0 10px 30px rgba(15, 23, 42, 0.10);
+  --walsoft-radius: 14px;
+  --walsoft-radius-sm: 10px;
+}
+
+/* ---------- Footer links: common ---------- */
+.sidebar .sidebar-item-text.sidebar-link,
+.nav-footer a,
+#quarto-margin-sidebar a,
+.quarto-title-meta a {
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.16em;
+}
+
+/* ---------- Sidebar footer block ---------- */
+/* Quarto sidebars are HTML-book/website sidebars; this targets the footer region */
+.sidebar .sidebar-footer,
+#quarto-sidebar .sidebar-footer {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--walsoft-border);
+  border-radius: var(--walsoft-radius);
+  background: var(--walsoft-surface);
+  box-shadow: var(--walsoft-shadow-sm);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Sidebar footer text/link */
+.sidebar .sidebar-footer a,
+#quarto-sidebar .sidebar-footer a {
+  color: var(--walsoft-brand-dark);
+  font-weight: 600;
+  text-decoration: none;
+  line-height: 1.4;
+  transition:
+    color 0.18s ease,
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.sidebar .sidebar-footer a:hover,
+#quarto-sidebar .sidebar-footer a:hover {
+  color: var(--walsoft-brand);
+  opacity: 0.95;
+}
+
+.sidebar .sidebar-footer a:focus-visible,
+#quarto-sidebar .sidebar-footer a:focus-visible,
+.nav-footer a:focus-visible {
+  outline: 2px solid var(--walsoft-brand);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---------- Bottom page footer ---------- */
+.nav-footer {
+  border-top: 1px solid var(--walsoft-border);
+  margin-top: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 1.25rem;
+  background: transparent;
+}
+
+.nav-footer-center {
+  margin-inline: auto;
+  max-width: 980px;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--walsoft-border);
+  border-radius: var(--walsoft-radius);
+  background: var(--walsoft-surface-strong);
+  box-shadow: var(--walsoft-shadow-sm);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--walsoft-text);
+  text-align: center;
+}
+
+/* Link inside center footer */
+.nav-footer-center a {
+  color: var(--walsoft-brand-dark);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-footer-center a:hover {
+  color: var(--walsoft-brand);
+}
+
+/* Make separator calmer */
+.nav-footer-center {
+  letter-spacing: 0.01em;
+}
+
+/* ---------- Optional: make overall footer feel cleaner ---------- */
+.nav-footer-left,
+.nav-footer-right {
+  color: var(--walsoft-muted);
+  font-size: 0.92rem;
+}
+
+/* ---------- Mobile behavior ---------- */
+@media (max-width: 768px) {
+  .sidebar .sidebar-footer,
+  #quarto-sidebar .sidebar-footer,
+  .nav-footer-center {
+    border-radius: var(--walsoft-radius-sm);
+    padding: 0.8rem 0.9rem;
+  }
+
+  .nav-footer-center {
+    font-size: 0.92rem;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .nav-footer-center a {
+    white-space: normal;
+  }
+}
+
+/* ---------- Dark-mode friendliness if theme/browser uses dark preference ---------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --walsoft-text: #e5e7eb;
+    --walsoft-muted: #9ca3af;
+    --walsoft-border: rgba(255, 255, 255, 0.10);
+    --walsoft-surface: rgba(17, 24, 39, 0.72);
+    --walsoft-surface-strong: rgba(17, 24, 39, 0.86);
+    --walsoft-shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.22);
+    --walsoft-shadow-md: 0 14px 38px rgba(0, 0, 0, 0.28);
+  }
+
+  .nav-footer-center,
+  .sidebar .sidebar-footer,
+  #quarto-sidebar .sidebar-footer {
+    color: var(--walsoft-text);
+  }
+}
+
+
+
+
+
+/* Sidebar footer link inside the Quarto sidebar */
+#quarto-sidebar a[href="https://learn.walsoftcomputers.com/"] {
+  color: #0a58ca;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  line-height: 1.45;
+  transition: color 0.18s ease, opacity 0.18s ease, font-weight 0.18s ease;
+}
+
+#quarto-sidebar a[href="https://learn.walsoftcomputers.com/"]:hover {
+  color: #0b6efd;
+  font-weight: 400;
+  text-decoration: none;
+  opacity: 0.95;
+}
+
+#quarto-sidebar a[href="https://learn.walsoftcomputers.com/"]:focus,
+#quarto-sidebar a[href="https://learn.walsoftcomputers.com/"]:focus-visible {
+  color: #0b6efd;
+  font-weight: 400;
+  text-decoration: none;
+  outline: none;
+}

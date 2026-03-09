@@ -25,6 +25,13 @@ book:
     image-alt: "Cover image for Neural Networks from First Principles"
     image-width: 1200
     image-height: 630
+  sidebar:
+    search: true
+    footer: |
+      [← Walsoft Learning Hub](https://learn.walsoftcomputers.com/)
+  page-footer:
+    center: |
+      [← Back to Walsoft Learning Hub](https://learn.walsoftcomputers.com/)
   chapters:
     - index.qmd
     - about-this-book.qmd
@@ -45,6 +52,7 @@ csl: apa.csl
 format:
   html:
     theme: litera
+    css: styles/walsoft_styles.css
     toc: true
     number-sections: true
     code-fold: false
